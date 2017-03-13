@@ -2,23 +2,25 @@ package org.sevensource.support.jpa.model;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Objects;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.ClassUtils;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@Access(AccessType.FIELD)
 public abstract class AbstractPersistentEntity<ID extends Serializable> implements PersistentEntity<ID> {
 
 	@Version
@@ -40,18 +42,25 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 	@LastModifiedDate
     @Column(nullable=false)
 	private Instant lastModifiedDate;
-	
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if (!(o instanceof AbstractPersistentEntity)) return false;
-        AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
-        return getId() != null && Objects.equals(getId(), other.getId());
+		if (!getClass().equals(ClassUtils.getUserClass(o))) return false;
+		AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
+		
+		if(this.getId() == null && other.getId() == null) {
+			return EqualsBuilder.reflectionEquals(this, other);
+		} else if(this.getId() == null || other.getId() == null) {
+			return false;
+		} else {
+			return this.getId().equals(other.getId());
+		}
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
     	// always return the same hashCode
     	// although this decreases performance for large hash tables,
     	// this way the JPA contract is correctly followed

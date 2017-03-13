@@ -21,7 +21,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -31,6 +30,9 @@ import org.junit.Test;
 import org.sevensource.support.jpa.configuration.JpaAuditingTestConfiguration;
 import org.sevensource.support.jpa.model.mock.MockFactory;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 
 @DataJpaTest
@@ -67,6 +69,49 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		List<E> list = getEntityManager().createQuery(q).getResultList();
 		assertThat(list).isEmpty();
 	}
+	
+	@Test
+	public void equalsContract() {
+	    EqualsVerifier
+	    	.forClass(entityClass)
+	    	.withRedefinedSuperclass()
+	    	.suppress(Warning.STRICT_INHERITANCE)
+
+	    	//.suppress(Warning.IDENTICAL_COPY_FOR_VERSIONED_ENTITY)
+	        .suppress(Warning.ALL_FIELDS_SHOULD_BE_USED)
+	        .suppress(Warning.STRICT_HASHCODE)
+	    	
+        .verify();
+	}
+	
+	@Test
+	public void test_equality_with_empty_objects() {
+		E entity1 = null;
+		E entity2 = null;
+		try {
+			entity1 = entityClass.newInstance();
+			entity2 = entityClass.newInstance();
+		} catch (Exception e) {
+			// do nothing, cannot instantiante without default constructor
+			return;
+		}
+		
+		Set<E> set = new HashSet<>();
+		set.add(entity1);
+		set.add(entity2);
+		assertThat(set.size()).isEqualTo(1);
+	}
+	
+	@Test
+	public void test_equality_with_populated_objects() {
+		E entity1 = populateEntity();
+		E entity2 = populateEntity();
+		
+		Set<E> set = new HashSet<>();
+		set.add(entity1);
+		set.add(entity2);
+		assertThat(set.size()).isEqualTo(2);
+	}
 
 	@Test
 	public void persist_creates_a_UUID() {
@@ -97,11 +142,8 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		assertThat(e.getCreatedBy()).isEqualTo(JpaAuditingTestConfiguration.AUDITOR_STRING);
 		assertThat(e.getLastModifiedBy()).isEqualTo(JpaAuditingTestConfiguration.AUDITOR_STRING);
 
-		assertThat(e.getCreatedDate().isAfter(BEGIN)).isTrue();
-		assertThat(e.getCreatedDate().isBefore(END)).isTrue();
-
-		assertThat(e.getLastModifiedDate().isAfter(BEGIN)).isTrue();
-		assertThat(e.getLastModifiedDate().isBefore(END)).isTrue();
+		assertThat(e.getCreatedDate()).isBetween(BEGIN, END);
+		assertThat(e.getLastModifiedDate()).isBetween(BEGIN, END);
 
 		assertThat(e.getVersion()).isEqualTo(0);
 	}

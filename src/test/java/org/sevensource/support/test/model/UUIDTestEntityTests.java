@@ -8,16 +8,11 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.jpa.configuration.MockFactoryConfiguration;
-import org.sevensource.support.jpa.model.AbstractPersistentEntity;
 import org.sevensource.support.jpa.model.AbstractUUIDEntityTestSupport;
 import org.sevensource.support.test.configuration.MockConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -31,16 +26,7 @@ public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestE
 		super(UUIDTestEntity.class);
 	}
 	
-	@Test
-	public void equalsContract() {
-	    EqualsVerifier
-	    	.forClass(UUIDTestEntity.class)
-	    	.withRedefinedSuperclass()
-	    	.withNonnullFields("id")
-	    	.withOnlyTheseFields("id")
-        .verify();
-	}
-	
+
 	@Test
 	public void test_persist_with_reference() {
 		UUIDTestEntity e = new UUIDTestEntity("Hello World 1");
