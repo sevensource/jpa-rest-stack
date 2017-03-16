@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaAuditingTestConfiguration;
 import org.sevensource.support.jpa.model.AbstractUUIDEntityTestSupport;
 import org.sevensource.support.test.configuration.MockConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,7 +26,6 @@ public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestE
 	public UUIDTestEntityTests() {
 		super(UUIDTestEntity.class);
 	}
-	
 
 	@Test
 	public void test_persist_with_reference() {

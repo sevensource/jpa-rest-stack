@@ -47,8 +47,8 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	@Autowired
 	private EntityService<T, UUID> service;
 	
-	
 	private final Class<T> domainClass;
+	
 	
 	public AbstractEntityServiceTests(Class<T> domainClass) {
 		this.domainClass = domainClass;
@@ -67,11 +67,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	}
 	
 	protected List<T> createEntity(int counter) {
-		List<T> list = new ArrayList<>();
-		for(int i=0; i<counter; i++) {
-			list.add(MockFactory.on(domainClass).create());
-		}
-		return list;
+		return MockFactory.on(domainClass).create(counter);
 	}
 	
 	protected T touch(T e) {
@@ -361,12 +357,11 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	
 	private int getEntityCount() {
 		CriteriaBuilder cb = tem.getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<T> cq = cb.createQuery(domainClass);
-		Root<T> root = cq.from(domainClass);
-		cq = cq.where();
-        TypedQuery<T> q = tem.getEntityManager().createQuery(cq);
-        List<T> results = q.getResultList();
-        return results.size();
+		CriteriaQuery<T> q = cb.createQuery(domainClass);
+		q.from(domainClass);
+		
+		List<T> list = tem.getEntityManager().createQuery(q).getResultList();
+        return list.size();
 	}
 	
 }

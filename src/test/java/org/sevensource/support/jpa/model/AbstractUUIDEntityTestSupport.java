@@ -41,16 +41,16 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	@PersistenceContext
 	EntityManager em;
 	
-	private final Class<E> entityClass;
+	private final Class<E> domainClass;
 
 
 	
 	protected AbstractUUIDEntityTestSupport(Class<E> entityClazz) {
-		this.entityClass = entityClazz;
+		this.domainClass = entityClazz;
 	}
 	
 	protected E populateEntity() {
-		return MockFactory.on(entityClass).populate();
+		return MockFactory.on(domainClass).populate();
 	}
 	
 	protected EntityManager getEntityManager() {
@@ -63,8 +63,8 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	
 	private void ensureEmpty() {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<E> q = cb.createQuery(entityClass);
-		q.from(entityClass);
+		CriteriaQuery<E> q = cb.createQuery(domainClass);
+		q.from(domainClass);
 		
 		List<E> list = getEntityManager().createQuery(q).getResultList();
 		assertThat(list).isEmpty();
@@ -73,7 +73,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	@Test
 	public void equalsContract() {
 	    EqualsVerifier
-	    	.forClass(entityClass)
+	    	.forClass(domainClass)
 	    	.withRedefinedSuperclass()
 	    	.suppress(Warning.STRICT_INHERITANCE)
 
@@ -89,8 +89,8 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		E entity1 = null;
 		E entity2 = null;
 		try {
-			entity1 = entityClass.newInstance();
-			entity2 = entityClass.newInstance();
+			entity1 = domainClass.newInstance();
+			entity2 = domainClass.newInstance();
 		} catch (Exception e) {
 			// do nothing, cannot instantiante without default constructor
 			return;
@@ -160,7 +160,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		
 		assertThat(e.getId()).isEqualTo(id);
 
-		E ee = getEntityManager().find(entityClass, id);
+		E ee = getEntityManager().find(domainClass, id);
 		assertThat(ee.getId()).isEqualTo(id);
 	}
 	
@@ -219,14 +219,14 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		});
 
 		doInJPA(entityManager -> {
-			E _entity = entityManager.find(entityClass, entity.getId());
+			E _entity = entityManager.find(domainClass, entity.getId());
 			assertThat(tuples.contains(_entity))
 					.as("The entity is found after it's loaded in an other Persistence Context").isTrue();
 		});
 
 		executeSync(() -> {
 			doInJPA(entityManager -> {
-				E _entity = entityManager.find(entityClass, entity.getId());
+				E _entity = entityManager.find(domainClass, entity.getId());
 				assertThat(tuples.contains(_entity)).as("The entity is found after it's loaded "
 						+ "in an other Persistence Context and " + "in an other thread").isTrue();
 			});
@@ -235,8 +235,8 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		// now: delete - delete one by one to respect cascades
 		doInJPA(entityManager -> {
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-			CriteriaQuery<E> q = cb.createQuery(entityClass);
-			q.from(entityClass);
+			CriteriaQuery<E> q = cb.createQuery(domainClass);
+			q.from(domainClass);
 			List<E> res = entityManager.createQuery(q).getResultList();
 			for(E e : res) {
 				entityManager.remove(e);
