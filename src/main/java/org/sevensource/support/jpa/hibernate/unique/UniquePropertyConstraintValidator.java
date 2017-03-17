@@ -9,16 +9,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Type;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -26,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import com.google.common.base.Joiner;
@@ -119,7 +125,7 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 		}
         
         CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-        CriteriaQuery<?> criteriaQuery = builder.createQuery(entityClass);
+        CriteriaQuery<Tuple> criteriaQuery = builder.createTupleQuery();
         Root<?> root = criteriaQuery.from(entityClass);
         
         Predicate[] predicates = new Predicate[constraints.size()];
@@ -134,32 +140,21 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         	}
         	predicates[c] = builder.and(groupPredicates);
         }
-        	
-		if (logger.isDebugEnabled()) {
-			List<String> tmp = new ArrayList<>();
-			
-			for(int c=0; c<constraints.size(); c++) {
-				List<ConstraintDescriptor> constraintGroup = constraints.get(c);
-				
-				String[] tmpx = new String[constraintGroup.size()];
-				for(int i=0; i<constraintGroup.size(); i++) {
-					final ConstraintDescriptor constraint = constraintGroup.get(i);
-					tmpx[i] = String.format("%s='%s'", constraint.field, constraint.value);
-				}
-				tmp.add("(" + Joiner.on(" AND ").join(tmpx) + ")");
-			}
-			
-			logger.debug("Validating UniqueConstraint [{}] for entity {}", Joiner.on(" OR ").join(tmp), entityClass );
-		}
-        	
+        
+        logQuery(constraints, entityClass);
+        
+        String propertyName = getIdPropertyName(entityClass);
+
     	EntityManager em = entityManagerFactory.createEntityManager();
+    	criteriaQuery = criteriaQuery.multiselect(root.get(propertyName));
     	criteriaQuery = criteriaQuery.where(builder.or(predicates));
-    	TypedQuery<?> query = em.createQuery(criteriaQuery);
-            
+    	TypedQuery<Tuple> query = em.createQuery(criteriaQuery);
             
         try {
-        	Object o = query.getSingleResult();
-        	if(o.equals(target)) {
+        	Object resultId = query.getSingleResult().get(0);
+        	
+        	Object entityId = entityManagerFactory.getPersistenceUnitUtil().getIdentifier(target);
+        	if(resultId.equals(entityId)) {
         		if (logger.isTraceEnabled()) {
 					logger.trace("Object returned by ValidationConstraint query is equal to the object under validation");
 				}
@@ -182,4 +177,34 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         }
     }
 
+	private String getIdPropertyName(Class<?> entityClass) {
+		String idPropertyName = null;
+        for (SingularAttribute sa : entityManagerFactory.getMetamodel().entity(entityClass).getSingularAttributes()) {
+           if (sa.isId()) {
+        	   Assert.isNull(idPropertyName, "Single @Id expected");
+              idPropertyName = sa.getName();
+           }
+        }
+        return idPropertyName;
+	}
+
+    private static void logQuery(List<List<ConstraintDescriptor>> constraints, Class<?> entityClass) {
+    	if (logger.isDebugEnabled()) {
+			List<String> tmp = new ArrayList<>();
+			
+			for(int c=0; c<constraints.size(); c++) {
+				List<ConstraintDescriptor> constraintGroup = constraints.get(c);
+				
+				String[] tmpx = new String[constraintGroup.size()];
+				for(int i=0; i<constraintGroup.size(); i++) {
+					final ConstraintDescriptor constraint = constraintGroup.get(i);
+					tmpx[i] = String.format("%s='%s'", constraint.field, constraint.value);
+				}
+				tmp.add("(" + Joiner.on(" AND ").join(tmpx) + ")");
+			}
+			
+			logger.debug("Validating UniqueConstraint [{}] for entity {}", Joiner.on(" OR ").join(tmp), entityClass );
+		}
+    }
+    
 }

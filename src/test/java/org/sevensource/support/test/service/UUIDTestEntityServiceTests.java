@@ -39,7 +39,6 @@ public class UUIDTestEntityServiceTests extends AbstractEntityServiceTests<UUIDT
 		super(UUIDTestEntity.class);
 	}
 	
-	
 	@Override
 	protected List<UUIDTestEntity> getEntitesToPersistBeforeTransaction() {
 		UUIDTestEntity e = populate();
