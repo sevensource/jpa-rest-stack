@@ -71,6 +71,12 @@
 		    <version>2.2.1</version>
 		    <scope>test</scope>
 		</dependency>
+		<dependency>
+		  <groupId>net.ttddyy</groupId>
+		  <artifactId>datasource-proxy</artifactId>
+		  <version>1.4.1</version>
+		  <scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
