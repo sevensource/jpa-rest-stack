@@ -17,9 +17,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
@@ -27,8 +25,8 @@ import javax.transaction.Transactional.TxType;
 
 import org.hibernate.Session;
 import org.junit.Test;
+import org.sevensource.support.jpa.AbstractJpaTestSupport;
 import org.sevensource.support.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.jpa.model.mock.MockFactory;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -36,38 +34,13 @@ import nl.jqno.equalsverifier.Warning;
 
 
 @DataJpaTest
-public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity> {
-
-	@PersistenceContext
-	EntityManager em;
+public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity> extends AbstractJpaTestSupport<E> {
 	
 	private final Class<E> domainClass;
 
-
-	
-	protected AbstractUUIDEntityTestSupport(Class<E> entityClazz) {
-		this.domainClass = entityClazz;
-	}
-	
-	protected E populateEntity() {
-		return MockFactory.on(domainClass).populate();
-	}
-	
-	protected EntityManager getEntityManager() {
-		return em;
-	}
-	
-	protected EntityManagerFactory getEntityManagerFactory() {
-		return getEntityManager().getEntityManagerFactory();
-	}
-	
-	private void ensureEmpty() {
-		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<E> q = cb.createQuery(domainClass);
-		q.from(domainClass);
-		
-		List<E> list = getEntityManager().createQuery(q).getResultList();
-		assertThat(list).isEmpty();
+	protected AbstractUUIDEntityTestSupport(Class<E> domainClass) {
+		super(domainClass);
+		this.domainClass = domainClass;
 	}
 	
 	@Test
@@ -82,6 +55,27 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	        .suppress(Warning.STRICT_HASHCODE)
 	    	
         .verify();
+	}
+	
+	@Test
+	public void equals_works() {
+		ensureEmpty();
+		
+		E e1 = populate();
+		E e2 = populate();
+		
+		assertThat(e1).isEqualTo(e1);
+		assertThat(e2).isEqualTo(e2);
+		assertThat(e1).isNotEqualTo(e2);
+
+		getEntityManager().persist(e1);
+		getEntityManager().flush();
+		
+		assertThat(e1).isEqualTo(e1);
+		assertThat(e1).isNotEqualTo(e2);
+		
+		assertThat(e1).isNotEqualTo(null);
+		assertThat(e1).isNotEqualTo(new Object());
 	}
 	
 	@Test
@@ -104,8 +98,8 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	
 	@Test
 	public void test_equality_with_populated_objects() {
-		E entity1 = populateEntity();
-		E entity2 = populateEntity();
+		E entity1 = populate();
+		E entity2 = populate();
 		
 		Set<E> set = new HashSet<>();
 		set.add(entity1);
@@ -117,7 +111,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	public void persist_creates_a_UUID() {
 		ensureEmpty();
 		
-		E e = populateEntity();
+		E e = populate();
 		getEntityManager().persist(e);
 		getEntityManager().flush();
 		assertThat(e.getId()).isNotNull();
@@ -127,7 +121,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	public void persist_updates_auditing() {
 		ensureEmpty();
 		
-		E e = populateEntity();
+		E e = populate();
 
 		Instant BEGIN = Instant.now();
 		try {
@@ -153,7 +147,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		ensureEmpty();
 		
 		UUID id = UUID.randomUUID();
-		E e = populateEntity();
+		E e = populate();
 		e.setId(id);
 		getEntityManager().persist(e);
 		getEntityManager().flush();
@@ -163,27 +157,6 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		E ee = getEntityManager().find(domainClass, id);
 		assertThat(ee.getId()).isEqualTo(id);
 	}
-	
-	@Test
-	public void equals_works() {
-		ensureEmpty();
-		
-		E e1 = populateEntity();
-		E e2 = populateEntity();
-		
-		assertThat(e1).isEqualTo(e1);
-		assertThat(e2).isEqualTo(e2);
-		assertThat(e1).isNotEqualTo(e2);
-
-		getEntityManager().persist(e1);
-		getEntityManager().flush();
-		
-		assertThat(e1).isEqualTo(e1);
-		assertThat(e1).isNotEqualTo(e2);
-		
-		assertThat(e1).isNotEqualTo(null);
-		assertThat(e1).isNotEqualTo(new Object());
-	}
 
 	@Test
 	@Transactional(value=TxType.NOT_SUPPORTED)
@@ -191,7 +164,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	public void assert_equality_constraints() {
 
 		ensureEmpty();
-		E entity = populateEntity();
+		E entity = populate();
 		
 		
 		Set<E> tuples = new HashSet<>();

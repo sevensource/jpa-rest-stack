@@ -1,48 +1,36 @@
 package org.sevensource.support.jpa.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
 
 import org.junit.Test;
+import org.sevensource.support.jpa.AbstractJpaTestSupport;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.model.PersistentEntity;
-import org.sevensource.support.jpa.model.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import org.springframework.util.CollectionUtils;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 
 
 @DataJpaTest
-public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID>> {
-	
-	@Autowired
-	TestEntityManager tem;
-	
-	@Autowired
-	EntityManagerFactory emf;
+public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID>> extends AbstractJpaTestSupport<T> {
 	
 	@Autowired
 	private EntityService<T, UUID> service;
@@ -51,6 +39,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	
 	
 	public AbstractEntityServiceTests(Class<T> domainClass) {
+		super(domainClass);
 		this.domainClass = domainClass;
 	}
 	
@@ -58,51 +47,105 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		return service;
 	}
 	
-	protected T populate() {
-		return MockFactory.on(domainClass).populate();
-	}
-	
-	protected T createEntity() {
-		return MockFactory.on(domainClass).create();
-	}
-	
-	protected List<T> createEntity(int counter) {
-		return MockFactory.on(domainClass).create(counter);
-	}
-	
-	protected T touch(T e) {
-		return MockFactory.on(domainClass).touch(e);
-	}
-	
 	@BeforeTransaction
 	public void beforeTransaction() {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = getEntityManagerFactory().createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
-		for(Class<?> clazz : getEntityClassesForDeletion()) {
+		List<Class<?>> deletionClasses = new ArrayList<>();
+		if(! CollectionUtils.isEmpty( getEntityClassesToDeleteBeforeTransaction() )) {
+			deletionClasses.addAll( getEntityClassesToDeleteBeforeTransaction() );
+		}
+		deletionClasses.add(domainClass);
+		for(Class<?> clazz : deletionClasses) {
 			CriteriaBuilder criteriaBuilder  = em.getCriteriaBuilder();
 			CriteriaDelete query = criteriaBuilder.createCriteriaDelete(clazz);
-			Root<?> root = query.from(clazz);
-			int result = em.createQuery(query).executeUpdate();
+			query.from(clazz);
+			em.createQuery(query).executeUpdate();
 		}
 		
-		for(T e : getEntitiesForBusinessValidation()) {
-			em.persist(e);
+		List<T> entities = getEntitesToPersistBeforeTransaction();
+		if(entities != null) {
+			for(T e : getEntitesToPersistBeforeTransaction()) {
+				em.persist(e);
+			}
 		}
 		tx.commit();
 	}
 	
-	protected abstract List<T> getEntitiesForBusinessValidation(); 
-	protected abstract List<Class<?>> getEntityClassesForDeletion();
+	/**
+	 * Persist entities before transaction to perform tests, that violate, ie. database constraints.
+	 * 
+	 * @return a list of entities to persist before each transaction, can be null
+	 */
+	protected abstract List<T> getEntitesToPersistBeforeTransaction();
+	
+	/**
+	 * 
+	 * @return a list of classes to be deleted before each transaction in addition of the entity under test.
+	 */
+	protected abstract List<Class<?>> getEntityClassesToDeleteBeforeTransaction();
+	
+	/**
+	 * get a list of entities with invalid data, which are expected to cause an {@link EntityValidationException}
+	 * @return
+	 */
+	protected abstract List<T> getEntitiesWithValidationViolations();
 	
 	// ABSTRACTS
-	@Test(expected=EntityValidationException.class)
-	public abstract void create_with_business_violation();
-	@Test(expected=EntityValidationException.class)
-	public abstract void create_withId_with_business_violation();
-	@Test(expected=EntityValidationException.class)
-	public abstract void update_with_business_violation();
+	
+	@Test
+	public void create_with_validation_violation() {
+		List<T> entities = getEntitiesWithValidationViolations();
+		if(entities != null) {
+			for(T e : entities) {
+				try {
+					getService().create(e);
+					fail("Create should fail with invalid entity: " + e);
+				} catch(EntityValidationException ex) {
+					// ok, as expected
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void create_withId_with_validation_violation() {
+		List<T> entities = getEntitiesWithValidationViolations();
+		if(entities != null) {
+			for(T e : entities) {
+				try {
+					getService().create(UUID.randomUUID(), e);
+					fail("Create should fail with invalid entity: " + e);
+				} catch(EntityValidationException ex) {
+					// ok, as expected
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void update_with_validation_violation() {
+		List<T> entities = getEntitiesWithValidationViolations();
+		if(entities != null) {
+			List<T> created = createEntity(entities.size());
+			getEntityManager().flush();
+			
+			for(int i=0; i<created.size(); i++) {
+				try {
+					T e = entities.get(i);
+					getService().get(created.get(i).getId());
+					UUID id = created.get(i).getId();
+					e.setId(id);
+					getService().update(id, e);
+					fail("Update should fail with invalid entity: " + e);
+				} catch(EntityValidationException ex) {
+					// ok, as expected
+				}
+			}
+		}
+	}
 	
 	
 	///// GET
@@ -162,9 +205,9 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void create_persists_an_entity() {
 		T e = populate();
 		e = getService().create(e);
-		tem.flush();
+		getEntityManager().flush();
 		assertThat(e.getId()).isNotNull();
-		T e1 = tem.find(domainClass, e.getId());
+		T e1 = getEntityManager().find(domainClass, e.getId());
 		assertThat(e1.getId()).isNotNull();
 		assertThat(e).isEqualTo(e1);
 	}
@@ -173,13 +216,13 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void version_is_incremented() {
 		T e = populate();
 		e = getService().create(e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getVersion()).isEqualTo(0);
 		
 		touch(e);
 		e = getService().update(e.getId(), e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getVersion()).isEqualTo(1);
 	}
@@ -188,7 +231,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void entity_has_auditing_data_after_create() {
 		T e = populate();
 		e = getService().create(e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getCreatedBy()).isNotBlank();
 		assertThat(e.getLastModifiedBy()).isNotBlank();
@@ -200,7 +243,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	@Test
 	public void create_by_id_with_first_null_argument() {
 		T e = getService().create(null, populate());
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getId()).isNotNull();
 	}
@@ -215,7 +258,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		T e = populate();
 		UUID id = UUID.randomUUID();
 		e = getService().create(id, e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getId()).isEqualTo(id);
 	}
@@ -258,12 +301,12 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void update_works_for_new_entity() {
 		T e = populate();
 		e = getService().create(e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		UUID id = e.getId();
 		touch(e);
 		e = getService().update(e.getId(), e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getId()).isEqualTo(id);
 		assertThat(e.getVersion()).isEqualTo(1);
@@ -276,7 +319,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		UUID id = e.getId();
 		touch(e);
 		e = getService().update(e.getId(), e);
-		tem.flush();
+		getEntityManager().flush();
 		
 		assertThat(e.getId()).isEqualTo(id);
 		assertThat(e.getVersion()).isEqualTo(1);
@@ -299,9 +342,9 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void delete_existing_id() {
 		UUID id = createEntity().getId();
 		getService().delete(id);
-		tem.flush();
+		getEntityManager().flush();
 		
-		T e = tem.find(domainClass, id);
+		T e = getEntityManager().find(domainClass, id);
 		assertThat(e).isNull();
 	}
 	
@@ -319,8 +362,8 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void findall_is_correct_with_pageable(int count) {
 		
 		createEntity(count);
-		tem.flush();
-		tem.clear();
+		getEntityManager().flush();
+		getEntityManager().clear();
 		count = getEntityCount();
 		
 		int pagesize = 7;
@@ -346,22 +389,12 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void findAllIsCorrectWithSort(int count) {
 		
 		createEntity(count);
-		tem.flush();
-		tem.clear();
+		getEntityManager().flush();
+		getEntityManager().clear();
 		count = getEntityCount();
 		
 		Sort sort = new Sort("id");
 		List<T> res = getService().findAll(sort);
 		assertThat(res).size().isEqualTo(count);
 	}
-	
-	private int getEntityCount() {
-		CriteriaBuilder cb = tem.getEntityManager().getCriteriaBuilder();
-		CriteriaQuery<T> q = cb.createQuery(domainClass);
-		q.from(domainClass);
-		
-		List<T> list = tem.getEntityManager().createQuery(q).getResultList();
-        return list.size();
-	}
-	
 }

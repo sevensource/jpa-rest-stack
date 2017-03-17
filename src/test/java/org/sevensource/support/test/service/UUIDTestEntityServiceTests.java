@@ -1,14 +1,13 @@
 package org.sevensource.support.test.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.DataProviderRunnerWithSpring;
 import org.sevensource.support.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.service.AbstractEntityServiceTests;
 import org.sevensource.support.test.configuration.MockConfiguration;
 import org.sevensource.support.test.model.UUIDTestEntity;
@@ -33,18 +32,35 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 @ComponentScan(basePackageClasses={UUIDTestEntityService.class})
 public class UUIDTestEntityServiceTests extends AbstractEntityServiceTests<UUIDTestEntity> {
 
-	private final static String UNIQUE_STRING = "A UNIQUE STRING";
+	private final static String UNIQUE_TITLE = "A UNIQUE STRING";
+	private final static String[] INVALID_TITLE = new String[] {null, "", "a", UNIQUE_TITLE};
+	
+	public UUIDTestEntityServiceTests() {
+		super(UUIDTestEntity.class);
+	}
+	
 	
 	@Override
-	protected List<UUIDTestEntity> getEntitiesForBusinessValidation() {
+	protected List<UUIDTestEntity> getEntitesToPersistBeforeTransaction() {
 		UUIDTestEntity e = populate();
-		e.setTitle(UNIQUE_STRING);
+		e.setTitle(UNIQUE_TITLE);
 		return Arrays.asList(e);
 	}
 	
 	@Override
-	protected List<Class<?>> getEntityClassesForDeletion() {
+	protected List<Class<?>> getEntityClassesToDeleteBeforeTransaction() {
 		return Arrays.asList(UUIDTestEntity.class, UUIDTestReferenceEntity.class);
+	}
+	
+	@Override
+	protected List<UUIDTestEntity> getEntitiesWithValidationViolations() {
+		List<UUIDTestEntity> invalid = new ArrayList<>();
+		for(String name : INVALID_TITLE) {
+			UUIDTestEntity e = populate();
+			e.setTitle(name);
+			invalid.add(e);
+		}
+		return invalid;
 	}
 	
 	@DataProvider(trimValues=false)
@@ -52,81 +68,14 @@ public class UUIDTestEntityServiceTests extends AbstractEntityServiceTests<UUIDT
 		return new String[] { "webSite", "web-sIte", "web:service"};
     }
 	
-	@DataProvider(trimValues=false)
-	public static String[] INVALID_NAMES() {
-		return new String[] { "null", "", "a"};
-    }
-	
-	
-	public UUIDTestEntityServiceTests() {
-		super(UUIDTestEntity.class);
-	}
 	
 	/* **************************************************************** */
-	
-	@Override
-	public void create_with_business_violation() {
-		UUIDTestEntity e = createEntity();
-		UUIDTestEntity e1 = populate();
-		e1.setTitle(e.getTitle());
-		e1 = getService().create(e1);
-	}
-
-	@Override
-	public void create_withId_with_business_violation() {
-		UUIDTestEntity e1 = populate();
-		e1.setTitle(UNIQUE_STRING);
-		e1 = getService().create(UUID.randomUUID(), e1);
-	}
-
-	@Override
-	public void update_with_business_violation() {		
-		UUIDTestEntity e1 = createEntity();
-		e1.setTitle(UNIQUE_STRING);
-		e1 = getService().update(e1.getId(), e1);
-	}
-	
-	
-	// CREATE
-	@Test(expected=EntityValidationException.class)
-	@UseDataProvider("INVALID_NAMES")
-	public void createWithInvalidName(String name) {
-		UUIDTestEntity c = populate();
-		c.setTitle(name);
-		getService().create(c);
-	}
-	
 	@Test
 	@UseDataProvider("VALID_NAMES")
 	public void createWithValidName(String name) {
 		UUIDTestEntity c = populate();
 		c.setTitle(name);
 		getService().create(c);
-	}
-	
-	// CREATE WITH ID
-	@Test(expected=EntityValidationException.class)
-	@UseDataProvider("INVALID_NAMES")
-	public void createWithIdWithInvalidName(String name) {
-		UUIDTestEntity c = populate();
-		c.setTitle(name);
-		getService().create(UUID.randomUUID(), c);
-	}
-	
-	@Test()
-	@UseDataProvider("VALID_NAMES")
-	public void createWithIdWithValidName(String name) {
-		UUIDTestEntity c = populate();
-		c.setTitle(name);
-		getService().create(UUID.randomUUID(), c);
-	}
-	
-	/// UPDATE
-	@Test(expected=EntityValidationException.class)
-	@UseDataProvider("INVALID_NAMES")
-	public void updateWithInvalidName(String name) {
-		UUIDTestEntity c = createEntity();
-		c.setTitle(name);
-		getService().update(c.getId(), c);
+		getEntityManager().flush();
 	}
 }
