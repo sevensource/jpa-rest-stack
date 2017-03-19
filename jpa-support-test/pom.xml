@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>jpa-support-test</artifactId>
+	<packaging>jar</packaging>
+
+	<name>jpa-support</name>
+	<description></description>
+
+	<parent>
+		<groupId>org.sevensource.support</groupId>
+		<artifactId>jpa-rest-stack</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<datasource.proxy.version>1.4.1</datasource.proxy.version>
+		<equalsverifier.version>2.2.1</equalsverifier.version>
+		<junit.dataprovider.version>1.12.0</junit.dataprovider.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.sevensource.support</groupId>
+			<artifactId>jpa-support</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		
+		<dependency>
+		  <groupId>net.ttddyy</groupId>
+		  <artifactId>datasource-proxy</artifactId>
+		  <version>${datasource.proxy.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.tngtech.java</groupId>
+			<artifactId>junit-dataprovider</artifactId>
+            <version>${junit.dataprovider.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>nl.jqno.equalsverifier</groupId>
+		    <artifactId>equalsverifier</artifactId>
+		    <version>${equalsverifier.version}</version>
+		</dependency>
+		
+		<!-- 
+		<dependency>
+		    <groupId>io.github.benas</groupId>
+		    <artifactId>random-beans</artifactId>
+		    <version>3.6.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.github.benas</groupId>
+		    <artifactId>random-beans-randomizers</artifactId>
+		    <version>3.6.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.github.benas</groupId>
+		    <artifactId>random-beans-validation</artifactId>
+		    <version>3.6.0</version>
+		    <scope>test</scope>
+		</dependency>
+		 -->
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layout>NONE</layout>
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+					  <goals>
+					    <goal>build-info</goal>
+					  </goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

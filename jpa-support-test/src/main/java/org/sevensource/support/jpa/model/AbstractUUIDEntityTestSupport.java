@@ -47,12 +47,27 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	public void equalsContract() {
 	    EqualsVerifier
 	    	.forClass(domainClass)
-	    	.withRedefinedSuperclass()
-	    	.suppress(Warning.STRICT_INHERITANCE)
-
-	    	//.suppress(Warning.IDENTICAL_COPY_FOR_VERSIONED_ENTITY)
+	    	.withRedefinedSuperclass()						// disable check, since domainClass cannot equal to AbstractUUIDEntity$$DynamicSubclass@0
 	        .suppress(Warning.ALL_FIELDS_SHOULD_BE_USED)
-	        .suppress(Warning.STRICT_HASHCODE)
+
+	        // config for IMPL where id is always set and hash of id is returned
+	        //.withNonnullFields("id")						// IF we're selfAssigning id upon access: hashCode relies on id, but equals does not.
+	        
+	        // config for IMPL where id is not always set and hashcode always returns the same
+	        //.suppress(Warning.STRICT_INHERITANCE)			// Subclass: equals is not final
+	        //.suppress(Warning.STRICT_HASHCODE)				// IF we're always returning the same hashCode: hashCode relies on id, but equals does not.
+	        
+	        
+//	        //config for IMPL in which only id is compared and always the same hashcode is returned
+//	        .suppress(Warning.STRICT_INHERITANCE)			// Subclass: equals is not final
+//	        .suppress(Warning.IDENTICAL_COPY_FOR_VERSIONED_ENTITY) //object does not equal an identical copy of itself
+//	        .suppress(Warning.STRICT_HASHCODE)				// IF we're always returning the same hashCode: hashCode relies on id, but equals does not.
+	        	
+	        //config for IMPL in which only id is compared and always the hashcode of id is returned
+	        .withNonnullFields("id")						// IF we're selfAssigning id upon access: hashCode relies on id, but equals does not.
+	        .suppress(Warning.STRICT_INHERITANCE)			// Subclass: equals is not final
+	        .suppress(Warning.IDENTICAL_COPY_FOR_VERSIONED_ENTITY) //object does not equal an identical copy of itself
+	        //.suppress(Warning.STRICT_HASHCODE)				// IF we're always returning the same hashCode: hashCode relies on id, but equals does not.	        
 	    	
         .verify();
 	}

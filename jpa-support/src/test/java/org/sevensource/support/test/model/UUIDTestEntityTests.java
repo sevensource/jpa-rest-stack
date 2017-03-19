@@ -3,6 +3,9 @@ package org.sevensource.support.test.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sevensource.support.jdbc.DataSourceAssertions.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
@@ -36,6 +39,20 @@ public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestE
 	
 	public UUIDTestEntityTests() {
 		super(UUIDTestEntity.class);
+	}
+	
+	@SuppressWarnings("unused")
+	@Test
+	public void x() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
+		Constructor c = UUIDTestEntity.class.getDeclaredConstructor();
+		if(! c.isAccessible())
+			c.setAccessible(true);
+		c.newInstance();
+	}
+	
+	private void y(Class clazz) throws InstantiationException, IllegalAccessException {
+		Object o = clazz.newInstance();
+		o.equals(null);
 	}
 	
 	private QueryCount getQueryCount() {

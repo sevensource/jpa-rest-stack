@@ -18,13 +18,13 @@ public class UUIDTestEntity extends AbstractUUIDEntity {
 	@Column(unique=true)
 	@UniqueProperty
 	@NotNull
-	@Size(min=2)
+	@Size(min=2, max=200)
 	private String title;
 	
 	@OneToOne
 	private UUIDTestReferenceEntity ref;
 	
-	protected UUIDTestEntity() {}
+	private UUIDTestEntity() {}
 	
 	public UUIDTestEntity(String title) {
 		this.title = title;
