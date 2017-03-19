@@ -21,10 +21,12 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 	@Column(columnDefinition="uuid", updatable=false, unique=true, nullable=false)
 	private UUID id = UUID.randomUUID();
 	
+	@Override
 	public UUID getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(UUID id) {
 		this.id = id;
 	}

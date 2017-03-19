@@ -19,18 +19,22 @@ public class UniqueConstraintValidatorTripleTests extends UniqueConstraintValida
 	private final static String FAIL_VALUE_2 = "YYY";
 	private final static String FAIL_VALUE_3 = "ZZZ";
 
+	@Override
 	protected String getTableName() {
 		return "three_unique_entity";
 	}
 	
+	@Override
 	protected String[] getColumns() {
 		return new String[]{"title", "name", "lastname"};
 	}
 	
+	@Override
 	protected String[] getValues() {
 		return new String[]{"'"+FAIL_VALUE_1+"'", "'"+FAIL_VALUE_2+"'", "'"+FAIL_VALUE_3+"'"};
 	}
 	
+	@Override
 	protected ThreeUniqueEntity populate(boolean fail) {
 		ThreeUniqueEntity e = new ThreeUniqueEntity();
 		e.setTitle("TITLE");
@@ -39,6 +43,7 @@ public class UniqueConstraintValidatorTripleTests extends UniqueConstraintValida
 		return e;
 	}
 	
+	@Override
 	protected void touchOne(ThreeUniqueEntity e, boolean fail) {
 		e.setTitle(fail ? FAIL_VALUE_1 : "NAME");
 		e.setLastname(fail ? FAIL_VALUE_3 : "LASTNAME");

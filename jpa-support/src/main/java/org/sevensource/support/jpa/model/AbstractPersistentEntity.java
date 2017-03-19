@@ -67,22 +67,27 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
         return 31;
     }
 
+	@Override
 	public Integer getVersion() {
 		return version;
 	}
 
+	@Override
 	public String getCreatedBy() {
 		return createdBy;
 	}
 
+	@Override
 	public Instant getCreatedDate() {
 		return createdDate;
 	}
 
+	@Override
 	public String getLastModifiedBy() {
 		return lastModifiedBy;
 	}
 
+	@Override
 	public Instant getLastModifiedDate() {
 		return lastModifiedDate;
 	}

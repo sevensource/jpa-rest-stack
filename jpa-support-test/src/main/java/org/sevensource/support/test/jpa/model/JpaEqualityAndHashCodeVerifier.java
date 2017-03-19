@@ -124,6 +124,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 
 		void execute();
 
+		@Override
 		default Void call() throws Exception {
 			execute();
 			return null;

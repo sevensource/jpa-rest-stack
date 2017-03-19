@@ -3,27 +3,13 @@ package org.sevensource.support.test.jpa.model;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.hibernate.Session;
 import org.junit.Test;
 import org.sevensource.support.jpa.model.AbstractUUIDEntity;
 import org.sevensource.support.test.jpa.AbstractJpaTestSupport;

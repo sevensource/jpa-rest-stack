@@ -17,23 +17,28 @@ public class UniqueConstraintValidatorSimpleTests extends UniqueConstraintValida
 
 	private final static String FAIL_VALUE_1 = "XXX";
 
+	@Override
 	protected String getTableName() {
 		return "one_unique_entity";
 	}
 	
+	@Override
 	protected String[] getColumns() {
 		return new String[]{"title"};
 	}
 	
+	@Override
 	protected String[] getValues() {
 		return new String[]{"'"+FAIL_VALUE_1+"'"};
 	}
 	
+	@Override
 	protected OneUniqueEntity populate(boolean fail) {
 		OneUniqueEntity e = new OneUniqueEntity();
 		e.setTitle(fail ? FAIL_VALUE_1 : "TITLE");
 		return e;
 	}
+	@Override
 	protected void touchOne(OneUniqueEntity e, boolean fail) {
 		e.setTitle(fail ? FAIL_VALUE_1 : "TITLE1");
 	}
