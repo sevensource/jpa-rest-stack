@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,7 +21,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -31,11 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 /**
  * Validates UniqueConstraints by querying the underlying persistence layer in a new session
@@ -101,7 +95,9 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     					}
     				}
     				if(! added) {
-    					constraints.add( Lists.newArrayList(new ConstraintDescriptor(name, value, constraintGroup)));
+    					List<ConstraintDescriptor> l = new ArrayList<>(3);
+    					l.add(new ConstraintDescriptor(name, value, constraintGroup));
+    					constraints.add(l);
     				}
     			}
     		}
@@ -200,10 +196,11 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 					final ConstraintDescriptor constraint = constraintGroup.get(i);
 					tmpx[i] = String.format("%s='%s'", constraint.field, constraint.value);
 				}
-				tmp.add("(" + Joiner.on(" AND ").join(tmpx) + ")");
+				;
+				tmp.add("(" + String.join(" AND ", tmpx) + ")");
 			}
 			
-			logger.debug("Validating UniqueConstraint [{}] for entity {}", Joiner.on(" OR ").join(tmp), entityClass );
+			logger.debug("Validating UniqueConstraint [{}] for entity {}", String.join(" OR ", tmp), entityClass );
 		}
     }
     

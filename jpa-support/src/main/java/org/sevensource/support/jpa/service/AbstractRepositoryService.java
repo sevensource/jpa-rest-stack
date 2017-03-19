@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -22,9 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import org.springframework.util.Assert;
 
 public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>> implements EntityService<T, UUID> {
 
@@ -34,9 +30,6 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	private final Validator validator;
 	private final Class<T> entityClass;
 	
-	
-    @PersistenceContext
-    private EntityManager em;
 	
 	public AbstractRepositoryService(JpaRepository<T, UUID> repository, Validator validator, Class<T> entityClass) {
 		this.repository = repository;
@@ -64,29 +57,30 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=true)
 	public T get(UUID id) {
-		Preconditions.checkArgument(id != null, "ID must not be null");
+		Assert.notNull(id, "ID must not be null");
 		return repository.findOne(id);
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
 	public boolean exists(UUID id) {
-		Preconditions.checkArgument(id != null, "ID must not be null");
+		Assert.notNull(id, "ID must not be null");
 		return repository.exists(id);
 	}
 	
 	@Override
 	@Transactional(readOnly=false)
 	public T create(T entity) {
-		Preconditions.checkArgument(entity != null, "Entity must not be null");
-		Preconditions.checkArgument(entity.getId() == null, "ID of entity must be null");
-		return create(null, entity);
+		Assert.notNull(entity, "Entity must not be null");
+		//Assert.isNull(entity.getId(), "ID of entity must be null");
+		//return create(null, entity);
+		return create(entity.getId(), entity);
 	}
 	
 	@Override
 	@Transactional(readOnly=false)
 	public T create(UUID id, T entity) {
-		Preconditions.checkArgument(entity != null, "Entity must not be null");
+		Assert.notNull(entity, "Entity must not be null");
 		
 		if(id != null && exists(id)) {
 			final String msg = String.format("Entity with id [%s] already exists", id); 
@@ -105,9 +99,9 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=false)
 	public T update(UUID id, T entity) throws EntityNotFoundException {
-		Preconditions.checkArgument(id != null, "ID must not be null");
-		Preconditions.checkArgument(entity != null, "Entity must not be null");
-		Preconditions.checkArgument(id == entity.getId(), "IDs must match");
+		Assert.notNull(id, "ID must not be null");
+		Assert.notNull(entity, "Entity must not be null");
+		Assert.isTrue(id == entity.getId(), "IDs must match");
 		
 		validate(entity);
 		
@@ -126,7 +120,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=false)
 	public void delete(UUID id) throws EntityNotFoundException {
-		Preconditions.checkArgument(id != null, "ID must not be null");
+		Assert.notNull(id, "ID must not be null");
 		
 		if(! exists(id)) {
 			final String msg = String.format("Entity with id [%s] does not exist", id);
@@ -154,9 +148,8 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 		if(violations.isEmpty()) {
 			return;
 		} else {
-			List<ConstraintViolation<?>> violationsList = Lists.newArrayList(violations);
 			final String message = String.format("Validation of entity %s failed", entityClass.getName());
-			throw new EntityValidationException(message, violationsList);
+			throw new EntityValidationException(message, (Set) violations);
 		}
 	}
 	
@@ -165,9 +158,8 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 		if(violations.isEmpty()) {
 			return;
 		} else {
-			List<ConstraintViolation<?>> violationsList = Lists.newArrayList(violations);
 			final String message = String.format("Validation of entity %s failed with a UniqueConstraint", entityClass.getName());
-			throw new EntityValidationException(message, violationsList);
+			throw new EntityValidationException(message, (Set) violations);
 		}
 	}
 	
