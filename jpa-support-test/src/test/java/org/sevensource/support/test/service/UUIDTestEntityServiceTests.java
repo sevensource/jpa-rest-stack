@@ -48,11 +48,6 @@ public class UUIDTestEntityServiceTests extends AbstractEntityServiceTests<UUIDT
 	}
 	
 	@Override
-	protected List<Class<?>> getEntityClassesToDeleteBeforeTransaction() {
-		return Arrays.asList(UUIDTestEntity.class, UUIDTestReferenceEntity.class);
-	}
-	
-	@Override
 	protected List<UUIDTestEntity> getEntitiesWithValidationViolations() {
 		List<UUIDTestEntity> invalid = new ArrayList<>();
 		for(String name : INVALID_TITLE) {

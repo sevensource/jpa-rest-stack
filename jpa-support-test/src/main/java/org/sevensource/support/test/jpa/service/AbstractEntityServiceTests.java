@@ -3,14 +3,11 @@ package org.sevensource.support.test.jpa.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 
 import org.junit.Test;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.transaction.BeforeTransaction;
-import org.springframework.util.CollectionUtils;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 
@@ -50,21 +46,11 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	
 	@BeforeTransaction
 	public void beforeTransaction() {
+		deleteAll();
+		
 		EntityManager em = getEntityManagerFactory().createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
-
-		List<Class<?>> deletionClasses = new ArrayList<>();
-		if(! CollectionUtils.isEmpty( getEntityClassesToDeleteBeforeTransaction() )) {
-			deletionClasses.addAll( getEntityClassesToDeleteBeforeTransaction() );
-		}
-		deletionClasses.add(domainClass);
-		for(Class<?> clazz : deletionClasses) {
-			CriteriaBuilder criteriaBuilder  = em.getCriteriaBuilder();
-			CriteriaDelete query = criteriaBuilder.createCriteriaDelete(clazz);
-			query.from(clazz);
-			em.createQuery(query).executeUpdate();
-		}
 		
 		List<T> entities = getEntitesToPersistBeforeTransaction();
 		if(entities != null) {
@@ -72,7 +58,10 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 				em.persist(e);
 			}
 		}
+		em.flush();
 		tx.commit();
+		em.clear();
+		em.close();
 	}
 	
 	/**
@@ -81,12 +70,6 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	 * @return a list of entities to persist before each transaction, can be null
 	 */
 	protected abstract List<T> getEntitesToPersistBeforeTransaction();
-	
-	/**
-	 * 
-	 * @return a list of classes to be deleted before each transaction in addition of the entity under test.
-	 */
-	protected abstract List<Class<?>> getEntityClassesToDeleteBeforeTransaction();
 	
 	/**
 	 * get a list of entities with invalid data, which are expected to cause an {@link EntityValidationException}

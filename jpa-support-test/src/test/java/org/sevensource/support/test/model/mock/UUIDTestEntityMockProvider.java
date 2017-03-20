@@ -1,5 +1,8 @@
 package org.sevensource.support.test.model.mock;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.sevensource.support.test.jpa.model.mock.AbstractMockProvider;
 import org.sevensource.support.test.jpa.model.mock.MockFactory;
 import org.sevensource.support.test.model.UUIDTestEntity;
@@ -47,5 +50,10 @@ public class UUIDTestEntityMockProvider extends AbstractMockProvider<UUIDTestEnt
 	public UUIDTestEntity touch(UUIDTestEntity entity) {
 		entity.setTitle(NAME + seed++);
 		return entity;
+	}
+	
+	@Override
+	public List<Class<?>> getDeletionOrder() {
+		return Arrays.asList(UUIDTestEntity.class, UUIDTestReferenceEntity.class);
 	}
 }

@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.sevensource.support.jpa.model.AbstractUUIDEntity;
 import org.sevensource.support.test.jpa.AbstractJpaTestSupport;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.transaction.BeforeTransaction;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
@@ -27,6 +28,11 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	protected AbstractUUIDEntityTestSupport(Class<E> domainClass) {
 		super(domainClass);
 		this.domainClass = domainClass;
+	}
+	
+	@BeforeTransaction
+	public void beforeTransaction() {
+		deleteAll();
 	}
 	
 	@Test
@@ -59,6 +65,37 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 	}
 	
 	@Test
+	public void test_equality_with_empty_objects() {
+		E entity1 = null;
+		E entity2 = null;
+		try {
+			entity1 = domainClass.newInstance();
+			entity2 = domainClass.newInstance();
+		} catch (Exception e) {
+			// do nothing, cannot instantiante without default constructor
+			return;
+		}
+		
+		Set<E> set = new HashSet<>();
+		set.add(entity1);
+		set.add(entity2);
+		
+		int expectedSize = entity1.getId() != null && !(entity1.getId().equals(entity2.getId())) ? 2 : 1;
+		assertThat(set).hasSize(expectedSize);
+	}
+	
+	@Test
+	public void test_equality_with_populated_objects() {
+		E entity1 = populate();
+		E entity2 = populate();
+		
+		Set<E> set = new HashSet<>();
+		set.add(entity1);
+		set.add(entity2);
+		assertThat(set.size()).isEqualTo(2);
+	}
+	
+	@Test
 	public void equals_works() {
 		ensureEmpty();
 		
@@ -77,35 +114,6 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		
 		assertThat(e1).isNotEqualTo(null);
 		assertThat(e1).isNotEqualTo(new Object());
-	}
-	
-	@Test
-	public void test_equality_with_empty_objects() {
-		E entity1 = null;
-		E entity2 = null;
-		try {
-			entity1 = domainClass.newInstance();
-			entity2 = domainClass.newInstance();
-		} catch (Exception e) {
-			// do nothing, cannot instantiante without default constructor
-			return;
-		}
-		
-		Set<E> set = new HashSet<>();
-		set.add(entity1);
-		set.add(entity2);
-		assertThat(set.size()).isEqualTo(1);
-	}
-	
-	@Test
-	public void test_equality_with_populated_objects() {
-		E entity1 = populate();
-		E entity2 = populate();
-		
-		Set<E> set = new HashSet<>();
-		set.add(entity1);
-		set.add(entity2);
-		assertThat(set.size()).isEqualTo(2);
 	}
 
 	@Test
@@ -133,10 +141,7 @@ public abstract class AbstractUUIDEntityTestSupport<E extends AbstractUUIDEntity
 		} catch (InterruptedException e1) {
 		}
 		Instant END = Instant.now();
-
-//		assertThat(e.getCreatedBy()).isEqualTo(JpaAuditingTestConfiguration.AUDITOR_STRING);
-//		assertThat(e.getLastModifiedBy()).isEqualTo(JpaAuditingTestConfiguration.AUDITOR_STRING);
-
+		
 		assertThat(e.getCreatedBy()).isNotEmpty();
 		assertThat(e.getLastModifiedBy()).isNotEmpty();
 		

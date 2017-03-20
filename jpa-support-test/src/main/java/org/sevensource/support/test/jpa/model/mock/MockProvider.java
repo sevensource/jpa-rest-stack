@@ -13,4 +13,6 @@ public interface MockProvider<T extends PersistentEntity<?>> {
 	
 	public T populate();
 	public T touch(T entity);
+	
+	public List<Class<?>> getDeletionOrder();
 }
