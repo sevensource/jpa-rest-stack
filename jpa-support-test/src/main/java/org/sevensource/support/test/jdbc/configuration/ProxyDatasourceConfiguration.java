@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.internal.FormatStyle;
 import org.hibernate.engine.jdbc.internal.Formatter;
+import org.sevensource.support.test.jdbc.SimpleQueryLogEntryCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -27,7 +28,8 @@ public class ProxyDatasourceConfiguration {
 	static ProxyDataSource getProxyDataSource(DataSource ds, String name) {
 			SLF4JQueryLoggingListener loggingListener = new SLF4JQueryLoggingListener();
 			loggingListener.setLogLevel(SLF4JLogLevel.INFO);
-			//loggingListener.setQueryLogEntryCreator(new PrettyQueryEntryCreator());
+			loggingListener.setLogger("DS");
+			loggingListener.setQueryLogEntryCreator(new SimpleQueryLogEntryCreator(false));
 			
 			return ProxyDataSourceBuilder
 					.create(name, ds)
@@ -36,16 +38,6 @@ public class ProxyDatasourceConfiguration {
 					.countQuery()
 					.build();
 	}
-	
-    // use hibernate to format queries
-    static class PrettyQueryEntryCreator extends DefaultQueryLogEntryCreator {
-        private Formatter formatter = FormatStyle.BASIC.getFormatter();
-
-        @Override
-        protected String formatQuery(String query) {
-            return this.formatter.format(query);
-        }
-    }
 
 	@Bean
 	public static BeanPostProcessor proxyDataSourceBeanPostProcessor() {

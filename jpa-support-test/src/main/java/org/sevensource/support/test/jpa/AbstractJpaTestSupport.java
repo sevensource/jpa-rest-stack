@@ -88,9 +88,14 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<UUID>> {
 		
 		for(Class<?> clazz : deletionClasses) {
 			CriteriaBuilder criteriaBuilder  = em.getCriteriaBuilder();
-			CriteriaDelete query = criteriaBuilder.createCriteriaDelete(clazz);
+			CriteriaQuery query = criteriaBuilder.createQuery(clazz);
 			query.from(clazz);
-			em.createQuery(query).executeUpdate();
+			List<?> results = em.createQuery(query).getResultList();
+			
+			//Delete one-by-one to also delete @Embeddables and Cascades
+			for(Object o : results) {
+				em.remove(o);
+			}
 			em.flush();
 		}
 		

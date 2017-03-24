@@ -11,8 +11,7 @@ import javax.persistence.Query;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.model.AbstractUUIDEntity;
-import org.sevensource.support.test.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
+import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.model.mock.MockFactory;
 import org.sevensource.support.test.model.UUIDTestEntity;
 import org.sevensource.support.test.model.UUIDTestReferenceEntity;
@@ -25,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = {JpaAuditingTestConfiguration.class, MockFactoryConfiguration.class})
+@ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
 public class UUIDTestEntityMockProviderTests {

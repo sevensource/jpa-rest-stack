@@ -23,4 +23,8 @@ public class DataSourceAssertions {
     public static int deleteCount() {
     	return QueryCountHolder.getGrandTotal().getDelete();
     }
+    
+    public static int totalCount() {
+    	return QueryCountHolder.getGrandTotal().getTotal();
+    }
 }

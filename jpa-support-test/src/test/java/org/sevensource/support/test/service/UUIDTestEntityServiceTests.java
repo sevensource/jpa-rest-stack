@@ -7,11 +7,9 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.test.DataProviderRunnerWithSpring;
-import org.sevensource.support.test.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
+import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.service.AbstractEntityServiceTests;
 import org.sevensource.support.test.model.UUIDTestEntity;
-import org.sevensource.support.test.model.UUIDTestReferenceEntity;
 import org.sevensource.support.test.model.mock.UUIDTestEntityMockProvider;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -27,7 +25,7 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 @RunWith(DataProviderRunnerWithSpring.class)
 @DataJpaTest
 @Import({ValidationAutoConfiguration.class})
-@ContextConfiguration(classes = {MockFactoryConfiguration.class, JpaAuditingTestConfiguration.class})
+@ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
 @EnableJpaRepositories(basePackageClasses=UUIDTestEntityRepository.class)
 @ComponentScan(basePackageClasses={UUIDTestEntityService.class, UUIDTestEntityMockProvider.class})

@@ -8,9 +8,7 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sevensource.support.test.jdbc.configuration.ProxyDatasourceConfiguration;
-import org.sevensource.support.test.jpa.configuration.JpaAuditingTestConfiguration;
-import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
+import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.model.AbstractUUIDEntityTestSupport;
 import org.sevensource.support.test.model.mock.UUIDTestEntityMockProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = {JpaAuditingTestConfiguration.class, MockFactoryConfiguration.class, ProxyDatasourceConfiguration.class})
+@ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
 public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestEntity> {
 
