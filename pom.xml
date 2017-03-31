@@ -24,6 +24,7 @@
 		<java.version>1.8</java.version>
 
 		<hibernate.version>5.2.1.Final</hibernate.version>
+		<random.beans.version>3.7.0-SNAPSHOT</random.beans.version>
 	</properties>
 
 	<modules>
@@ -31,6 +32,29 @@
 		<module>jpa-support-test</module>
 		<module>rest-support</module>
 	</modules>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.github.benas</groupId>
+				<artifactId>random-beans</artifactId>
+				<version>${random.beans.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+			    <groupId>io.github.benas</groupId>
+			    <artifactId>random-beans-randomizers</artifactId>
+			    <version>${random.beans.version}</version>
+			    <scope>test</scope>
+			</dependency>
+			<dependency>
+			    <groupId>io.github.benas</groupId>
+			    <artifactId>random-beans-validation</artifactId>
+			    <version>${random.beans.version}</version>
+			    <scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 
 </project>

@@ -68,27 +68,23 @@
 		    <version>${equalsverifier.version}</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>io.github.benas</groupId>
+			<artifactId>random-beans</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- 
 		<dependency>
 		    <groupId>io.github.benas</groupId>
-		    <artifactId>random-beans</artifactId>
-		    <version>3.6.0</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>io.github.benas</groupId>
 		    <artifactId>random-beans-randomizers</artifactId>
-		    <version>3.6.0</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>io.github.benas</groupId>
 		    <artifactId>random-beans-validation</artifactId>
-		    <version>3.6.0</version>
 		    <scope>test</scope>
 		</dependency>
 		 -->
-		
 	</dependencies>
 
 	<build>

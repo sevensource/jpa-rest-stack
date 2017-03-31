@@ -1,5 +1,6 @@
 package org.sevensource.support.test.jpa.model.mock;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TransactionRequiredException;
 
+import org.sevensource.support.jpa.model.AbstractPersistentEntity;
 import org.sevensource.support.jpa.model.AbstractUUIDEntity;
 import org.sevensource.support.jpa.model.PersistentEntity;
 import org.slf4j.Logger;
@@ -16,10 +18,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import io.github.benas.randombeans.EnhancedRandomBuilder;
+import io.github.benas.randombeans.FieldDefinitionBuilder;
+import io.github.benas.randombeans.api.EnhancedRandom;
+
 public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implements MockProvider<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMockProvider.class);
 
+	private final static EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
+		   .seed(123L)
+		   .objectPoolSize(10)
+		   .randomizationDepth(3)
+		   .stringLengthRange(5, 50)
+		   .collectionSizeRange(1, 10)
+		   .scanClasspathForConcreteTypes(true)
+		   .overrideDefaultInitialization(true)
+		   .exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractUUIDEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedBy").inClass(AbstractPersistentEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("createdBy").inClass(AbstractPersistentEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("createdDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("version").ofType(Integer.class).inClass(AbstractPersistentEntity.class).get())
+		   .build();
+	
 	
 	private final Class<T> domainClass;
 	
@@ -100,5 +122,9 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		} else {
 			throw new IllegalStateException("Override setId() - don't know how to set id on " + mock.getClass().getSimpleName());
 		}
-	};
+	}
+	
+	protected EnhancedRandom getRandomizer() {
+		return random;
+	}
 }
