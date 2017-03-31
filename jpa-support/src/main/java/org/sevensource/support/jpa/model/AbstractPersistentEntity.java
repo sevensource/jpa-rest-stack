@@ -10,6 +10,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -49,10 +50,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 		if (!getClass().equals(ClassUtils.getUserClass(o))) return false;
 		AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
 		
-//		if(this.getId() == null && other.getId() == null) {
-//			return EqualsBuilder.reflectionEquals(this, other);
-//		} else 
-			if(this.getId() == null || other.getId() == null) {
+		if(this.getId() == null || other.getId() == null) {
 			return false;
 		} else {
 			return this.getId().equals(other.getId());
@@ -90,5 +88,13 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 	@Override
 	public Instant getLastModifiedDate() {
 		return lastModifiedDate;
+	}
+	
+	@Override
+	public String toString() {
+		return new ToStringCreator(this)
+			.append("id", getId())
+			.append("version", getVersion())
+			.toString();
 	}
 }

@@ -1,7 +1,6 @@
 package org.sevensource.support.test.jpa.model.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

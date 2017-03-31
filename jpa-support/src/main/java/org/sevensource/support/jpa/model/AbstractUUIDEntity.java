@@ -73,6 +73,6 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 		
     @Override
     public final int hashCode() {
-    	return getId().hashCode();
+    	return (id == null) ? super.hashCode() : id.hashCode();
     }
 }

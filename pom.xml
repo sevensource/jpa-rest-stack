@@ -29,6 +29,7 @@
 	<modules>
 		<module>jpa-support</module>
 		<module>jpa-support-test</module>
+		<module>rest-support</module>
 	</modules>
 
 
