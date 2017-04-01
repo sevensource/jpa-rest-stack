@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
 
 import org.sevensource.support.jpa.model.AbstractPersistentEntity;
 import org.sevensource.support.jpa.model.AbstractUUIDEntity;
@@ -22,13 +21,14 @@ import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.FieldDefinitionBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
+
 public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implements MockProvider<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMockProvider.class);
 
 	private final static EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
 		   .seed(123L)
-		   .objectPoolSize(10)
+		   .objectPoolSize(100)
 		   .randomizationDepth(3)
 		   .stringLengthRange(5, 50)
 		   .collectionSizeRange(1, 10)
@@ -71,39 +71,55 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		return list;
 	}
 	
+	private T persistWithExistingTransaction(T mock) {
+		tem.persist(mock);
+		tem.flush();
+		mock = tem.find(domainClass, mock.getId());
+		return mock;
+	}
+	
+	private T persistWithNewTransaction(T mock) {
+		EntityManager entityManager = null;
+		EntityTransaction txn = null;
+		try {
+			entityManager = emf.createEntityManager();
+			txn = entityManager.getTransaction();
+			txn.begin();
+			
+			entityManager.persist(mock);
+			entityManager.flush();
+			entityManager.refresh(mock);
+			
+			txn.commit();
+			return mock;
+		} catch (Throwable e) {
+			if (txn != null && txn.isActive())
+				txn.rollback();
+			throw new RuntimeException(e);
+		} finally {
+			if (entityManager != null) {
+				entityManager.close();
+			}
+		}
+	}
+	
+	private boolean hasExistingEntityManagerTransaction() {
+		if(tem == null) return false;
+		try {
+			EntityManager manager = tem.getEntityManager();
+			return true;
+		} catch(IllegalStateException e) {
+			return false;
+		}
+	}
+	
 	@Override
 	public T create() {
 		T mock = populate();
-		if(tem != null) {
-			try {
-				tem.persist(mock);
-				tem.flush();
-				mock = tem.find(domainClass, mock.getId());
-				//mock = tem.persistFlushFind(mock);
-			} catch (IllegalStateException | TransactionRequiredException iae) {
-				EntityManager entityManager = null;
-				EntityTransaction txn = null;
-				try {
-					entityManager = emf.createEntityManager();
-					txn = entityManager.getTransaction();
-					txn.begin();
-					
-					entityManager.persist(mock);
-					entityManager.flush();
-					entityManager.refresh(mock);
-					
-					txn.commit();
-				} catch (Throwable e) {
-					if (txn != null && txn.isActive())
-						txn.rollback();
-					throw e;
-				} finally {
-					if (entityManager != null) {
-						entityManager.close();
-					}
-				}
-			}
-			
+		if(hasExistingEntityManagerTransaction()) {
+			mock = persistWithExistingTransaction(mock);
+		} else if(emf != null) {
+			mock = persistWithNewTransaction(mock);
 		} else {
 			logger.warn("Mocking persist() of entity {}", mock.getClass().getSimpleName());
 			setId(mock);

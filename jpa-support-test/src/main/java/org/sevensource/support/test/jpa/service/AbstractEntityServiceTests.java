@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
@@ -48,13 +49,14 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void beforeTransaction() {
 		deleteAll();
 		
+		List<T> entities = getEntitesToPersistBeforeTransaction();
+		
 		EntityManager em = getEntityManagerFactory().createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 		
-		List<T> entities = getEntitesToPersistBeforeTransaction();
 		if(entities != null) {
-			for(T e : getEntitesToPersistBeforeTransaction()) {
+			for(T e : entities) {
 				em.persist(e);
 			}
 		}

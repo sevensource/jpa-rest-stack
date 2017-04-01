@@ -9,24 +9,30 @@ import org.junit.runner.RunWith;
 import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
 import org.sevensource.support.test.jpa.model.mock.MockFactory;
 import org.sevensource.support.test.model.UUIDTestEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {MockFactoryConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
+@Import(UUIDTestEntityMockProvider.class)
 public class UUIDTestEntityMockProviderWithoutEntityManagerTests {
+	
+	@Autowired
+	MockFactory<?> mockFactory;
 	
 	@Test
 	public void create_mock() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).create();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).create();
 		assertThat(e.getId()).isNotNull();
 	}
 	
 	@Test
 	public void create_many_mock() {
-		List<UUIDTestEntity> e = MockFactory.on(UUIDTestEntity.class).create(10);
+		List<UUIDTestEntity> e = mockFactory.on(UUIDTestEntity.class).create(10);
 		assertThat(e).hasSize(10);
 		for(int i=0; i<10; i++) {
 			assertThat(e.get(i).getId()).isNotNull();	
@@ -35,24 +41,24 @@ public class UUIDTestEntityMockProviderWithoutEntityManagerTests {
 	
 	@Test
 	public void populate_mock() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).populate();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).populate();
 		assertThat(e).isNotNull();
 	}
 	
 	@Test
 	public void touch_mock() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).create();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).create();
 		String t = e.getTitle();
 		assertThat(t).isNotNull();
 		
-	    MockFactory.on(UUIDTestEntity.class).touch(e);
+	    mockFactory.on(UUIDTestEntity.class).touch(e);
 	    assertThat(e.getTitle()).isNotNull();
 	    assertThat(e.getTitle()).isNotEqualTo(t);
 	}
 	
 	@Test
 	public void create_mock_check_reference() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).create();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).create();
 		assertThat(e.getRef()).isNotNull();
 	}
 }

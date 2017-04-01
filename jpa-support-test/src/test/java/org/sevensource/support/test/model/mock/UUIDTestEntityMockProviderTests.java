@@ -15,6 +15,7 @@ import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.model.mock.MockFactory;
 import org.sevensource.support.test.model.UUIDTestEntity;
 import org.sevensource.support.test.model.UUIDTestReferenceEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,9 +33,12 @@ public class UUIDTestEntityMockProviderTests {
 	@PersistenceContext
 	EntityManager em;
 	
+	@Autowired
+	MockFactory<?> mockFactory;
+	
 	@Test
 	public void create_mock() {
-		MockFactory.on(UUIDTestEntity.class).create();
+		mockFactory.on(UUIDTestEntity.class).create();
 	    Query query = em.createQuery("SELECT e FROM UUIDTestEntity e");
 	    List<UUIDTestEntity> list = query.getResultList();
 	    assertThat(list).hasSize(1);
@@ -42,7 +46,7 @@ public class UUIDTestEntityMockProviderTests {
 	
 	@Test
 	public void create_many_mocks() {
-		MockFactory.on(UUIDTestEntity.class).create(10);
+		mockFactory.on(UUIDTestEntity.class).create(10);
 	    Query query = em.createQuery("SELECT e FROM UUIDTestEntity e");
 	    List<UUIDTestEntity> list = query.getResultList();
 	    assertThat(list).hasSize(10);
@@ -50,7 +54,7 @@ public class UUIDTestEntityMockProviderTests {
 	
 	@Test
 	public void create_mock_check_reference() {
-		MockFactory.on(UUIDTestEntity.class).create();
+		mockFactory.on(UUIDTestEntity.class).create();
 	    Query query = em.createQuery("SELECT e FROM UUIDTestEntity e");
 	    List<UUIDTestEntity> list = query.getResultList();
 	    assertThat(list).hasSize(1);
@@ -65,19 +69,19 @@ public class UUIDTestEntityMockProviderTests {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void create_invalid_mock() {
-		MockFactory.on(AbstractUUIDEntity.class);
+		mockFactory.on(AbstractUUIDEntity.class);
 	}
 	
 	
 	@Test
 	public void populate_mock() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).populate();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).populate();
 		assertThat(e).isNotNull();
 	}
 	
 	@Test
 	public void touch_mock() {
-		UUIDTestEntity e = MockFactory.on(UUIDTestEntity.class).create();
+		UUIDTestEntity e = mockFactory.on(UUIDTestEntity.class).create();
 	    Query query = em.createQuery("SELECT e FROM UUIDTestEntity e");
 	    List<UUIDTestEntity> list = query.getResultList();
 	    assertThat(list).hasSize(1);
@@ -85,7 +89,7 @@ public class UUIDTestEntityMockProviderTests {
 	    String t = e.getTitle();
 		assertThat(t).isNotNull();
 	    
-	    MockFactory.on(UUIDTestEntity.class).touch(e);
+	    mockFactory.on(UUIDTestEntity.class).touch(e);
 	    em.merge(e);
 	    
 	    assertThat(e.getTitle()).isNotNull();

@@ -14,11 +14,16 @@ import javax.persistence.criteria.CriteriaQuery;
 
 import org.sevensource.support.jpa.model.PersistentEntity;
 import org.sevensource.support.test.jpa.model.mock.MockFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 public abstract class AbstractJpaTestSupport<T extends PersistentEntity<UUID>> {
 
 	@PersistenceContext
 	EntityManager em;
+	
+	@Autowired
+	MockFactory<?> mockFactory;
 	
 	private final Class<T> domainClass;
 	
@@ -35,23 +40,23 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<UUID>> {
 	}
 	
 	protected T populate() {
-		return MockFactory.on(domainClass).populate();
+		return mockFactory.on(domainClass).populate();
 	}
 	
 	protected T createEntity() {
-		return MockFactory.on(domainClass).create();
+		return mockFactory.on(domainClass).create();
 	}
 	
 	protected List<T> createEntity(int counter) {
-		return MockFactory.on(domainClass).create(counter);
+		return mockFactory.on(domainClass).create(counter);
 	}
 	
 	protected T touch(T e) {
-		return MockFactory.on(domainClass).touch(e);
+		return mockFactory.on(domainClass).touch(e);
 	}
 	
 	protected List<Class<?>> getDeletionOrder() {
-		return MockFactory.on(domainClass).getDeletionOrder();
+		return mockFactory.on(domainClass).getDeletionOrder();
 	}
 	
 	protected void ensureEmpty() {
