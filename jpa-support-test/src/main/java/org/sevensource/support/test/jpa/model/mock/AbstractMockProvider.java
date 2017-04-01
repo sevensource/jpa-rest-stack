@@ -51,6 +51,9 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	@Autowired(required=false)
 	private EntityManagerFactory emf;
 	
+	@Autowired
+	MockFactory<?> mockFactory;
+	
 	
 	public AbstractMockProvider(Class<T> domainClass) {
 		this.domainClass = domainClass;
@@ -69,6 +72,31 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		}
 
 		return list;
+	}	
+	
+	@Override
+	public T create() {
+		T mock = populate();
+		if(hasExistingEntityManagerTransaction()) {
+			mock = persistWithExistingTransaction(mock);
+		} else if(emf != null) {
+			mock = persistWithNewTransaction(mock);
+		} else {
+			logger.warn("Mocking persist() of entity {}", mock.getClass().getSimpleName());
+			setId(mock);
+		}
+		
+		return mock;
+	}
+	
+	private boolean hasExistingEntityManagerTransaction() {
+		if(tem == null) return false;
+		try {
+			EntityManager manager = tem.getEntityManager();
+			return true;
+		} catch(IllegalStateException e) {
+			return false;
+		}
 	}
 	
 	private T persistWithExistingTransaction(T mock) {
@@ -103,31 +131,6 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		}
 	}
 	
-	private boolean hasExistingEntityManagerTransaction() {
-		if(tem == null) return false;
-		try {
-			EntityManager manager = tem.getEntityManager();
-			return true;
-		} catch(IllegalStateException e) {
-			return false;
-		}
-	}
-	
-	@Override
-	public T create() {
-		T mock = populate();
-		if(hasExistingEntityManagerTransaction()) {
-			mock = persistWithExistingTransaction(mock);
-		} else if(emf != null) {
-			mock = persistWithNewTransaction(mock);
-		} else {
-			logger.warn("Mocking persist() of entity {}", mock.getClass().getSimpleName());
-			setId(mock);
-		}
-		
-		return mock;
-	}
-	
 	/**
 	 * set an ID on the mock manually
 	 * @param mock
@@ -138,6 +141,11 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		} else {
 			throw new IllegalStateException("Override setId() - don't know how to set id on " + mock.getClass().getSimpleName());
 		}
+	}
+	
+	
+	protected <E extends PersistentEntity<?>> E create(Class<E> clazz) {
+		return mockFactory.on(clazz).create();
 	}
 	
 	protected EnhancedRandom getRandomizer() {
