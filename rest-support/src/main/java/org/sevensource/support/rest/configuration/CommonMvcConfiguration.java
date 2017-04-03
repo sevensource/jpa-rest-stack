@@ -2,7 +2,6 @@ package org.sevensource.support.rest.configuration;
 
 import java.util.List;
 
-import org.sevensource.support.rest.controller.RestResponseStatusExceptionResolver;
 import org.sevensource.support.rest.exception.RestControllerExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
-@Import({RestResponseStatusExceptionResolver.class, RestControllerExceptionHandler.class})
+@Import({RestControllerExceptionHandler.class})
 public class CommonMvcConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean

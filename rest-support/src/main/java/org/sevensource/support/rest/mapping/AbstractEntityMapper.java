@@ -1,12 +1,7 @@
 package org.sevensource.support.rest.mapping;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
-import org.modelmapper.spi.PropertyInfo;
 
 public abstract class AbstractEntityMapper<E,D> implements EntityMapper<E,D> {
 

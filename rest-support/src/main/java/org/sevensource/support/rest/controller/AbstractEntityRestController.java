@@ -135,13 +135,13 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteItemResource(@PathVariable ID id) {
 		
-		E domainObj = entityService.get(id);
+		boolean exists = entityService.exists(id);
 
-		if (domainObj == null) {
+		if (exists) {
+			entityService.delete(id);
+			return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		
-		entityService.delete(id);
-		return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
 	}
 }

@@ -2,19 +2,14 @@ package org.sevensource.support.rest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -26,12 +21,10 @@ import org.sevensource.support.rest.controller.TestEntityRestController.TestEnti
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
@@ -59,40 +52,6 @@ public class AbstractEntityRestControllerPutTests {
 	
 	private static String url(String path) {
 		return TestEntityRestController.PATH + path;
-	}
-	
-	@Before
-	public void before() {
-	}
-	
-	@Test
-	public void post_resource_works() throws Exception {
-		String json = "{\"name\":	\"test\"}";
-		
-		UUID assignedId = UUID.randomUUID();
-		
-		when(service.create(entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
-			e.setId(assignedId);
-			e.setName(entityCaptor.getValue().getName());
-			return e;
-		});
-		
-		
-		
-		MvcResult result = mvc
-		.perform(post(url(""))
-				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.content(json))
-		.andExpect(status().isCreated())
-		.andExpect(header().string(HttpHeaders.LOCATION, not(isEmptyOrNullString())))
-		.andDo(print())
-		.andReturn();
-		
-		assertThat(entityCaptor.getValue().getName()).isEqualTo("test");
-		
-		String link = result.getResponse().getHeader(HttpHeaders.LOCATION);
-		assertThat(link).endsWith(TestEntityRestController.PATH + "/" + assignedId.toString());
 	}
 	
 	@Test

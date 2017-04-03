@@ -2,8 +2,10 @@ package org.sevensource.support.rest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -19,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.configuration.CommonMvcConfiguration;
@@ -40,16 +41,13 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers=TestEntityRestController.class)
 @ContextConfiguration(classes={CommonMvcConfiguration.class, CommonMappingConfiguration.class, TestEntityRestController.class})
-public class AbstractEntityRestControllerPostTests {
+public class AbstractEntityRestControllerDeleteTests {
 
 	@MockBean
 	private EntityService<TestEntity, UUID> service;
 	
 	@Autowired
 	private MockMvc mvc;
-	
-	@Captor
-	ArgumentCaptor<TestEntity> entityCaptor;
 
 	@Captor
 	ArgumentCaptor<UUID> idCaptor;
@@ -62,33 +60,37 @@ public class AbstractEntityRestControllerPostTests {
 		return TestEntityRestController.PATH + path;
 	}
 	
+	@Before
+	public void before() {
+	}
+	
 	@Test
-	public void post_resource_works() throws Exception {
-		String json = "{\"name\":	\"test\"}";
-		
+	public void delete_resource_works() throws Exception {
 		UUID assignedId = UUID.randomUUID();
 		
-		when(service.create(entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
-			e.setId(assignedId);
-			e.setName(entityCaptor.getValue().getName());
-			return e;
-		});
-		
-		
+		when(service.exists(assignedId)).thenReturn(true);
 		
 		MvcResult result = mvc
-		.perform(post(url(""))
-				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.content(json))
-		.andExpect(status().isCreated())
-		.andExpect(header().string(HttpHeaders.LOCATION, not(isEmptyOrNullString())))
+		.perform(delete(url("/" + assignedId.toString()))
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(status().isNoContent())
 		.andDo(print())
 		.andReturn();
 		
-		assertThat(entityCaptor.getValue().getName()).isEqualTo("test");
+		verify(service, times(1)).delete(assignedId);
+	}
+	
+	@Test
+	public void delete_resource_returns_404() throws Exception {
+		UUID assignedId = UUID.randomUUID();
 		
-		String link = result.getResponse().getHeader(HttpHeaders.LOCATION);
-		assertThat(link).endsWith(TestEntityRestController.PATH + "/" + assignedId.toString());
+		when(service.exists(assignedId)).thenReturn(false);
+		
+		MvcResult result = mvc
+		.perform(delete(url("/" + assignedId.toString()))
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(status().isNotFound())
+		.andDo(print())
+		.andReturn();
 	}
 }
