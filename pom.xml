@@ -25,6 +25,7 @@
 
 		<hibernate.version>5.2.1.Final</hibernate.version>
 		<random.beans.version>3.7.0-SNAPSHOT</random.beans.version>
+		<mockito.version>[2.7.0,3.0.0)</mockito.version>
 	</properties>
 
 	<modules>
