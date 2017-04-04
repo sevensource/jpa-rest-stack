@@ -1,6 +1,6 @@
 package org.sevensource.support.jpa.configuration;
 
-import org.sevensource.support.jpa.domain.SimpleEntity;
+import org.sevensource.support.jpa.model.SimpleEntity;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

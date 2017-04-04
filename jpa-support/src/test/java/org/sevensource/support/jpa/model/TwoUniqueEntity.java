@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.domain;
+package org.sevensource.support.jpa.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,19 +9,15 @@ import org.sevensource.support.jpa.model.AbstractUUIDEntity;
 
 @Entity
 @UniquePropertyConstraint(groups={UniqueValidation.class})
-public class ThreeUniqueEntity extends AbstractUUIDEntity {
+public class TwoUniqueEntity extends AbstractUUIDEntity {
 	
 	@Column(unique=true)
 	@UniqueProperty
 	private String title;
 	
 	@Column(unique=true)
-	@UniqueProperty(constraintGroup="fullname")
+	@UniqueProperty
 	private String name;
-	
-	@Column(unique=true)
-	@UniqueProperty(constraintGroup="fullname")
-	private String lastname;
 	
 	public String getTitle() {
 		return title;
@@ -37,13 +33,5 @@ public class ThreeUniqueEntity extends AbstractUUIDEntity {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public String getLastname() {
-		return lastname;
-	}
-	
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
 	}
 }

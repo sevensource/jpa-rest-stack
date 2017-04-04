@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.domain;
+package org.sevensource.support.jpa.model;
 
 import javax.persistence.Entity;
 

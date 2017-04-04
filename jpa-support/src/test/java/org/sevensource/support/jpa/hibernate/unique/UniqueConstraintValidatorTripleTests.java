@@ -2,7 +2,7 @@ package org.sevensource.support.jpa.hibernate.unique;
 
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.domain.ThreeUniqueEntity;
+import org.sevensource.support.jpa.model.ThreeUniqueEntity;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
