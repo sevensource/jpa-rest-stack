@@ -1,4 +1,4 @@
-package org.sevensource.support.rest.controller;
+package org.sevensource.support.rest.mvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +24,7 @@ import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.configuration.CommonMvcConfiguration;
+import org.sevensource.support.rest.controller.TestEntityRestController;
 import org.sevensource.support.rest.controller.TestEntityRestController.TestEntity;
 import org.sevensource.support.rest.exception.ApiErrorDTO;
 import org.sevensource.support.rest.exception.ApiValidationErrorDTO;
@@ -49,7 +50,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 		DataSourceAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class
 		})
-public class AbstractEntityRestControllerExceptionIntegrationTests {
+public class MvcExceptionIntegrationTests {
 
 	@MockBean
 	private EntityService<TestEntity, UUID> service;

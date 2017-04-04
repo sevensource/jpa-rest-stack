@@ -18,19 +18,19 @@ public class TestEntityRestController extends AbstractEntityRestController<UUID,
 
 	public final static String PATH = "/entity";
 
-	static class TestEntity extends AbstractUUIDEntity {
+	public static class TestEntity extends AbstractUUIDEntity {
 		private String name;
 		public String getName() { return name; }
 		public void setName(String name) { this.name = name; }
 	}
 	
-	static class TestDTO extends AbstractUUIDDTO {
+	public static class TestDTO extends AbstractUUIDDTO {
 		private String name;
 		public String getName() { return name; }
 		public void setName(String name) { this.name = name; }
 	}
 	
-	static class TestEntityMapper extends AbstractEntityMapper<TestEntity, TestDTO> {
+	public static class TestEntityMapper extends AbstractEntityMapper<TestEntity, TestDTO> {
 		public TestEntityMapper(ModelMapper mapper) {
 			super(mapper, TestEntity.class, TestDTO.class);
 		}
