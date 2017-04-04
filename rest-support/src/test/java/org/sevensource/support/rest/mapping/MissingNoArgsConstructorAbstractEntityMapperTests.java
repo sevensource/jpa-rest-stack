@@ -9,7 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.Provider;
 import org.modelmapper.TypeMap;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.mapping.MissingNoArgsConstructorAbstractEntityMapperTests.MissingNoArgsConstructorTestEntityMapper;

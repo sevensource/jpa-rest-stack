@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
-import org.sevensource.support.jpa.model.PersistentEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

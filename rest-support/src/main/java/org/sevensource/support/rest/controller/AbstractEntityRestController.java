@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.sevensource.support.jpa.model.PersistentEntity;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.mapping.EntityMapper;
 import org.slf4j.Logger;

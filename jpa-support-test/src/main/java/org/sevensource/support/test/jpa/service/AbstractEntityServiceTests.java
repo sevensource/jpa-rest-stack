@@ -10,10 +10,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.junit.Test;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
-import org.sevensource.support.jpa.model.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.test.jpa.AbstractJpaTestSupport;
 import org.springframework.beans.factory.annotation.Autowired;

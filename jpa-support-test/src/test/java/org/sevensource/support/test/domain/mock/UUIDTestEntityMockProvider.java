@@ -1,11 +1,11 @@
-package org.sevensource.support.test.model.mock;
+package org.sevensource.support.test.domain.mock;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.sevensource.support.test.jpa.model.mock.AbstractMockProvider;
-import org.sevensource.support.test.model.UUIDTestEntity;
-import org.sevensource.support.test.model.UUIDTestReferenceEntity;
+import org.sevensource.support.test.domain.UUIDTestEntity;
+import org.sevensource.support.test.domain.UUIDTestReferenceEntity;
+import org.sevensource.support.test.jpa.domain.mock.AbstractMockProvider;
 import org.springframework.stereotype.Component;
 
 @Component

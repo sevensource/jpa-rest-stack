@@ -1,10 +1,10 @@
-package org.sevensource.support.test.jpa.model.mock;
+package org.sevensource.support.test.jpa.domain.mock;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.sevensource.support.jpa.model.PersistentEntity;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;

@@ -1,8 +1,8 @@
-package org.sevensource.support.test.jpa.model.mock;
+package org.sevensource.support.test.jpa.domain.mock;
 
 import java.util.List;
 
-import org.sevensource.support.jpa.model.PersistentEntity;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 
 public interface MockProvider<T extends PersistentEntity<?>> {
 	

@@ -3,7 +3,7 @@ package org.sevensource.support.rest.controller;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.controller.TestEntityRestController.TestDTO;
 import org.sevensource.support.rest.controller.TestEntityRestController.TestEntity;

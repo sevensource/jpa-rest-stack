@@ -1,4 +1,4 @@
-package org.sevensource.support.test.jpa.model.mock;
+package org.sevensource.support.test.jpa.domain.mock;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.sevensource.support.jpa.model.AbstractPersistentEntity;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
-import org.sevensource.support.jpa.model.PersistentEntity;
+import org.sevensource.support.jpa.domain.AbstractPersistentEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

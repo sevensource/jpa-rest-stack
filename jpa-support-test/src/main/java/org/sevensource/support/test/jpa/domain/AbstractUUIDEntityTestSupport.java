@@ -1,4 +1,4 @@
-package org.sevensource.support.test.jpa.model;
+package org.sevensource.support.test.jpa.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.junit.Test;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.test.jpa.AbstractJpaTestSupport;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.transaction.BeforeTransaction;

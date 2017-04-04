@@ -11,7 +11,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import org.junit.Test;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.model.SimpleEntity;
+import org.sevensource.support.jpa.domain.SimpleEntity;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;

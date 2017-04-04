@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.model;
+package org.sevensource.support.jpa.domain;
 
 import java.util.UUID;
 

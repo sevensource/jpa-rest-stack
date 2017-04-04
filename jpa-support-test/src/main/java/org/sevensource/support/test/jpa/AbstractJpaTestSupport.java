@@ -12,8 +12,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.sevensource.support.jpa.model.PersistentEntity;
-import org.sevensource.support.test.jpa.model.mock.MockFactory;
+import org.sevensource.support.jpa.domain.PersistentEntity;
+import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 

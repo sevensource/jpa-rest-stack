@@ -1,4 +1,4 @@
-package org.sevensource.support.test.model;
+package org.sevensource.support.test.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,10 +6,10 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.jpa.hibernate.unique.UniqueProperty;
 import org.sevensource.support.jpa.hibernate.unique.UniquePropertyConstraint;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
 
 @Entity
 @UniquePropertyConstraint(groups={UniqueValidation.class})

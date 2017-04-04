@@ -1,4 +1,4 @@
-package org.sevensource.support.test.model.mock;
+package org.sevensource.support.test.domain.mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sevensource.support.test.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
-import org.sevensource.support.test.jpa.model.mock.MockFactory;
-import org.sevensource.support.test.model.UUIDTestEntity;
+import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;

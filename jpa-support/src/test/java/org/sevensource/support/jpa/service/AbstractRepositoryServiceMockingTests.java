@@ -9,8 +9,8 @@ import javax.validation.Validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.sevensource.support.jpa.domain.SimpleEntity;
 import org.sevensource.support.jpa.exception.EntityException;
-import org.sevensource.support.jpa.model.SimpleEntity;
 import org.sevensource.support.jpa.service.AbstractRepositoryService;
 import org.springframework.data.jpa.repository.JpaRepository;
 

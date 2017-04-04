@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 
 /**
  * UUID ID generator, which preserves existing IDs instead of always generating a new one.

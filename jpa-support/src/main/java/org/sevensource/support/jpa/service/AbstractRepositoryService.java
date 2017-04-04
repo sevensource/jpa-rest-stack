@@ -7,12 +7,12 @@ import java.util.UUID;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
-import org.sevensource.support.jpa.model.PersistentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

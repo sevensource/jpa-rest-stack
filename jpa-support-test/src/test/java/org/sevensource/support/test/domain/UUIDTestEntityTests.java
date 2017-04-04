@@ -1,4 +1,4 @@
-package org.sevensource.support.test.model;
+package org.sevensource.support.test.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,8 +9,8 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
-import org.sevensource.support.test.jpa.model.AbstractUUIDEntityTestSupport;
-import org.sevensource.support.test.model.mock.UUIDTestEntityMockProvider;
+import org.sevensource.support.test.domain.mock.UUIDTestEntityMockProvider;
+import org.sevensource.support.test.jpa.domain.AbstractUUIDEntityTestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;

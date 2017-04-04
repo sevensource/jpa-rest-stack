@@ -5,7 +5,7 @@ import javax.validation.Validator;
 import org.sevensource.support.jpa.exception.EntityException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.service.AbstractRepositoryService;
-import org.sevensource.support.test.model.UUIDTestEntity;
+import org.sevensource.support.test.domain.UUIDTestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

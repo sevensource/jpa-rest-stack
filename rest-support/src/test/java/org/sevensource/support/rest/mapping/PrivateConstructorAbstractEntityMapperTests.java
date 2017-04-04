@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.mapping.PrivateConstructorAbstractEntityMapperTests.PrivateConstructorTestEntityMapper;

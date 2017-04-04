@@ -1,4 +1,4 @@
-package org.sevensource.support.test.jpa.model;
+package org.sevensource.support.test.jpa.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +21,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.Session;
-import org.sevensource.support.jpa.model.PersistentEntity;
+import org.sevensource.support.jpa.domain.PersistentEntity;
 
 public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 

@@ -1,8 +1,8 @@
-package org.sevensource.support.test.model;
+package org.sevensource.support.test.domain;
 
 import javax.persistence.Entity;
 
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 
 @Entity
 public class UUIDTestReferenceEntity extends AbstractUUIDEntity {

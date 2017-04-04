@@ -1,4 +1,4 @@
-package org.sevensource.support.test.model.mock;
+package org.sevensource.support.test.domain.mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,11 +10,11 @@ import javax.persistence.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.sevensource.support.jpa.model.AbstractUUIDEntity;
+import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.test.configuration.JpaSupportTestConfiguration;
-import org.sevensource.support.test.jpa.model.mock.MockFactory;
-import org.sevensource.support.test.model.UUIDTestEntity;
-import org.sevensource.support.test.model.UUIDTestReferenceEntity;
+import org.sevensource.support.test.domain.UUIDTestEntity;
+import org.sevensource.support.test.domain.UUIDTestReferenceEntity;
+import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
