@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public abstract class AbstractUUIDDTO implements IdentifiableDTO<UUID> {
 	
+	@JsonProperty(access=Access.READ_ONLY)
 	private UUID id;
 	
 	@JsonProperty(access=Access.READ_ONLY)

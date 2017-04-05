@@ -82,6 +82,14 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	public T create(UUID id, T entity) {
 		Assert.notNull(entity, "Entity must not be null");
 		
+		if(id == null) {
+			entity.setId(null);
+		}
+		
+		if(entity.getId() != null && !entity.getId().equals(id)) {
+			throw new EntityValidationException("IDs must match");
+		}
+		
 		if(id != null && exists(id)) {
 			final String msg = String.format("Entity with id [%s] already exists", id); 
 			throw new EntityAlreadyExistsException(msg);

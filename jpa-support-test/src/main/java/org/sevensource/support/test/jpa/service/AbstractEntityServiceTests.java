@@ -184,7 +184,6 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		getService().create(null);
 	}
 	
-	//@Test(expected=IllegalArgumentException.class)
 	@Test()
 	public void create_with_populated_id() {
 		T e = populate();
@@ -247,12 +246,21 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	
 	@Test
 	public void create_by_id() {
-		T e = populate();
 		UUID id = UUID.randomUUID();
+		T e = populate();
+		e.setId(id);
 		e = getService().create(id, e);
 		getEntityManager().flush();
 		
 		assertThat(e.getId()).isEqualTo(id);
+	}
+	
+	@Test(expected=EntityValidationException.class)
+	public void create_by_id_with_different_ids() {
+		T e = populate();
+		UUID id = UUID.randomUUID();
+		e = getService().create(id, e);
+		getEntityManager().flush();
 	}
 	
 	@Test(expected=EntityAlreadyExistsException.class)
