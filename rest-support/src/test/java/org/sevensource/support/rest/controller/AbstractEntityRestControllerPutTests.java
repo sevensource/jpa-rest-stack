@@ -3,6 +3,7 @@ package org.sevensource.support.rest.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,18 +85,19 @@ public class AbstractEntityRestControllerPutTests {
 	
 	@Test
 	public void put_existing_resource_works() throws Exception {
-		String json = "{\"name\":	\"test\"}";
+		UUID requestedId = UUID.randomUUID();
 		
-		when(service.exists(any())).thenReturn(true);
+		String json = "{\"id\": \"" + requestedId.toString() + "\", \"name\":	\"test\"}";
+
+		TestEntity e = random.nextObject(TestEntity.class);
 		
-		when(service.update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
-			e.setId(idCaptor.getValue());
+		when(service.get(eq(requestedId))).thenReturn(e);
+		
+		when(service.update(eq(requestedId), entityCaptor.capture())).thenAnswer((c) -> {
 			e.setName(entityCaptor.getValue().getName());
 			return e;
 		});
 		
-		UUID requestedId = UUID.randomUUID();
 		
 		mvc
 		.perform(put(url("/" + requestedId.toString()))
@@ -117,16 +119,15 @@ public class AbstractEntityRestControllerPutTests {
 				+ "\"id\":	\"" + NIL_UUID.toString() + "\""
 				+ "}";
 		
-		when(service.exists(any())).thenReturn(true);
+		UUID requestedId = UUID.randomUUID();
+		TestEntity e = random.nextObject(TestEntity.class);
 		
-		when(service.update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
-			e.setId(idCaptor.getValue());
+		when(service.get(eq(requestedId))).thenReturn(e);
+		
+		when(service.update(eq(requestedId), entityCaptor.capture())).thenAnswer((c) -> {
 			e.setName(entityCaptor.getValue().getName());
 			return e;
 		});
-		
-		UUID requestedId = UUID.randomUUID();
 		
 		mvc
 		.perform(put(url("/" + requestedId.toString()))

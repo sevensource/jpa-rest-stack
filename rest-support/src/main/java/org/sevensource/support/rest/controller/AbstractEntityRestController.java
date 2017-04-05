@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
+import org.sevensource.support.rest.dto.IdentifiableDTO;
 import org.sevensource.support.rest.mapping.EntityMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
-public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO> {
+public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO extends IdentifiableDTO<ID>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEntityRestController.class);
 		
@@ -46,6 +47,10 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	
 	protected E toEntity(DTO resource) {
 		return mapper.toEntity(resource);
+	}
+	
+	protected E toEntity(DTO resource, E destination) {
+		return mapper.toEntity(resource, destination);
 	}
 	
 	protected final List<DTO> toResources(Iterable<E> entities) {
@@ -73,7 +78,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	}
 	
 	@PostMapping("")
-	public ResponseEntity<Void> postResource(@RequestBody DTO objectToSave) {
+	public ResponseEntity<DTO> postResource(@RequestBody DTO objectToSave) {
 		final E entityToSave = toEntity(objectToSave);
 		final E savedEntity = entityService.create(entityToSave);
 		
@@ -83,11 +88,12 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 				.withSelfRel();
 		
 		final String href = selfLink.getHref();
+		final DTO dto = toResource(savedEntity);
 		
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.header(HttpHeaders.LOCATION, href)
-				.build();
+				.body(dto);
 	}
 	
 //	public ResponseEntity<List<String>> postCollectionResource() {
@@ -109,18 +115,22 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<DTO> putItemResource(@PathVariable ID id, @RequestBody DTO objectToSave) {
+	public ResponseEntity<DTO> putItemResource(@PathVariable ID id, @RequestBody DTO dto) {
 
-		HttpStatus status;
-		final E entityToSave = toEntity(objectToSave);
+		dto.setId(id);
+
+		E entityToSave = entityService.get(id);
 		E savedEntity = null;
+		HttpStatus status;
 		
-		if(entityService.exists(id)) {
+		if(entityToSave != null) {
+			entityToSave = toEntity(dto, entityToSave);
+			savedEntity = entityService.update(id, entityToSave);
 			status = HttpStatus.OK;
-			savedEntity = entityService.update(id, entityToSave);			
 		} else {
-			status = HttpStatus.CREATED;
+			entityToSave = toEntity(dto);
 			savedEntity = entityService.create(id, entityToSave);
+			status = HttpStatus.CREATED;
 		}
 		
 		final DTO savedDto = toResource(savedEntity);
@@ -136,7 +146,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	public ResponseEntity<?> deleteItemResource(@PathVariable ID id) {
 		
 		boolean exists = entityService.exists(id);
-
+		
 		if (exists) {
 			entityService.delete(id);
 			return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);

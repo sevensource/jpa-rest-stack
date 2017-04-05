@@ -101,7 +101,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	public T update(UUID id, T entity) throws EntityNotFoundException {
 		Assert.notNull(id, "ID must not be null");
 		Assert.notNull(entity, "Entity must not be null");
-		Assert.isTrue(id == entity.getId(), "IDs must match");
+		Assert.isTrue(id.equals(entity.getId()), "IDs must match");
 		
 		validate(entity);
 		

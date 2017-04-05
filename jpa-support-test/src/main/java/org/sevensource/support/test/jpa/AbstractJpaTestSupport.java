@@ -3,7 +3,6 @@ package org.sevensource.support.test.jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,7 +16,7 @@ import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-public abstract class AbstractJpaTestSupport<T extends PersistentEntity<UUID>> {
+public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 
 	@PersistenceContext
 	EntityManager em;

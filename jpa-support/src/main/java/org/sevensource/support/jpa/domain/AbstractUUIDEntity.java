@@ -6,20 +6,26 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.sevensource.support.jpa.hibernate.UseUUIDIdOrGenerate;
+import org.sevensource.support.jpa.hibernate.AssignedUUIDGenerator;
 import org.springframework.util.ClassUtils;
 
 @MappedSuperclass
 public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> { 
 
+	private static final long serialVersionUID = 7109098772597401810L;
+
+	@Transient
+	private UUID _id = UUID.randomUUID();
+	
 	@Id
-	@GeneratedValue(generator=UseUUIDIdOrGenerate.NAME)
-	@GenericGenerator(name=UseUUIDIdOrGenerate.NAME,
-		strategy=UseUUIDIdOrGenerate.GENERATOR_CLASS)
+	@GeneratedValue(generator=AssignedUUIDGenerator.NAME)
+	@GenericGenerator(name=AssignedUUIDGenerator.NAME,
+		strategy=AssignedUUIDGenerator.GENERATOR_CLASS)
 	@Column(columnDefinition="uuid", updatable=false, unique=true, nullable=false)
-	private UUID id = UUID.randomUUID();
+	private UUID id = _id;
 	
 	@Override
 	public UUID getId() {
@@ -29,6 +35,13 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 	@Override
 	public void setId(UUID id) {
 		this.id = id;
+	}
+	
+	@Transient
+	@Override
+	public boolean isNew() {
+		if(id == null) return true;
+		return id.equals(_id);
 	}
 	
 //	// IMPL with:

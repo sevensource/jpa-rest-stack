@@ -28,11 +28,13 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 	private E entity;
 	private Class<E> domainClass;
 	private EntityManagerFactory entityManagerFactory;
+	private boolean changesHashCodeAfterPersist;
 	
-	public JpaEqualityAndHashCodeVerifier(E entity, EntityManagerFactory entityManagerFactory) {
+	public JpaEqualityAndHashCodeVerifier(E entity, EntityManagerFactory entityManagerFactory, boolean changesHashCodeAfterPersist) {
 		this.entity = entity;
 		this.domainClass = (Class<E>) this.entity.getClass();
 		this.entityManagerFactory = entityManagerFactory;
+		this.changesHashCodeAfterPersist = changesHashCodeAfterPersist;
 	}
 	
 	public void verify() {
@@ -44,8 +46,20 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 		assertThat(tuples.contains(entity)).isTrue();
 
 		doInJPA(entityManager -> {
+			if(changesHashCodeAfterPersist) {
+				tuples.remove(entity);
+				assertThat(tuples.size()).isEqualTo(0);
+			}
+			
 			entityManager.persist(entity);
 			entityManager.flush();
+			
+			if(changesHashCodeAfterPersist) {
+				entity = entityManager.find(domainClass, entity.getId());
+				tuples.add(entity);
+				assertThat(tuples.contains(entity)).isTrue();
+			}
+			
 			assertThat(tuples.contains(entity)).as("The entity is found after it's persisted").isTrue();
 		});
 

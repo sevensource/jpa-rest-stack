@@ -3,7 +3,9 @@ package org.sevensource.support.jpa.domain;
 import java.io.Serializable;
 import java.time.Instant;
 
-public interface PersistentEntity<ID extends Serializable> {
+import org.springframework.data.domain.Persistable;
+
+public interface PersistentEntity<ID extends Serializable> extends Persistable<ID> {
 	public ID getId();
 	public void setId(ID id);
 	public Integer getVersion();

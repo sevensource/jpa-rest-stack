@@ -83,6 +83,7 @@ public class AbstractEntityRestControllerPostTests {
 				.content(json))
 		.andExpect(status().isCreated())
 		.andExpect(header().string(HttpHeaders.LOCATION, not(isEmptyOrNullString())))
+		.andExpect(jsonPath("$.id").isNotEmpty())
 		.andDo(print())
 		.andReturn();
 		

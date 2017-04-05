@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
+import org.sevensource.support.jpa.domain.AbstractIntegerEntity;
 import org.sevensource.support.jpa.domain.AbstractPersistentEntity;
 import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.jpa.domain.PersistentEntity;
@@ -35,6 +36,8 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		   .scanClasspathForConcreteTypes(true)
 		   .overrideDefaultInitialization(true)
 		   .exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractUUIDEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("_id").inClass(AbstractUUIDEntity.class).get())
+		   .exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractIntegerEntity.class).get())
 		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedBy").inClass(AbstractPersistentEntity.class).get())
 		   .exclude(FieldDefinitionBuilder.field().named("createdBy").inClass(AbstractPersistentEntity.class).get())
 		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
@@ -138,6 +141,8 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	protected void setId(T mock) {
 		if(mock instanceof AbstractUUIDEntity) {
 			((AbstractUUIDEntity)mock).setId(UUID.randomUUID());
+		} else if(mock instanceof AbstractIntegerEntity) {
+			((AbstractIntegerEntity)mock).setId(random.nextInt());
 		} else {
 			throw new IllegalStateException("Override setId() - don't know how to set id on " + mock.getClass().getSimpleName());
 		}

@@ -14,10 +14,10 @@ import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
  * @author pgaschuetz
  *
  */
-public class UseUUIDIdOrGenerate extends UUIDGenerator {
+public class AssignedUUIDGenerator extends UUIDGenerator {
 	
-	public final static String NAME = "useUuidIdOrGenerate";
-	public final static String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.UseUUIDIdOrGenerate";
+	public final static String NAME = "assignedUUIDGenerator";
+	public final static String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.AssignedUUIDGenerator";
 	
 	@Override
 	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {

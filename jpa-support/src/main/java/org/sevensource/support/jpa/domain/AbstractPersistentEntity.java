@@ -8,6 +8,7 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.springframework.core.style.ToStringCreator;
@@ -22,6 +23,8 @@ import org.springframework.util.ClassUtils;
 @EntityListeners(AuditingEntityListener.class)
 @Access(AccessType.FIELD)
 public abstract class AbstractPersistentEntity<ID extends Serializable> implements PersistentEntity<ID> {
+
+	private static final long serialVersionUID = 4692410111632259138L;
 
 	@Version
 	@Column(nullable=false)
@@ -43,6 +46,13 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     @Column(nullable=false)
 	private Instant lastModifiedDate;
     
+	
+	@Override
+	@Transient
+	public boolean isNew() {
+		return getId() == null;
+	}
+	
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,7 +72,11 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     	// always return the same hashCode
     	// although this decreases performance for large hash tables,
     	// this way the JPA contract is correctly followed
-        return 31;
+        //return 31;
+    	
+		int hashCode = 17;
+		hashCode += null == getId() ? 0 : getId().hashCode() * 31;
+		return hashCode;
     }
 
 	@Override

@@ -53,6 +53,12 @@ public abstract class AbstractEntityMapper<E,D> implements EntityMapper<E,D> {
 	}
 	
 	@Override
+	public E toEntity(D dto, E destination) {
+		mapper.map(dto, destination);
+		return destination;
+	}
+	
+	@Override
 	public D toDTO(E entity) {
 		return mapper.map(entity, dtoClass);
 	}

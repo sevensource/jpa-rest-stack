@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @Import({ValidationAutoConfiguration.class})
-public class UseUUIDIdOrGenerateTests {
+public class AssignedUUIDGeneratorTests {
 	
 	@PersistenceContext
 	EntityManager em;

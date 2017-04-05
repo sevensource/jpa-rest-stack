@@ -5,18 +5,19 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-public abstract class AbstractUUIDDTO {
+public abstract class AbstractUUIDDTO implements IdentifiableDTO<UUID> {
 	
-	@JsonProperty(access=Access.READ_ONLY)
 	private UUID id;
 	
 	@JsonProperty(access=Access.READ_ONLY)
 	private Integer version;
 	
+	@Override
 	public UUID getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(UUID id) {
 		this.id = id;
 	}
