@@ -58,7 +58,7 @@ public class ReferenceDTOToEntityConverterTests {
 	static class ReferencingTestEntityMapper extends AbstractEntityMapper<ReferencingTestSource, ReferencingTestDestination> {
 
 		@Autowired
-		ReferenceDTOToEntityConverter converter;
+		ReferenceDTOToEntityConverter<?> converter;
 		
 		public ReferencingTestEntityMapper(ModelMapper mapper) {
 			super(mapper, ReferencingTestSource.class, ReferencingTestDestination.class);

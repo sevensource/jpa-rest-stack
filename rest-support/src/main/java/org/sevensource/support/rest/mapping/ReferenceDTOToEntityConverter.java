@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReferenceDTOToEntityConverter<T extends PersistentEntity<? extends Serializable>> implements Converter<ReferenceDTO, T> {
 
-	@Autowired()
+	@Autowired(required=false)
 	private List<EntityService<?, ? extends Serializable>> entityServices = new ArrayList<>();
 	
 	@Override

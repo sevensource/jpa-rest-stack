@@ -189,10 +189,15 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 		E e = populate();
 		assertThat(e.isNew()).isTrue();
 		
+		getEntityManager().persist(e);
+		getEntityManager().flush();
+		assertThat(e.isNew()).isFalse();
+		
+		e = populate();
 		e.setId(null);
 		assertThat(e.isNew()).isTrue();
-		
-		e.setId(getNewId());
+		getEntityManager().persist(e);
+		getEntityManager().flush();
 		assertThat(e.isNew()).isFalse();
 	}
 	

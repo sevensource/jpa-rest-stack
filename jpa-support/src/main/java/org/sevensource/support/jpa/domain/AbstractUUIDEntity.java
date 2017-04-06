@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PostPersist;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -35,6 +36,11 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 	@Override
 	public void setId(UUID id) {
 		this.id = id;
+	}
+	
+	@PostPersist
+	public void postPersist() {
+		this._id = null;
 	}
 	
 	@Transient
