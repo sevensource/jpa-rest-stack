@@ -1,9 +1,14 @@
 package org.sevensource.support.rest.mapping;
 
+import javax.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.sevensource.support.jpa.domain.PersistentEntity;
+import org.sevensource.support.rest.dto.IdentifiableDTO;
 
-public abstract class AbstractEntityMapper<E,D> implements EntityMapper<E,D> {
+public abstract class AbstractEntityMapper<E extends PersistentEntity<?>, D extends IdentifiableDTO<?>>
+	implements EntityMapper<E,D> {
 
 	private final ModelMapper mapper;
 	
@@ -14,7 +19,10 @@ public abstract class AbstractEntityMapper<E,D> implements EntityMapper<E,D> {
 		this.mapper = mapper;
 		this.entityClass = entityClass;
 		this.dtoClass = dtoClass;
-		
+	}
+	
+	@PostConstruct
+	public void postConstruct() {
 		addMappings(mapper);
 	}
 	
@@ -53,9 +61,8 @@ public abstract class AbstractEntityMapper<E,D> implements EntityMapper<E,D> {
 	}
 	
 	@Override
-	public E toEntity(D dto, E destination) {
+	public void toEntity(D dto, E destination) {
 		mapper.map(dto, destination);
-		return destination;
 	}
 	
 	@Override

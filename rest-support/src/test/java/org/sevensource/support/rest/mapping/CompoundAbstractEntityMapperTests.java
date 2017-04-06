@@ -10,10 +10,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
-import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.mapping.CompoundAbstractEntityMapperTests.CompoundTestEntityMapper;
-import org.sevensource.support.rest.mapping.CompoundAbstractEntityMapperTests.CompoundTestEntityMapper.TestDestination;
 import org.sevensource.support.rest.mapping.CompoundAbstractEntityMapperTests.CompoundTestEntityMapper.TestSource;
+import org.sevensource.support.rest.mapping.model.SimpleTestDestination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
@@ -29,16 +28,10 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 public class CompoundAbstractEntityMapperTests {
 	
 	@Component
-	static class CompoundTestEntityMapper extends AbstractEntityMapper<TestSource, TestDestination> {
+	static class CompoundTestEntityMapper extends AbstractEntityMapper<TestSource, SimpleTestDestination> {
 
 		public CompoundTestEntityMapper(ModelMapper mapper) {
-			super(mapper, TestSource.class, TestDestination.class);
-		}
-		
-		public static class TestDestination extends AbstractUUIDDTO {
-			private String name;
-			public String getName() { return name; }
-			public void setName(String name) { this.name = name; }
+			super(mapper, TestSource.class, SimpleTestDestination.class);
 		}
 		
 		public static class TestSource extends AbstractUUIDEntity {
@@ -51,8 +44,8 @@ public class CompoundAbstractEntityMapperTests {
 		}
 		
 		@Override
-		protected PropertyMap<TestSource, TestDestination> createEntityToDtoMap() {
-			return new PropertyMap<TestSource, TestDestination>(TestSource.class, TestDestination.class) {
+		protected PropertyMap<TestSource, SimpleTestDestination> createEntityToDtoMap() {
+			return new PropertyMap<TestSource, SimpleTestDestination>(TestSource.class, SimpleTestDestination.class) {
 				
 				Converter<TestSource, String> toName = new AbstractConverter<TestSource, String>() {
 					  protected String convert(TestSource source) {
@@ -68,17 +61,17 @@ public class CompoundAbstractEntityMapperTests {
 		}
 		
 		@Override
-		protected PropertyMap<TestDestination, TestSource> createDtoToEntityMap() {
-			return new PropertyMap<TestDestination, TestSource>(TestDestination.class, TestSource.class) {
+		protected PropertyMap<SimpleTestDestination, TestSource> createDtoToEntityMap() {
+			return new PropertyMap<SimpleTestDestination, TestSource>(SimpleTestDestination.class, TestSource.class) {
 				
-				Converter<TestDestination, String> toFirstname = new AbstractConverter<TestDestination, String>() {
-					  protected String convert(TestDestination source) {
+				Converter<SimpleTestDestination, String> toFirstname = new AbstractConverter<SimpleTestDestination, String>() {
+					  protected String convert(SimpleTestDestination source) {
 					    return source == null ? null : source.getName().split(" ")[0];
 					  }
 					};
 					
-					Converter<TestDestination, String> toLastname = new AbstractConverter<TestDestination, String>() {
-						  protected String convert(TestDestination source) {
+					Converter<SimpleTestDestination, String> toLastname = new AbstractConverter<SimpleTestDestination, String>() {
+						  protected String convert(SimpleTestDestination source) {
 						    return source == null ? null : source.getName().split(" ")[1];
 						  }
 						};
@@ -109,7 +102,7 @@ public class CompoundAbstractEntityMapperTests {
 		s.setFirstname(firstname);
 		s.setLastname(lastname);
 		
-		TestDestination d = mapper.toDTO(s);
+		SimpleTestDestination d = mapper.toDTO(s);
 		
 		assertThat(d.getId()).isEqualTo(d.getId());
 		assertThat(d.getVersion()).isEqualTo(d.getVersion());
@@ -118,7 +111,7 @@ public class CompoundAbstractEntityMapperTests {
 	
 	@Test
 	public void destination_to_source_works() {
-		TestDestination d = random.random(TestDestination.class);
+		SimpleTestDestination d = random.random(SimpleTestDestination.class);
 		d.setName(name);
 		
 		TestSource s = mapper.toEntity(d);

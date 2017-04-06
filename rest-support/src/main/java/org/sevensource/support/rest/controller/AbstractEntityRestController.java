@@ -49,8 +49,8 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		return mapper.toEntity(resource);
 	}
 	
-	protected E toEntity(DTO resource, E destination) {
-		return mapper.toEntity(resource, destination);
+	protected void toEntity(DTO resource, E destination) {
+		mapper.toEntity(resource, destination);
 	}
 	
 	protected final List<DTO> toResources(Iterable<E> entities) {
@@ -124,7 +124,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		HttpStatus status;
 		
 		if(entityToSave != null) {
-			entityToSave = toEntity(dto, entityToSave);
+			toEntity(dto, entityToSave);
 			savedEntity = entityService.update(id, entityToSave);
 			status = HttpStatus.OK;
 		} else {

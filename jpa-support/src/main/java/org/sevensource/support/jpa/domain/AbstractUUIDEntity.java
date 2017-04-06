@@ -18,7 +18,7 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 	private static final long serialVersionUID = 7109098772597401810L;
 
 	@Transient
-	private UUID _id = UUID.randomUUID();
+	private transient UUID _id = UUID.randomUUID();
 	
 	@Id
 	@GeneratedValue(generator=AssignedUUIDGenerator.NAME)
@@ -44,31 +44,6 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 		return id.equals(_id);
 	}
 	
-//	// IMPL with:
-//	// private UUID id = UUID.randomUUID();
-//    @Override
-//    public final boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null) return false;
-//		if (!getClass().equals(ClassUtils.getUserClass(o))) return false;
-//		AbstractUUIDEntity other = (AbstractUUIDEntity) o;
-//		
-//		if(this.getId() == null || other.getId() == null) {
-//			return EqualsBuilder.reflectionEquals(this, other, "id", "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
-//		} else {
-//			return this.getId().equals(other.getId());
-//		}
-//    }
-//		
-//		
-//    @Override
-//    public final int hashCode() {
-//    	return getId().hashCode();
-//    }
-	
-	
-//	// IMPL No 2 with:
-//	// private UUID id = UUID.randomUUID();
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

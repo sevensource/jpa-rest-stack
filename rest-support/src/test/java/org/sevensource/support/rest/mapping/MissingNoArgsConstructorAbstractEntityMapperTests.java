@@ -6,15 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.AbstractProvider;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.Provider;
-import org.modelmapper.TypeMap;
-import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.mapping.MissingNoArgsConstructorAbstractEntityMapperTests.MissingNoArgsConstructorTestEntityMapper;
 import org.sevensource.support.rest.mapping.MissingNoArgsConstructorAbstractEntityMapperTests.MissingNoArgsConstructorTestEntityMapper.TestDestination;
-import org.sevensource.support.rest.mapping.MissingNoArgsConstructorAbstractEntityMapperTests.MissingNoArgsConstructorTestEntityMapper.TestSource;
+import org.sevensource.support.rest.mapping.model.SimpleTestSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
@@ -33,10 +29,10 @@ public class MissingNoArgsConstructorAbstractEntityMapperTests {
 	ModelMapper mapper;
 	
 	@Component
-	static class MissingNoArgsConstructorTestEntityMapper extends AbstractEntityMapper<TestSource, TestDestination> {
+	static class MissingNoArgsConstructorTestEntityMapper extends AbstractEntityMapper<SimpleTestSource, TestDestination> {
 
 		public MissingNoArgsConstructorTestEntityMapper(ModelMapper mapper) {
-			super(mapper, TestSource.class, TestDestination.class);
+			super(mapper, SimpleTestSource.class, TestDestination.class);
 		}
 		
 		public static class TestDestination extends AbstractUUIDDTO {
@@ -46,15 +42,9 @@ public class MissingNoArgsConstructorAbstractEntityMapperTests {
 			public void setName(String name) { this.name = name; }
 		}
 		
-		public static class TestSource extends AbstractUUIDEntity {
-			private String name;
-			public String getName() { return name; }
-			public void setName(String name) { this.name = name; }
-		}
-		
 		@Override
 		protected void configureModelMapper(ModelMapper mapper) {
-			mapper.getTypeMap(TestSource.class, TestDestination.class).setProvider(
+			mapper.getTypeMap(SimpleTestSource.class, TestDestination.class).setProvider(
 					new AbstractProvider<TestDestination>() {
 
 				@Override
@@ -74,7 +64,7 @@ public class MissingNoArgsConstructorAbstractEntityMapperTests {
 	
 	@Test
 	public void source_to_destination_works() {
-		TestSource s = random.nextObject(TestSource.class);
+		SimpleTestSource s = random.nextObject(SimpleTestSource.class);
 		TestDestination d = testEntityMapper.toDTO(s);
 		
 		assertThat(d.getId()).isEqualTo(s.getId());
@@ -85,7 +75,7 @@ public class MissingNoArgsConstructorAbstractEntityMapperTests {
 	@Test
 	public void destination_to_source_works() {
 		TestDestination d = random.nextObject(TestDestination.class);
-		TestSource s = testEntityMapper.toEntity(d);
+		SimpleTestSource s = testEntityMapper.toEntity(d);
 
 		assertThat(s.getId()).isEqualTo(d.getId());
 		assertThat(s.getVersion()).isNull(); //setter is non-existant

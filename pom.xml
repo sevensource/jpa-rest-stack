@@ -26,16 +26,23 @@
 		<hibernate.version>5.2.1.Final</hibernate.version>
 		<random.beans.version>3.7.0-SNAPSHOT</random.beans.version>
 		<mockito.version>[2.7.0,3.0.0)</mockito.version>
+		<commons.lang3.version>3.5</commons.lang3.version>
 	</properties>
 
 	<modules>
 		<module>jpa-support</module>
 		<module>jpa-support-test</module>
 		<module>rest-support</module>
+		<module>rest-support-test</module>
 	</modules>
 	
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons.lang3.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>io.github.benas</groupId>
 				<artifactId>random-beans</artifactId>

@@ -5,12 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
-import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
 import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.mapping.PrivateConstructorAbstractEntityMapperTests.PrivateConstructorTestEntityMapper;
 import org.sevensource.support.rest.mapping.PrivateConstructorAbstractEntityMapperTests.PrivateConstructorTestEntityMapper.TestDestination;
-import org.sevensource.support.rest.mapping.PrivateConstructorAbstractEntityMapperTests.PrivateConstructorTestEntityMapper.TestSource;
+import org.sevensource.support.rest.mapping.model.SimpleTestSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
@@ -29,22 +28,16 @@ public class PrivateConstructorAbstractEntityMapperTests {
 	ModelMapper mapper;
 	
 	@Component
-	static class PrivateConstructorTestEntityMapper extends AbstractEntityMapper<TestSource, TestDestination> {
+	static class PrivateConstructorTestEntityMapper extends AbstractEntityMapper<SimpleTestSource, TestDestination> {
 
 		public PrivateConstructorTestEntityMapper(ModelMapper mapper) {
-			super(mapper, TestSource.class, TestDestination.class);
+			super(mapper, SimpleTestSource.class, TestDestination.class);
 		}
 		
 		public static class TestDestination extends AbstractUUIDDTO {
 			private String name;
 			private TestDestination() {}
 			public TestDestination(String name) { this.name = name; }
-			public String getName() { return name; }
-			public void setName(String name) { this.name = name; }
-		}
-		
-		public static class TestSource extends AbstractUUIDEntity {
-			private String name;
 			public String getName() { return name; }
 			public void setName(String name) { this.name = name; }
 		}
@@ -59,7 +52,7 @@ public class PrivateConstructorAbstractEntityMapperTests {
 	
 	@Test
 	public void source_to_destination_works() {
-		TestSource s = random.random(TestSource.class);
+		SimpleTestSource s = random.random(SimpleTestSource.class);
 		TestDestination d = testEntityMapper.toDTO(s);
 		
 		assertThat(d.getId()).isEqualTo(s.getId());
@@ -70,7 +63,7 @@ public class PrivateConstructorAbstractEntityMapperTests {
 	@Test
 	public void destination_to_source_works() {
 		TestDestination d = random.random(TestDestination.class);
-		TestSource s = testEntityMapper.toEntity(d);
+		SimpleTestSource s = testEntityMapper.toEntity(d);
 
 		assertThat(s.getId()).isEqualTo(d.getId());
 		assertThat(s.getVersion()).isNull(); //setter is non-existant
