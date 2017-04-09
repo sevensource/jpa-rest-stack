@@ -13,8 +13,6 @@ public class ApiErrorDTO {
 	
 	private String path;
 	
-	protected ApiErrorDTO() {
-	}
 	
 	public ApiErrorDTO(Exception ex, HttpStatus status) {
 		this.timestamp = Instant.now().toEpochMilli();

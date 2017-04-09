@@ -18,9 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.service.EntityService;
-import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
-import org.sevensource.support.rest.configuration.CommonMvcConfiguration;
-import org.sevensource.support.rest.controller.TestEntityRestController.TestEntity;
+import org.sevensource.support.rest.model.SimpleTestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,12 +34,12 @@ import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers=TestEntityRestController.class)
-@ContextConfiguration(classes={CommonMvcConfiguration.class, CommonMappingConfiguration.class, TestEntityRestController.class})
+@WebMvcTest(controllers=SimpleTestEntityRestController.class)
+@ContextConfiguration(classes={AbstractEntityControllerTestsConfiguration.class})
 public class AbstractEntityRestControllerFindTests {
 
 	@MockBean
-	private EntityService<TestEntity, UUID> service;
+	private EntityService<SimpleTestEntity, UUID> service;
 	
 	@Autowired
 	private MockMvc mvc;
@@ -53,14 +51,14 @@ public class AbstractEntityRestControllerFindTests {
 	
 	
 	private static String url(String path) {
-		return TestEntityRestController.PATH + path;
+		return SimpleTestEntityRestController.PATH + path;
 	}
 	
 	@Before
 	public void before() {
-		final List<TestEntity> objects = IntStream
+		final List<SimpleTestEntity> objects = IntStream
 				.range(0, 10)
-				.mapToObj(i -> random.nextObject(TestEntity.class))
+				.mapToObj(i -> random.nextObject(SimpleTestEntity.class))
 				.collect(Collectors.toList());
 		
 		when(service.findAll((Pageable) any())).thenAnswer((c) -> {

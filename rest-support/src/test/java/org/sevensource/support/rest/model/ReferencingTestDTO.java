@@ -1,9 +1,9 @@
-package org.sevensource.support.rest.mapping.model;
+package org.sevensource.support.rest.model;
 
 import org.sevensource.support.rest.dto.AbstractUUIDDTO;
 import org.sevensource.support.rest.dto.ReferenceDTO;
 
-public class ReferencingTestDestination extends AbstractUUIDDTO {
+public class ReferencingTestDTO extends AbstractUUIDDTO {
 	private String name;
 	private ReferenceDTO reference;
 	

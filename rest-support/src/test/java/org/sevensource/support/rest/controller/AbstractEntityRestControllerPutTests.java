@@ -2,8 +2,8 @@ package org.sevensource.support.rest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,9 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.sevensource.support.jpa.service.EntityService;
-import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
-import org.sevensource.support.rest.configuration.CommonMvcConfiguration;
-import org.sevensource.support.rest.controller.TestEntityRestController.TestEntity;
+import org.sevensource.support.rest.model.SimpleTestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,18 +29,18 @@ import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers=TestEntityRestController.class)
-@ContextConfiguration(classes={CommonMvcConfiguration.class, CommonMappingConfiguration.class, TestEntityRestController.class})
+@WebMvcTest(controllers=SimpleTestEntityRestController.class)
+@ContextConfiguration(classes={AbstractEntityControllerTestsConfiguration.class})
 public class AbstractEntityRestControllerPutTests {
 
 	@MockBean
-	private EntityService<TestEntity, UUID> service;
+	private EntityService<SimpleTestEntity, UUID> service;
 	
 	@Autowired
 	private MockMvc mvc;
 	
 	@Captor
-	ArgumentCaptor<TestEntity> entityCaptor;
+	ArgumentCaptor<SimpleTestEntity> entityCaptor;
 
 	@Captor
 	ArgumentCaptor<UUID> idCaptor;
@@ -52,7 +50,7 @@ public class AbstractEntityRestControllerPutTests {
 	private final static UUID NIL_UUID = new UUID(0,0);
 	
 	private static String url(String path) {
-		return TestEntityRestController.PATH + path;
+		return SimpleTestEntityRestController.PATH + path;
 	}
 	
 	@Test
@@ -62,7 +60,7 @@ public class AbstractEntityRestControllerPutTests {
 		when(service.exists(any())).thenReturn(false);
 		
 		when(service.create(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
+			SimpleTestEntity e = random.nextObject(SimpleTestEntity.class);
 			e.setId(idCaptor.getValue());
 			e.setName(entityCaptor.getValue().getName());
 			return e;
@@ -89,7 +87,7 @@ public class AbstractEntityRestControllerPutTests {
 		
 		String json = "{\"id\": \"" + requestedId.toString() + "\", \"name\":	\"test\"}";
 
-		TestEntity e = random.nextObject(TestEntity.class);
+		SimpleTestEntity e = random.nextObject(SimpleTestEntity.class);
 		
 		when(service.get(eq(requestedId))).thenReturn(e);
 		
@@ -120,7 +118,7 @@ public class AbstractEntityRestControllerPutTests {
 				+ "}";
 		
 		UUID requestedId = UUID.randomUUID();
-		TestEntity e = random.nextObject(TestEntity.class);
+		SimpleTestEntity e = random.nextObject(SimpleTestEntity.class);
 		
 		when(service.get(eq(requestedId))).thenReturn(e);
 		

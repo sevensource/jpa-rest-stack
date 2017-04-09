@@ -46,12 +46,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-hateoas</artifactId>
 		</dependency>
-		
-		<dependency>
-		  <groupId>org.modelmapper</groupId>
-		  <artifactId>modelmapper</artifactId>
-		  <version>0.7.7</version>
-		</dependency>
+		 
+		 <dependency>
+		 	<groupId>org.mapstruct</groupId>
+		 	<artifactId>mapstruct-jdk8</artifactId>
+		 </dependency>
+		 
+		 <dependency>
+		 	<groupId>org.mapstruct</groupId>
+		 	<artifactId>mapstruct-processor</artifactId>
+		 </dependency>
 		
 		<dependency>
 			<groupId>io.github.benas</groupId>
@@ -68,6 +72,20 @@
 
 	<build>
 		<plugins>
+	        <plugin>
+    	        <groupId>org.apache.maven.plugins</groupId>
+        	    <artifactId>maven-compiler-plugin</artifactId>
+        	    <configuration>
+	                <annotationProcessorPaths>
+	                    <path>
+	                        <groupId>org.mapstruct</groupId>
+	                        <artifactId>mapstruct-processor</artifactId>
+	                        <version>${org.mapstruct.version}</version>
+	                    </path>
+	                </annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

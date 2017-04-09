@@ -1,11 +1,11 @@
-package org.sevensource.support.rest.mapping.model;
+package org.sevensource.support.rest.model;
 
 import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 
-public class ReferencingTestSource extends AbstractUUIDEntity {
+public class ReferencingTestEntity extends AbstractUUIDEntity {
 
 	private String name;
-	private SimpleTestSource reference;
+	private SimpleTestEntity reference;
 	
 	public String getName() {
 		return name;
@@ -13,10 +13,10 @@ public class ReferencingTestSource extends AbstractUUIDEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public SimpleTestSource getReference() {
+	public SimpleTestEntity getReference() {
 		return reference;
 	}
-	public void setReference(SimpleTestSource reference) {
+	public void setReference(SimpleTestEntity reference) {
 		this.reference = reference;
 	}
 

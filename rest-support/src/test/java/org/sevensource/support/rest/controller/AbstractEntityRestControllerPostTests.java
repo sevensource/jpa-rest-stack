@@ -1,11 +1,10 @@
 package org.sevensource.support.rest.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,17 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.service.EntityService;
-import org.sevensource.support.rest.configuration.CommonMappingConfiguration;
-import org.sevensource.support.rest.configuration.CommonMvcConfiguration;
-import org.sevensource.support.rest.controller.TestEntityRestController.TestEntity;
+import org.sevensource.support.rest.model.SimpleTestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,18 +32,18 @@ import io.github.benas.randombeans.EnhancedRandomBuilder;
 import io.github.benas.randombeans.api.EnhancedRandom;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers=TestEntityRestController.class)
-@ContextConfiguration(classes={CommonMvcConfiguration.class, CommonMappingConfiguration.class, TestEntityRestController.class})
+@WebMvcTest(controllers=SimpleTestEntityRestController.class)
+@ContextConfiguration(classes={AbstractEntityControllerTestsConfiguration.class})
 public class AbstractEntityRestControllerPostTests {
 
 	@MockBean
-	private EntityService<TestEntity, UUID> service;
+	private EntityService<SimpleTestEntity, UUID> service;
 	
 	@Autowired
 	private MockMvc mvc;
 	
 	@Captor
-	ArgumentCaptor<TestEntity> entityCaptor;
+	ArgumentCaptor<SimpleTestEntity> entityCaptor;
 
 	@Captor
 	ArgumentCaptor<UUID> idCaptor;
@@ -59,7 +53,7 @@ public class AbstractEntityRestControllerPostTests {
 	private final static UUID NIL_UUID = new UUID(0,0);
 	
 	private static String url(String path) {
-		return TestEntityRestController.PATH + path;
+		return SimpleTestEntityRestController.PATH + path;
 	}
 	
 	@Test
@@ -69,7 +63,7 @@ public class AbstractEntityRestControllerPostTests {
 		UUID assignedId = UUID.randomUUID();
 		
 		when(service.create(entityCaptor.capture())).thenAnswer((c) -> {
-			TestEntity e = random.nextObject(TestEntity.class);
+			SimpleTestEntity e = random.nextObject(SimpleTestEntity.class);
 			e.setId(assignedId);
 			e.setName(entityCaptor.getValue().getName());
 			return e;
@@ -90,6 +84,6 @@ public class AbstractEntityRestControllerPostTests {
 		assertThat(entityCaptor.getValue().getName()).isEqualTo("test");
 		
 		String link = result.getResponse().getHeader(HttpHeaders.LOCATION);
-		assertThat(link).endsWith(TestEntityRestController.PATH + "/" + assignedId.toString());
+		assertThat(link).endsWith(SimpleTestEntityRestController.PATH + "/" + assignedId.toString());
 	}
 }

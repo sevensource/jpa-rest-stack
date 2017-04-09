@@ -14,9 +14,6 @@ public class ApiValidationErrorDTO extends ApiErrorDTO {
 	
 	private Map<String, List<String>> validationErrors = new HashMap<>();
 	
-	protected ApiValidationErrorDTO() {
-	}
-	
 	public ApiValidationErrorDTO(EntityValidationException ex, HttpStatus status) {
 		super(ex, status);
 		
@@ -31,9 +28,5 @@ public class ApiValidationErrorDTO extends ApiErrorDTO {
 	
 	public Map<String, List<String>> getValidationErrors() {
 		return validationErrors;
-	}
-	
-	public void setValidationErrors(Map<String, List<String>> validationErrors) {
-		this.validationErrors = validationErrors;
 	}
 }
