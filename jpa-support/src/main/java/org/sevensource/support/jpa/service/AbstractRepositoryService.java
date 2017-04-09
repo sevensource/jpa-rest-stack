@@ -157,7 +157,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 			return;
 		} else {
 			final String message = String.format("Validation of entity %s failed", entityClass.getName());
-			throw new EntityValidationException(message, (Set) violations);
+			throw new EntityValidationException(message, violations);
 		}
 	}
 	
@@ -167,7 +167,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 			return;
 		} else {
 			final String message = String.format("Validation of entity %s failed with a UniqueConstraint", entityClass.getName());
-			throw new EntityValidationException(message, (Set) violations);
+			throw new EntityValidationException(message, violations);
 		}
 	}
 	
