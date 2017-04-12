@@ -61,7 +61,6 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 	        .withNonnullFields("id")						// IF we're selfAssigning id upon access: hashCode relies on id, but equals does not.
 	        .suppress(Warning.STRICT_INHERITANCE)			// Subclass: equals is not final
 	        .suppress(Warning.IDENTICAL_COPY_FOR_VERSIONED_ENTITY) //object does not equal an identical copy of itself
-	        //.suppress(Warning.STRICT_HASHCODE)				// IF we're always returning the same hashCode: hashCode relies on id, but equals does not.	        
 	    	
         .verify();
 	}

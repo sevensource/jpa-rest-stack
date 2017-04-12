@@ -43,14 +43,12 @@ public class AbstractEntityRestControllerPostTests {
 	private MockMvc mvc;
 	
 	@Captor
-	ArgumentCaptor<SimpleTestEntity> entityCaptor;
+	private ArgumentCaptor<SimpleTestEntity> entityCaptor;
 
 	@Captor
-	ArgumentCaptor<UUID> idCaptor;
+	private ArgumentCaptor<UUID> idCaptor;
 	
-	EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
-	
-	private final static UUID NIL_UUID = new UUID(0,0);
+	private EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
 	
 	private static String url(String path) {
 		return SimpleTestEntityRestController.PATH + path;

@@ -44,7 +44,7 @@ public class AbstractEntityRestControllerFindTests {
 	@Autowired
 	private MockMvc mvc;
 	
-	EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
+	private EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
 	
 	private final static UUID ONE_UUID = new UUID(0,1);
 	private final static UUID TWO_UUID = new UUID(0,2);

@@ -21,5 +21,4 @@ public abstract class AbstractIntegerEntityTestSupport<E extends AbstractInteger
 	protected boolean entityChangesHashCodeAfterPersist() {
 		return true;
 	}
-
 }

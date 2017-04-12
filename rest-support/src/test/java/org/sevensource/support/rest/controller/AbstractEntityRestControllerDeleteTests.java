@@ -38,20 +38,9 @@ public class AbstractEntityRestControllerDeleteTests {
 	
 	@Autowired
 	private MockMvc mvc;
-
-	@Captor
-	ArgumentCaptor<UUID> idCaptor;
-	
-	EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
-	
-	private final static UUID NIL_UUID = new UUID(0,0);
 	
 	private static String url(String path) {
 		return SimpleTestEntityRestController.PATH + path;
-	}
-	
-	@Before
-	public void before() {
 	}
 	
 	@Test

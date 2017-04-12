@@ -37,7 +37,7 @@ public class AbstractEntityRestControllerGetTests {
 	@Autowired
 	private MockMvc mvc;
 	
-	EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
+	private EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandom();
 	
 	private final static UUID NIL_UUID = new UUID(0,0);
 	
