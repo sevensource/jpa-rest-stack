@@ -45,7 +45,7 @@ import com.jayway.jsonpath.JsonPath;
 		HibernateJpaAutoConfiguration.class
 		})
 @Configuration
-public class MvcExceptionIntegrationTest2 {
+public class MvcExceptionIntegrationTest {
 	
 	private final static String TEXT = "Some detail message";
 	

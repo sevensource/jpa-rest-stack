@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -26,27 +27,10 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implements MockProvider<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMockProvider.class);
-
-	private final static EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
-		   .seed(123L)
-		   .objectPoolSize(100)
-		   .randomizationDepth(3)
-		   .stringLengthRange(5, 50)
-		   .collectionSizeRange(1, 10)
-		   .scanClasspathForConcreteTypes(true)
-		   .overrideDefaultInitialization(true)
-		   .exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractUUIDEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("_id").inClass(AbstractUUIDEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractIntegerEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedBy").inClass(AbstractPersistentEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("createdBy").inClass(AbstractPersistentEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("lastModifiedDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("createdDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
-		   .exclude(FieldDefinitionBuilder.field().named("version").ofType(Integer.class).inClass(AbstractPersistentEntity.class).get())
-		   .build();
-	
 	
 	private final Class<T> domainClass;
+	
+	private EnhancedRandom random;
 	
 	@Autowired(required=false)
 	private TestEntityManager tem;
@@ -60,6 +44,32 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	
 	public AbstractMockProvider(Class<T> domainClass) {
 		this.domainClass = domainClass;
+	}
+	
+	@PostConstruct
+	public void postConstruct() {
+		EnhancedRandomBuilder randomBuilder = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
+				   .seed(123L)
+				   .objectPoolSize(100)
+				   .randomizationDepth(3)
+				   .stringLengthRange(5, 50)
+				   .collectionSizeRange(1, 10)
+				   .scanClasspathForConcreteTypes(true)
+				   .overrideDefaultInitialization(true);
+		
+		if(tem != null || emf != null) {
+			randomBuilder = randomBuilder
+					.exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractUUIDEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("_id").inClass(AbstractUUIDEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractIntegerEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("lastModifiedBy").inClass(AbstractPersistentEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("createdBy").inClass(AbstractPersistentEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("lastModifiedDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("createdDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
+					.exclude(FieldDefinitionBuilder.field().named("version").ofType(Integer.class).inClass(AbstractPersistentEntity.class).get());
+		}
+		
+		random = randomBuilder.build();
 	}
 	
 	@Override

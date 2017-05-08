@@ -27,6 +27,7 @@ public class MockFactory<T> {
 	
 	@SuppressWarnings("unchecked")
 	public <T extends PersistentEntity<?>> MockProvider<T> on(Class<T> domainClass) {
+		Assert.notNull(domainClass, "domainClass must not be null");
 		MockProvider<?> factory = factories.get(domainClass);
 		if (factory == null) {
 			throw new IllegalArgumentException("No provider registered for class " + domainClass.getName());
