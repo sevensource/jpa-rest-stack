@@ -94,18 +94,6 @@
 			<artifactId>random-beans</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<!-- 
-		<dependency>
-		    <groupId>io.github.benas</groupId>
-		    <artifactId>random-beans-randomizers</artifactId>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>io.github.benas</groupId>
-		    <artifactId>random-beans-validation</artifactId>
-		    <scope>test</scope>
-		</dependency>
-		 -->
 	</dependencies>
 
 	<build>

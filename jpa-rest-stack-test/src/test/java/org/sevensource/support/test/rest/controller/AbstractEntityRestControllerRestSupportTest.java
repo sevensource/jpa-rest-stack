@@ -1,16 +1,18 @@
 package org.sevensource.support.test.rest.controller;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import org.junit.runner.RunWith;
+import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestEntityMockProvider;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestReferenceEntityMockProvider;
+import org.sevensource.support.test.jpa.service.UUIDTestEntityService;
 import org.sevensource.support.test.rest.configuration.RestTestConfiguration;
 import org.sevensource.support.test.rest.mapper.UUIDTestEntityMapperImpl;
 import org.sevensource.support.test.rest.mapper.UUIDTestReferenceEntityMapperImpl;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,26 +25,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 	UUIDTestReferenceEntityMapperImpl.class,
 	UUIDTestEntityMockProvider.class,
 	UUIDTestReferenceEntityMockProvider.class})
-public class AbstractEntityRestControllerRestSupportTest extends AbstractEntityRestControllerTestSupport<UUIDTestEntity, UUID>{
+public class AbstractEntityRestControllerRestSupportTest extends AbstractUUIDEntityRestControllerTestSupport<UUIDTestEntity> {
 
+	@MockBean
+	private UUIDTestEntityService service;
+	
+	@Override
+	protected EntityService<UUIDTestEntity, UUID> getService() {
+		return service;
+	}
+	
 	@Override
 	protected String getRootPath() {
 		return SimpleTestEntityRestController.PATH;
-	}
-
-	@Override
-	protected UUID nextId() {
-		return UUID.randomUUID();
-	}
-
-	@Override
-	protected UUID nillId() {
-		return new UUID(0, 0);
-	}
-
-	@Override
-	protected Serializable invalidId() {
-		return "abc";
 	}
 	
 	@Override

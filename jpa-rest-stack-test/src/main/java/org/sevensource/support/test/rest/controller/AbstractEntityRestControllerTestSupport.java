@@ -5,13 +5,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -22,23 +18,15 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
-import org.sevensource.support.rest.dto.ReferenceDTO;
-import org.sevensource.support.rest.model.SimpleTestEntity;
 import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -56,9 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public abstract class AbstractEntityRestControllerTestSupport<E extends PersistentEntity<ID>, ID extends Serializable> {
-
-	@MockBean
-	private EntityService<E, ID> service;
 	
 	@Autowired
 	private MockMvc mvc;
@@ -77,40 +62,40 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Before
 	public void before() {
-		when(service.get(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().get(idCaptor.capture())).thenAnswer((c) -> {
 			if(idCaptor.getValue().equals(nillId())) return null;
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(service.create(entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(entityCaptor.capture())).thenAnswer((c) -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(nextId());
 			return entity;
 		});
 		
-		when(service.create(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(service.update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
 			E e = entityCaptor.getValue();
 			e.setId(idCaptor.getValue());
 			return e;
 		});
 		
-		when(service.exists(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().exists(idCaptor.capture())).thenAnswer((c) -> {
 			return ! nillId().equals(idCaptor.getValue());
 		});
 		
 		final List<E> objects = mockFactory.on(getEntityClass()).create(10);
 		
-		when(service.findAll(any(Sort.class))).thenReturn(objects);
+		when(getService().findAll(any(Sort.class))).thenReturn(objects);
 		
-		when(service.findAll(any(PageRequest.class))).thenAnswer((c) -> {
+		when(getService().findAll(any(PageRequest.class))).thenAnswer((c) -> {
 			Pageable pageable = c.getArgument(0);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();
@@ -136,6 +121,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	protected abstract ID nillId();
 	protected abstract Serializable invalidId();
 	protected abstract Class<E> getEntityClass();
+	protected abstract EntityService<E, ID> getService();
 	
 	
 	private MockHttpServletRequestBuilder request(String url, HttpMethod method) {
@@ -182,7 +168,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 			.andDo(print())
 			.andReturn();
 		
-		verify(service, times(1)).delete(assignedId);
+		verify(getService(), times(1)).delete(assignedId);
 	}
 	
 	@Test
