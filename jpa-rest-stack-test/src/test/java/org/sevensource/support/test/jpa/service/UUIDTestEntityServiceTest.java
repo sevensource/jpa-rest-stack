@@ -29,12 +29,12 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
 @EnableJpaRepositories(basePackageClasses=UUIDTestEntityRepository.class)
 @ComponentScan(basePackageClasses={UUIDTestEntityService.class, UUIDTestEntityMockProvider.class})
-public class UUIDTestEntityServiceTests extends AbstractEntityServiceTests<UUIDTestEntity> {
+public class UUIDTestEntityServiceTest extends AbstractEntityServiceTests<UUIDTestEntity> {
 
 	private final static String UNIQUE_TITLE = "A UNIQUE STRING";
 	private final static String[] INVALID_TITLE = new String[] {null, "", "a", UNIQUE_TITLE};
 	
-	public UUIDTestEntityServiceTests() {
+	public UUIDTestEntityServiceTest() {
 		super(UUIDTestEntity.class);
 	}
 	

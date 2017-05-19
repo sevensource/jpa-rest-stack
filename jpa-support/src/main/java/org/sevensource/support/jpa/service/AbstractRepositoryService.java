@@ -179,5 +179,4 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	 */
 	protected abstract void validateConstraints(T entity) throws EntityException;
 	
-
 }

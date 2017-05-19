@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
-public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestEntity> {
+public class UUIDTestEntityTest extends AbstractUUIDEntityTestSupport<UUIDTestEntity> {
 
 	@PersistenceContext
 	EntityManager em;
@@ -29,7 +29,7 @@ public class UUIDTestEntityTests extends AbstractUUIDEntityTestSupport<UUIDTestE
 	@Autowired
 	DataSource ds;
 	
-	public UUIDTestEntityTests() {
+	public UUIDTestEntityTest() {
 		super(UUIDTestEntity.class);
 	}
 	

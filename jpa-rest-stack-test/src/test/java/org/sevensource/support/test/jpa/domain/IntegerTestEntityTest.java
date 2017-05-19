@@ -13,9 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={IntegerTestEntityMockProvider.class})
-public class IntegerTestEntityTests extends AbstractIntegerEntityTestSupport<IntegerTestEntity> {
+public class IntegerTestEntityTest extends AbstractIntegerEntityTestSupport<IntegerTestEntity> {
 
-	public IntegerTestEntityTests() {
+	public IntegerTestEntityTest() {
 		super(IntegerTestEntity.class);
 	}
 }
