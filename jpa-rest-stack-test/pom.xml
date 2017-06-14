@@ -9,9 +9,9 @@
 	<description />
 
 	<parent>
-		<groupId>org.sevensource.support</groupId>
-		<artifactId>jpa-rest-stack</artifactId>
-		<version>0.0.6</version>
+		<groupId>org.sevensource.support.jpa-rest-stack</groupId>
+		<artifactId>jpa-rest-stack-parent</artifactId>
+		<version>0.1.0</version>
 	</parent>
 
 	<properties>
@@ -22,15 +22,15 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.sevensource.support</groupId>
+			<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 			<artifactId>jpa-support</artifactId>
-			<version>0.0.6</version>
+			<version>0.1.0</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.sevensource.support</groupId>
+			<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 			<artifactId>rest-support</artifactId>
-			<version>0.0.6</version>
+			<version>0.1.0</version>
 		</dependency>
 		
 		<dependency>
