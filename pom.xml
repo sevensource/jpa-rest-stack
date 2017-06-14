@@ -4,7 +4,7 @@
 
 	<groupId>org.sevensource.support</groupId>
 	<artifactId>jpa-rest-stack</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<packaging>pom</packaging>
 
 	<name>jpa-rest-stack</name>
@@ -21,6 +21,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 		
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 
@@ -45,6 +46,7 @@
             	<artifactId>jgitflow-maven-plugin</artifactId>
             	<version>1.0-m5.1</version>
             	<configuration>
+            		<arguments>-Dmaven.install.skip=true</arguments>
 					<flowInitContext>
 		                <versionTagPrefix>v</versionTagPrefix>
 		            </flowInitContext>
@@ -54,18 +56,6 @@
             	</configuration>
         	</plugin>
 		</plugins>
-		
-		<pluginManagement>
-			<plugins>
-	        	<plugin>
-	        		<groupId>org.apache.maven.plugins</groupId>
-	        		<artifactId>maven-javadoc-plugin</artifactId>
-	        		<configuration>
-	        			<skip />
-	        		</configuration>
-	        	</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	
