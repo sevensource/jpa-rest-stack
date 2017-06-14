@@ -18,8 +18,8 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	
 	/**
 	 * returns true if the service supports operations on the entityClass
-	 * @param pe
-	 * @return
+	 * @param classToCheck classToCheck
+	 * @return true if the service supports this EntityClass
 	 */
 	public boolean supports(Class<?> classToCheck);
 	
@@ -45,7 +45,7 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	 * @return the saved entity
 	 * @throws IllegalArgumentException if entity was null
 	 * @throws IllegalArgumentException if entity already has an id
-	 * @throws DataIntegrityViolationException
+	 * @throws DataIntegrityViolationException on error
 	 */
 	public T create(T entity);
 
@@ -68,7 +68,7 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	 * @throws IllegalArgumentException if id or entity was null
 	 * @throws IllegalArgumentException if id and entitys id are not equal
 	 * @throws EntityNotFoundException if the entity does not exist
-	 * @throws DataIntegrityViolationException
+	 * @throws DataIntegrityViolationException on error
 	 */
 	public T update(ID id, T entity);
 	
@@ -76,9 +76,9 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	/**
 	 * validates an entity
 	 * 
-	 * @param entity
-	 * @return
-	 * @throws EntityValidationException
+	 * @param entity the object to be validated
+	 * @return true if the validation succeeded
+	 * @throws EntityValidationException if an error occurs
 	 */
 	public boolean validate(T entity) throws ConstraintViolationException, EntityValidationException;
 	
@@ -92,15 +92,15 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	
 	/**
 	 * 
-	 * @param pageable
-	 * @return
+	 * @param pageable {@link Pageable}
+	 * @return data
 	 */
 	public Page<T> findAll(Pageable pageable);
 	
 	/**
 	 * 
-	 * @param sort
-	 * @return
+	 * @param sort {@link Sort}
+	 * @return data
 	 */
 	public List<T> findAll(Sort sort);
 	
