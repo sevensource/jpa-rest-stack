@@ -174,8 +174,8 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	/**
 	 * validate business constraints
 	 * 
-	 * @param entity
-	 * @throws EntityException
+	 * @param entity the entity under inspection
+	 * @throws EntityException if a constraint cannot be validated
 	 */
 	protected abstract void validateConstraints(T entity) throws EntityException;
 	
