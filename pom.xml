@@ -31,15 +31,7 @@
 		<commons.lang3.version>3.5</commons.lang3.version>
 		<org.mapstruct.version>1.2.0.Beta3</org.mapstruct.version>
 	</properties>
-	
-	<!-- 
-	<repositories>
-		<repository>
-	    	<id>ossrh</id>
-	    	<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
- -->
+
  
 	<distributionManagement>
 		<repository>
@@ -47,6 +39,11 @@
 			<name>repo.seven-systems.ch-releases</name>
 			<url>http://repo.seven-systems.ch/artifactory/libs-release-local</url>
 		</repository>
+	    <snapshotRepository>
+	        <id>repo.seven-systems.ch-snapshots</id>
+	        <name>repo.seven-systems.ch-snapshots</name>
+	        <url>http://repo.seven-systems.ch/artifactory/libs-snapshot-local</url>
+	    </snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
@@ -55,8 +52,17 @@
 				<enabled>false</enabled>
 			</snapshots>
 			<id>repo.seven-systems.ch</id>
-			<name>libs-release</name>
+			<name>repo.seven-systems.ch-releases</name>
 			<url>http://repo.seven-systems.ch/artifactory/libs-release-local</url>
+		</repository>
+		
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>repo.seven-systems.ch-snapshots</id>
+			<name>repo.seven-systems.ch-snapshots</name>
+			<url>http://repo.seven-systems.ch/artifactory/libs-snapshot-local</url>
 		</repository>
 	</repositories>
 
