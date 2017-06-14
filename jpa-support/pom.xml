@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 		<artifactId>jpa-rest-stack-parent</artifactId>
-		<version>0.1.0</version>
+		<version>0.2.0</version>
 	</parent>
 
 	<properties>
@@ -48,21 +48,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<layout>NONE</layout>
-					<skip>true</skip>
-				</configuration>
-				<executions>
-					<execution>
-					  <goals>
-					    <goal>build-info</goal>
-					  </goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
