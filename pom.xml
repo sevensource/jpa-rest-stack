@@ -48,13 +48,7 @@
 			</snapshots>
 			<id>repo.seven-systems.ch</id>
 			<name>libs-release</name>
-			<url>http://repo.seven-systems.ch/artifactory/libs-release</url>
-		</repository>
-		<repository>
-			<snapshots />
-			<id>repo.seven-systems.ch</id>
-			<name>libs-snapshot</name>
-			<url>http://repo.seven-systems.ch/artifactory/libs-snapshot</url>
+			<url>http://repo.seven-systems.ch/artifactory/libs-release-local</url>
 		</repository>
 	</repositories>
 
