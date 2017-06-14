@@ -4,7 +4,7 @@
 
 	<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 	<artifactId>jpa-rest-stack-parent</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
 
 	<name>jpa-rest-stack</name>
