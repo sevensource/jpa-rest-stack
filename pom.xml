@@ -45,14 +45,8 @@
             	<artifactId>jgitflow-maven-plugin</artifactId>
             	<version>1.0-m5.1</version>
             	<configuration>
-            		<arguments>-Dmaven.javadoc.skip=true</arguments>
 					<flowInitContext>
-		                <masterBranchName>master</masterBranchName>
-		                <developBranchName>develop</developBranchName>
-		                <featureBranchPrefix>feature-</featureBranchPrefix>
-		                <releaseBranchPrefix>release-</releaseBranchPrefix>
-		                <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-		                <versionTagPrefix>version-</versionTagPrefix>
+		                <versionTagPrefix>v</versionTagPrefix>
 		            </flowInitContext>
                 	<noDeploy>true</noDeploy>
             	</configuration>
