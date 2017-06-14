@@ -4,7 +4,7 @@
 
 	<groupId>org.sevensource.support</groupId>
 	<artifactId>jpa-rest-stack</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 
 	<name>jpa-rest-stack</name>
