@@ -9,26 +9,20 @@
 	<description />
 
 	<parent>
-		<groupId>org.sevensource.support</groupId>
-		<artifactId>jpa-rest-stack</artifactId>
-		<version>0.0.7-SNAPSHOT</version>
+		<groupId>org.sevensource.support.jpa-rest-stack</groupId>
+		<artifactId>jpa-rest-stack-parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 	</properties>
 	
-	<repositories>
-		<repository>
-	    	<id>ossrh</id>
-	    	<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.sevensource.support</groupId>
+			<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 			<artifactId>jpa-support</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
