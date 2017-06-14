@@ -67,8 +67,24 @@
 		<module>jpa-rest-stack-test</module>
 	</modules>
 
-	<build>
+<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layout>NONE</layout>
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+					  <goals>
+					    <goal>build-info</goal>
+					  </goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 			<plugin>
 				<groupId>external.atlassian.jgitflow</groupId>
 				<artifactId>jgitflow-maven-plugin</artifactId>
@@ -81,7 +97,20 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<enableSshAgent>true</enableSshAgent>
 					<noDeploy>true</noDeploy>
+					<pushReleases>true</pushReleases>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
