@@ -27,7 +27,6 @@ import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
