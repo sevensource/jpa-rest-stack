@@ -24,6 +24,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
+import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,14 +164,18 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         		
 				final String msg = context.getDefaultConstraintMessageTemplate();
 				ConstraintViolationBuilder constraintBuilder = context.buildConstraintViolationWithTemplate(msg);
+				NodeBuilderCustomizableContext nodeConstraintBuilder = null;
         		
         		for(List<ConstraintDescriptor> constraintList : constraints) {
         			for(ConstraintDescriptor cd : constraintList) {
-        				constraintBuilder.addPropertyNode(cd.field);
+        				if(nodeConstraintBuilder == null)
+        					nodeConstraintBuilder = constraintBuilder.addPropertyNode(cd.field);
+        				else
+        					nodeConstraintBuilder = nodeConstraintBuilder.addPropertyNode(cd.field);
         			}
         		}
         		
-        		constraintBuilder.addConstraintViolation().disableDefaultConstraintViolation();
+        		nodeConstraintBuilder.addConstraintViolation().disableDefaultConstraintViolation();
         		
 	        	return false;
         	}
