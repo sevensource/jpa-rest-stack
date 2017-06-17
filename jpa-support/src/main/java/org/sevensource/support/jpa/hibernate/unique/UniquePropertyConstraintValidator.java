@@ -161,12 +161,17 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 					logger.debug("Validation failed - object returned by ValidationConstraint query does not equal to the one under validation");
 				}
         		
+				final String msg = context.getDefaultConstraintMessageTemplate();
+				ConstraintViolationBuilder constraintBuilder = context.buildConstraintViolationWithTemplate(msg);
+        		
         		for(List<ConstraintDescriptor> constraintList : constraints) {
         			for(ConstraintDescriptor cd : constraintList) {
-        				final String msg = context.getDefaultConstraintMessageTemplate();
-        				context.buildConstraintViolationWithTemplate(msg).addPropertyNode(cd.field).addConstraintViolation();
+        				constraintBuilder.addPropertyNode(cd.field);
         			}
         		}
+        		
+        		constraintBuilder.addConstraintViolation().disableDefaultConstraintViolation();
+        		
 	        	return false;
         	}
         } catch(NoResultException nre) {
