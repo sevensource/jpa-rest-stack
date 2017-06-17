@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +159,14 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         	} else {
         		if (logger.isDebugEnabled()) {
 					logger.debug("Validation failed - object returned by ValidationConstraint query does not equal to the one under validation");
-				} 
+				}
+        		
+        		for(List<ConstraintDescriptor> constraintList : constraints) {
+        			for(ConstraintDescriptor cd : constraintList) {
+        				final String msg = context.getDefaultConstraintMessageTemplate();
+        				context.buildConstraintViolationWithTemplate(msg).addPropertyNode(cd.field).addConstraintViolation();
+        			}
+        		}
 	        	return false;
         	}
         } catch(NoResultException nre) {
