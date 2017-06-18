@@ -26,21 +26,26 @@ public class SimpleQueryLogEntryCreator extends DefaultQueryLogEntryCreator {
 	
 	@Override
 	protected void writeResultEntry(StringBuilder sb, ExecutionInfo execInfo, List<QueryInfo> queryInfoList) {
+		// itentionally empty
 	}
 	
 	@Override
 	protected void writeTypeEntry(StringBuilder sb, ExecutionInfo execInfo, List<QueryInfo> queryInfoList) {
+		// itentionally empty
 	}
 	
 	@Override
 	protected void writeBatchEntry(StringBuilder sb, ExecutionInfo execInfo, List<QueryInfo> queryInfoList) {
+		// itentionally empty
 	}
 	
 	@Override
 	protected void writeQuerySizeEntry(StringBuilder sb, ExecutionInfo execInfo, List<QueryInfo> queryInfoList) {
+		// itentionally empty
 	}
 	
 	@Override
 	protected void writeBatchSizeEntry(StringBuilder sb, ExecutionInfo execInfo, List<QueryInfo> queryInfoList) {
+		// itentionally empty
 	}
 }

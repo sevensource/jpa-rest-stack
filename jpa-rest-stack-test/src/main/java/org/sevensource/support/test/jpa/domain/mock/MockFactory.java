@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 @Component
-public class MockFactory<T> {
+public class MockFactory {
 	private Map<Class<?>, MockProvider<?>> factories = new HashMap<Class<?>, MockProvider<?>>();
 	
 	@Autowired(required=false)
