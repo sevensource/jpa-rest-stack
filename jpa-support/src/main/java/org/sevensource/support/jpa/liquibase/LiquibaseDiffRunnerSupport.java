@@ -141,7 +141,7 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 		return factory.getDatabase();
 	}
     
-	private DiffResult doDatabaseDiff(String schema, Connection referenceConnection, Connection targetConnection) throws LiquibaseException, IOException, ParserConfigurationException {
+	private DiffResult doDatabaseDiff(String schema, Connection referenceConnection, Connection targetConnection) throws LiquibaseException {
 	    Liquibase liquibase = null;
 	    
 	    try {

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestControllerExceptionHandler {
 
-	private final static String ERROR_URI_KEY = "javax.servlet.error.request_uri";
+	private static final String ERROR_URI_KEY = "javax.servlet.error.request_uri";
 	
 	
 	@ExceptionHandler({
