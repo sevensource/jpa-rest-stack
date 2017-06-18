@@ -259,7 +259,7 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 	public void create_by_id_with_different_ids() {
 		T e = populate();
 		UUID id = UUID.randomUUID();
-		e = getService().create(id, e);
+		getService().create(id, e);
 		getEntityManager().flush();
 	}
 	
@@ -268,7 +268,7 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		UUID id = createEntity().getId();
 		T e = populate();
 		e.setId(id);
-		e = getService().create(id, e);
+		getService().create(id, e);
 	}
 	
 	

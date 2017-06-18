@@ -133,10 +133,10 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			
 			txn.commit();
 			return mock;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			if (txn != null && txn.isActive())
 				txn.rollback();
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		} finally {
 			if (entityManager != null) {
 				entityManager.close();

@@ -77,25 +77,25 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 		
 		List<Class<?>> deletionClasses = getDeletionOrder();
 		
-		EntityManager em = getEntityManagerFactory().createEntityManager();
-		EntityTransaction tx = em.getTransaction();
+		EntityManager entitymanager = getEntityManagerFactory().createEntityManager();
+		EntityTransaction tx = entitymanager.getTransaction();
 		tx.begin();
 		
 		for(Class<?> clazz : deletionClasses) {
-			CriteriaBuilder criteriaBuilder  = em.getCriteriaBuilder();
+			CriteriaBuilder criteriaBuilder  = entitymanager.getCriteriaBuilder();
 			CriteriaQuery query = criteriaBuilder.createQuery(clazz);
 			query.from(clazz);
-			List<?> results = em.createQuery(query).getResultList();
+			List<?> results = entitymanager.createQuery(query).getResultList();
 			
 			//Delete one-by-one to also delete @Embeddables and Cascades
 			for(Object o : results) {
-				em.remove(o);
+				entitymanager.remove(o);
 			}
-			em.flush();
+			entitymanager.flush();
 		}
 		
 		tx.commit();
-		em.clear();
-		em.close();
+		entitymanager.clear();
+		entitymanager.close();
 	}
 }
