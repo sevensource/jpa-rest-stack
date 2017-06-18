@@ -77,7 +77,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     	// always return the same hashCode
     	// although this decreases performance for large hash tables,
     	// this way the JPA contract is correctly followed
-        //return 31;
+        // return 31;
     	
 		int hashCode = 17;
 		hashCode += null == getId() ? 0 : getId().hashCode() * 31;
