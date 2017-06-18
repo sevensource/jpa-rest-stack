@@ -91,6 +91,8 @@ public class DataProviderRunnerWithSpring extends SpringJUnit4ClassRunner {
      * <p>
      * Is copied from {@link BlockJUnit4ClassRunner#validateInstanceMethods} because {@link #computeTestMethods()} must
      * not be called if validation already found errors!
+     * 
+     * @deprecated .
      */
     @Override
     @Deprecated

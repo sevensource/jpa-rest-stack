@@ -29,7 +29,7 @@ public class RestControllerExceptionHandler {
 		else if(e instanceof EntityNotFoundException)
 			status = HttpStatus.NOT_FOUND;
 		else
-			throw new RuntimeException("Don't know how to handle exception of type " + e.getClass().getSimpleName(), e);
+			throw new IllegalStateException("Don't know how to handle exception of type " + e.getClass().getSimpleName(), e);
 		
 		ApiErrorDTO dto = new ApiErrorDTO(e, status);
 		return handle(dto, request);

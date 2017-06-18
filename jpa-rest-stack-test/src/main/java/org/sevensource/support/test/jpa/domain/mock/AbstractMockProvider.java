@@ -105,7 +105,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private boolean hasExistingEntityManagerTransaction() {
 		if(tem == null) return false;
 		try {
-			EntityManager manager = tem.getEntityManager();
+			tem.getEntityManager();
 			return true;
 		} catch(IllegalStateException e) {
 			return false;

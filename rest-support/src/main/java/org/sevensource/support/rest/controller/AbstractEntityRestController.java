@@ -139,7 +139,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	
 	@PatchMapping("/{id}")
 	public ResponseEntity<DTO> patchItemResource(@PathVariable UUID id, DTO objectToSave) {
-		throw new RuntimeException("Not yet implemented");
+		throw new IllegalArgumentException("Not yet implemented");
 	}
 	
 	@DeleteMapping("/{id}")

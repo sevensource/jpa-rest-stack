@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.CollectionUtils;
@@ -79,7 +80,7 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 					final String sql = String.format("CREATE SCHEMA %s", schema);
 					jdbcTemplate.execute(sql);
 				} catch(Exception e) {
-					throw new RuntimeException(e);
+					throw new IllegalStateException("Cannot create schema", e);
 				}
 			}
 		}
