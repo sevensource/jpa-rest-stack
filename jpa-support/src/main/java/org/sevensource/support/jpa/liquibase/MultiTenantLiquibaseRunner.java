@@ -1,7 +1,6 @@
 package org.sevensource.support.jpa.liquibase;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 		this.dataSource = dataSource;
 	}
 	
-	private void createSchemas() throws Exception {
+	private void createSchemas() {
 		List<String> schemasToCreate = new ArrayList<>();
 		if(StringUtils.hasLength(defaultSchema)) schemasToCreate.add(defaultSchema);
 		if(! CollectionUtils.isEmpty(schemas)) schemasToCreate.addAll(schemas);
