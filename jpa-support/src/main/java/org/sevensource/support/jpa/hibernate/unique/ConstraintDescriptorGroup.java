@@ -7,9 +7,6 @@ class ConstraintDescriptorGroup {
 	private final String name;
 	private List<ConstraintDescriptor> constraints = new ArrayList<>(3);
 	
-	public ConstraintDescriptorGroup(String groupName) {
-		this.name = groupName;
-	}
 	
 	public ConstraintDescriptorGroup(String groupName, ConstraintDescriptor descriptor) {
 		this.name = groupName;

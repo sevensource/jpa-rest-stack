@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +33,7 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 		this.changeLog = changeLog;
 		this.defaultSchema = defaultSchema;
 		this.schemas = schemas;
+		setResourceLoader(new DefaultResourceLoader());
 	}
 	
 	public MultiTenantLiquibaseRunner(DataSource dataSource, String changeLog, String defaultSchema) {
@@ -93,7 +95,7 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 	
 
 	@Override
-	protected MultiTenantSpringLiquibase init() {
+	protected MultiTenantSpringLiquibase createInstance() {
 		MultiTenantSpringLiquibase liquibase = new MultiTenantSpringLiquibase();
 		liquibase.setDataSource(getDataSource());
 		liquibase.setChangeLog(changeLog);
