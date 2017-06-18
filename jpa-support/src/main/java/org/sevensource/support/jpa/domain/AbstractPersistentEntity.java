@@ -55,9 +55,14 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 	
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-		if (!getClass().equals(ClassUtils.getUserClass(o))) return false;
+        if (this == o) {
+        	return true;
+        } else if (o == null) {
+        	return false;
+        } else if (!getClass().equals(ClassUtils.getUserClass(o))) {
+        	return false;
+        }
+        
 		AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
 		
 		if(this.getId() == null || other.getId() == null) {
