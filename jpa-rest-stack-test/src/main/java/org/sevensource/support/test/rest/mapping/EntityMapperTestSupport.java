@@ -10,7 +10,7 @@ import org.sevensource.support.rest.mapping.EntityMapper;
 import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractEntityMapperTestSupport<E extends PersistentEntity<?>,D extends IdentifiableDTO<?>> {
+public abstract class EntityMapperTestSupport<E extends PersistentEntity<?>,D extends IdentifiableDTO<?>> {
 	
 	protected static final String[] EXCLUDE_FIELDS = new String[] {
 			"version", "lastModifiedDate", "lastModifiedBy", "createdBy", "createdDate"
@@ -24,7 +24,7 @@ public abstract class AbstractEntityMapperTestSupport<E extends PersistentEntity
 	
 	Class<E> entityClass;
 	
-	public AbstractEntityMapperTestSupport(Class<E> entityClass) {
+	public EntityMapperTestSupport(Class<E> entityClass) {
 		this.entityClass = entityClass;
 	}
 	

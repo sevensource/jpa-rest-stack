@@ -42,7 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public abstract class AbstractEntityRestControllerTestSupport<E extends PersistentEntity<ID>, ID extends Serializable> {
+public abstract class EntityRestControllerTestSupport<E extends PersistentEntity<ID>, ID extends Serializable> {
 	
 	@Autowired
 	private MockMvc mvc;

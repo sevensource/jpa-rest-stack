@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 	UUIDTestReferenceEntityMapperImpl.class,
 	UUIDTestEntityMockProvider.class,
 	UUIDTestReferenceEntityMockProvider.class})
-public class AbstractEntityRestControllerRestSupportTest extends AbstractUUIDEntityRestControllerTestSupport<UUIDTestEntity> {
+public class EntityRestControllerRestSupportTest extends UUIDEntityRestControllerTestSupport<UUIDTestEntity> {
 
 	@MockBean
 	private UUIDTestEntityService service;

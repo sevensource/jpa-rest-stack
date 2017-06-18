@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.sevensource.support.jpa.domain.PersistentEntity;
 
-public abstract class AbstractUUIDEntityRestControllerTestSupport<E extends PersistentEntity<UUID>> extends AbstractEntityRestControllerTestSupport<E, UUID> {
+public abstract class UUIDEntityRestControllerTestSupport<E extends PersistentEntity<UUID>> extends EntityRestControllerTestSupport<E, UUID> {
 
 	@Override
 	protected UUID nextId() {
