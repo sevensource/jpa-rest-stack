@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractEntityMapperTestSupport<E extends PersistentEntity<?>,D extends IdentifiableDTO<?>> {
 	
-	protected final static String[] EXCLUDE_FIELDS = new String[] {
+	protected static final String[] EXCLUDE_FIELDS = new String[] {
 			"version", "lastModifiedDate", "lastModifiedBy", "createdBy", "createdDate"
 	};
 	
@@ -41,7 +41,7 @@ public abstract class AbstractEntityMapperTestSupport<E extends PersistentEntity
 	}
 	
 	@Test
-	public void reflective_equality() {
+	public void reflectiveEquality() {
 		
 		E entity = populate();
 		

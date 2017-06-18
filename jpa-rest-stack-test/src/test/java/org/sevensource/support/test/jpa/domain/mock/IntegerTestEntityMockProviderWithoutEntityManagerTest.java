@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = {MockFactoryConfiguration.class})
 @ComponentScan(basePackageClasses={IntegerTestEntityMockProvider.class})
 @Import(IntegerTestEntityMockProvider.class)
-public class IntegerTestEntityMockProviderWithoutEntityManagerTests {
+public class IntegerTestEntityMockProviderWithoutEntityManagerTest {
 	
 	@Autowired
 	MockFactory<?> mockFactory;

@@ -10,7 +10,7 @@ import org.sevensource.support.test.DataProviderRunnerWithSpring;
 import org.sevensource.support.test.jpa.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestEntityMockProvider;
-import org.sevensource.support.test.jpa.service.AbstractEntityServiceTests;
+import org.sevensource.support.test.jpa.service.AbstractEntityServiceTest;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,7 +29,7 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
 @EnableJpaRepositories(basePackageClasses=UUIDTestEntityRepository.class)
 @ComponentScan(basePackageClasses={UUIDTestEntityService.class, UUIDTestEntityMockProvider.class})
-public class UUIDTestEntityServiceTest extends AbstractEntityServiceTests<UUIDTestEntity> {
+public class UUIDTestEntityServiceTest extends AbstractEntityServiceTest<UUIDTestEntity> {
 
 	private final static String UNIQUE_TITLE = "A UNIQUE STRING";
 	private final static String[] INVALID_TITLE = new String[] {null, "", "a", UNIQUE_TITLE};

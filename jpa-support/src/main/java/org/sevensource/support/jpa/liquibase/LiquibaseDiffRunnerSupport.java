@@ -48,7 +48,7 @@ import liquibase.structure.core.DatabaseObjectFactory;
 @EnableAutoConfiguration
 public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 
-	public final static String LIQUIBASE_PROFILE = "liquibase_diff";
+	public static final String LIQUIBASE_PROFILE = "liquibase_diff";
 	
 	@Autowired
 	DataSource primaryDataSource;

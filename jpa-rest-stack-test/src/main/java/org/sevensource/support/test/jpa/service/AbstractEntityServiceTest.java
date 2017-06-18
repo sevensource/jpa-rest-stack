@@ -27,7 +27,7 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 
 
 @DataJpaTest
-public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID>> extends AbstractJpaTestSupport<T> {
+public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>> extends AbstractJpaTestSupport<T> {
 	
 	@Autowired
 	private EntityService<T, UUID> service;
@@ -35,7 +35,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	private final Class<T> domainClass;
 	
 	
-	public AbstractEntityServiceTests(Class<T> domainClass) {
+	public AbstractEntityServiceTest(Class<T> domainClass) {
 		super(domainClass);
 		this.domainClass = domainClass;
 	}

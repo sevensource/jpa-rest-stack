@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
-public class UUIDTestEntityMockProviderTests {
+public class UUIDTestEntityMockProviderTest {
 
 	@PersistenceContext
 	EntityManager em;

@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = {MockFactoryConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
 @Import(UUIDTestEntityMockProvider.class)
-public class UUIDTestEntityMockProviderWithoutEntityManagerTests {
+public class UUIDTestEntityMockProviderWithoutEntityManagerTest {
 	
 	@Autowired
 	MockFactory<?> mockFactory;

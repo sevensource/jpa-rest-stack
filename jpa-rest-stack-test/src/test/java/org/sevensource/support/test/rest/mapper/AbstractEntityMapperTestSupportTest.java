@@ -22,13 +22,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 	UUIDTestReferenceEntityMapperImpl.class,
 	UUIDTestEntityMockProvider.class,
 	UUIDTestReferenceEntityMockProvider.class})
-public class AbstractEntityMapperTestSupportTests extends AbstractEntityMapperTestSupport<UUIDTestEntity, TestDTO> {
+public class AbstractEntityMapperTestSupportTest extends AbstractEntityMapperTestSupport<UUIDTestEntity, TestDTO> {
 	
 	@MockBean
 	EntityService<UUIDTestEntity, UUID> serviceMock;
 	
 	
-	public AbstractEntityMapperTestSupportTests() {
+	public AbstractEntityMapperTestSupportTest() {
 		super(UUIDTestEntity.class);
 	}
 }
