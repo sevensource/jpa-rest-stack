@@ -154,7 +154,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	}
 	
 	protected void validateJsr310(T entity) {
-		Set<ConstraintViolation<T>> violations = validator.validate(entity);
+		final Set<ConstraintViolation<T>> violations = validator.validate(entity);
 		if(violations.isEmpty()) {
 			return;
 		} else {
@@ -164,7 +164,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	}
 	
 	protected void validateUniqueConstraint(T entity) throws EntityValidationException {
-		Set<ConstraintViolation<T>> violations = validator.validate(entity, UniqueValidation.class);
+		final Set<ConstraintViolation<T>> violations = validator.validate(entity, UniqueValidation.class);
 		if(violations.isEmpty()) {
 			return;
 		} else {
