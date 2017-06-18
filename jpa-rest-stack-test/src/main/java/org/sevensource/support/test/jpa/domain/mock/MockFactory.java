@@ -11,7 +11,7 @@ import org.springframework.util.Assert;
 
 @Component
 public class MockFactory {
-	private Map<Class<?>, MockProvider<?>> factories = new HashMap<Class<?>, MockProvider<?>>();
+	private Map<Class<?>, MockProvider<?>> factories = new HashMap<>();
 	
 	@Autowired(required=false)
 	void setMockProvider(List<MockProvider<?>> providers) {

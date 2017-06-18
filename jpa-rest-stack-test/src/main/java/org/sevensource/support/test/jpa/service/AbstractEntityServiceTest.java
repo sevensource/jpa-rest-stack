@@ -395,7 +395,6 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		getEntityManager().flush();
 		getEntityManager().clear();
 		int createdCount = getEntityCount();
-		assertThat(count).isEqualTo(createdCount);
 		
 		Sort sort = new Sort("id");
 		List<T> res = getService().findAll(sort);

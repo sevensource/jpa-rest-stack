@@ -115,8 +115,8 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private T persistWithExistingTransaction(T mock) {
 		tem.persist(mock);
 		tem.flush();
-		mock = tem.find(domainClass, mock.getId());
-		return mock;
+		T persistedMock = tem.find(domainClass, mock.getId());
+		return persistedMock;
 	}
 	
 	private T persistWithNewTransaction(T mock) {
