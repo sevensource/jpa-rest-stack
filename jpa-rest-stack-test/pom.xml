@@ -18,6 +18,8 @@
 		<datasource.proxy.version>1.4.1</datasource.proxy.version>
 		<equalsverifier.version>2.2.1</equalsverifier.version>
 		<junit.dataprovider.version>1.12.0</junit.dataprovider.version>
+		
+		<jacoco.outputDir>${project.parent.build.directory}</jacoco.outputDir>
 	</properties>
 
 	<dependencies>
