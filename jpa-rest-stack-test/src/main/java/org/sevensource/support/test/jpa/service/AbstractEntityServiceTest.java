@@ -368,17 +368,17 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		createEntity(count);
 		getEntityManager().flush();
 		getEntityManager().clear();
-		count = getEntityCount();
+		int entityCount = getEntityCount();
 		
 		int pagesize = 7;
 		for(int c=0; c<3;c++) {
 			int expected;
-			if(count == 0) {
+			if(entityCount == 0) {
 				expected = 0;
-			} else if(count >= pagesize * (c + 1)) {
+			} else if(entityCount >= pagesize * (c + 1)) {
 				expected = pagesize;
 			} else {
-				expected = Math.max(count - pagesize * c, 0);
+				expected = Math.max(entityCount - pagesize * c, 0);
 			}
 
 			PageRequest pageRequest = new PageRequest(c, pagesize);
