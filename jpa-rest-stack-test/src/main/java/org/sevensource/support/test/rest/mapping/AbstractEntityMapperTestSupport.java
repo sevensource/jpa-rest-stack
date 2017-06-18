@@ -17,7 +17,7 @@ public abstract class AbstractEntityMapperTestSupport<E extends PersistentEntity
 	};
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	@Autowired
 	EntityMapper<E,D> entityMapper;

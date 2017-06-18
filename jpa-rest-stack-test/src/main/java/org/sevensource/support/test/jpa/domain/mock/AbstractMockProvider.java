@@ -39,7 +39,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private EntityManagerFactory emf;
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	
 	public AbstractMockProvider(Class<T> domainClass) {

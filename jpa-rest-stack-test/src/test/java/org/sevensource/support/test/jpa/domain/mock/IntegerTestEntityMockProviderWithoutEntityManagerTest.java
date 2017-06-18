@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class IntegerTestEntityMockProviderWithoutEntityManagerTest {
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	@Test
 	public void create_mock() {

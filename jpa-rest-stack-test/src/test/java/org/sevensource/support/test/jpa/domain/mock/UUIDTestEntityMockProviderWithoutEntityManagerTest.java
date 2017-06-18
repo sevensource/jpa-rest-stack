@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class UUIDTestEntityMockProviderWithoutEntityManagerTest {
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	@Test
 	public void create_mock() {

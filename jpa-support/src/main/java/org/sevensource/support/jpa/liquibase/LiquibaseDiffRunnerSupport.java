@@ -93,6 +93,9 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 	public void diff(String schema, DataSource primaryDataSource, DataSource targetDataSource) throws LiquibaseException, IOException, ParserConfigurationException, SQLException {
 		DiffResult result = doDatabaseDiff(schema, primaryDataSource.getConnection(), targetDataSource.getConnection());
 		
+		StringBuilder builder = new StringBuilder();
+		builder.append("\\n\\n");
+		
 		System.out.println(" ");
 		System.out.println(" ");
 		System.out.println(String.format(">> db diff (%s):", schema));

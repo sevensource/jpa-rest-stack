@@ -22,7 +22,7 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 	EntityManager em;
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	private final Class<T> domainClass;
 	

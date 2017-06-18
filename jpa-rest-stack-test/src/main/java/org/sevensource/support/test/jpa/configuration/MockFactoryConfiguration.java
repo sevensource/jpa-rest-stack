@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class MockFactoryConfiguration {
 	
 	@Bean
-	public MockFactory<?> mockFactory() {
-		return new MockFactory<>();
+	public MockFactory mockFactory() {
+		return new MockFactory();
 	}
 }

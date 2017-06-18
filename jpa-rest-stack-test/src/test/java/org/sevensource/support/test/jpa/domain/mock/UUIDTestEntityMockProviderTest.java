@@ -34,7 +34,7 @@ public class UUIDTestEntityMockProviderTest {
 	EntityManager em;
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	@Test
 	public void create_mock() {

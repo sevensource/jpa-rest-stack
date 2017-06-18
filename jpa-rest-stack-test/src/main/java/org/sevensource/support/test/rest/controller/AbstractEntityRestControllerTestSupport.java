@@ -48,7 +48,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	private MockMvc mvc;
 	
 	@Autowired
-	private MockFactory<?> mockFactory;
+	private MockFactory mockFactory;
 	
 	@Captor
 	private ArgumentCaptor<E> entityCaptor;
