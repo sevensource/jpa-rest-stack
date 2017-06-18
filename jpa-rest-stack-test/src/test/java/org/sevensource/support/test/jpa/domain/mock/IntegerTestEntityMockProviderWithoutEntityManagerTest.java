@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.test.jpa.configuration.MockFactoryConfiguration;
 import org.sevensource.support.test.jpa.domain.IntegerTestEntity;
-import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
-import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;

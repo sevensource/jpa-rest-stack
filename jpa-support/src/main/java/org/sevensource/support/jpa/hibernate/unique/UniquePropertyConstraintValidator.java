@@ -63,7 +63,7 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         try {
 			constraints = getConstraintDescriptors(entityClass, target);
 		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		}
  
     	TypedQuery<Tuple> query = buildQuery(entityClass, constraints);

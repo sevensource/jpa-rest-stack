@@ -10,7 +10,6 @@ import org.sevensource.support.test.DataProviderRunnerWithSpring;
 import org.sevensource.support.test.jpa.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestEntityMockProvider;
-import org.sevensource.support.test.jpa.service.AbstractEntityServiceTest;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

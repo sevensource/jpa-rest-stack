@@ -2,7 +2,6 @@ package org.sevensource.support.test.jpa.domain;
 
 import org.junit.runner.RunWith;
 import org.sevensource.support.test.jpa.configuration.JpaSupportTestConfiguration;
-import org.sevensource.support.test.jpa.domain.AbstractIntegerEntityTestSupport;
 import org.sevensource.support.test.jpa.domain.mock.IntegerTestEntityMockProvider;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;

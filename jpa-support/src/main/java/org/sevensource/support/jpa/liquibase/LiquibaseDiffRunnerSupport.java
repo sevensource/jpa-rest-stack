@@ -130,7 +130,8 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 			builder.appendLine("No changes");
 		}
 		
-		logger.error("Report: {}", builder.asString());
+		final String report = builder.asString();
+		logger.error("Report: {}", report);
 	}
 	
 	private DataSource createDatabase() {
