@@ -394,10 +394,11 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		createEntity(count);
 		getEntityManager().flush();
 		getEntityManager().clear();
-		count = getEntityCount();
+		int createdCount = getEntityCount();
+		assertThat(count).isEqualTo(createdCount);
 		
 		Sort sort = new Sort("id");
 		List<T> res = getService().findAll(sort);
-		assertThat(res).size().isEqualTo(count);
+		assertThat(res).size().isEqualTo(createdCount);
 	}
 }

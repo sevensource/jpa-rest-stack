@@ -61,32 +61,32 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Before
 	public void before() {
-		when(getService().get(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().get(idCaptor.capture())).thenAnswer(c -> {
 			if(idCaptor.getValue().equals(nillId())) return null;
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(getService().create(entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(nextId());
 			return entity;
 		});
 		
-		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E e = entityCaptor.getValue();
 			e.setId(idCaptor.getValue());
 			return e;
 		});
 		
-		when(getService().exists(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().exists(idCaptor.capture())).thenAnswer(c -> {
 			return ! nillId().equals(idCaptor.getValue());
 		});
 		
@@ -94,7 +94,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 		
 		when(getService().findAll(any(Sort.class))).thenReturn(objects);
 		
-		when(getService().findAll(any(PageRequest.class))).thenAnswer((c) -> {
+		when(getService().findAll(any(PageRequest.class))).thenAnswer(c -> {
 			Pageable pageable = c.getArgument(0);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();

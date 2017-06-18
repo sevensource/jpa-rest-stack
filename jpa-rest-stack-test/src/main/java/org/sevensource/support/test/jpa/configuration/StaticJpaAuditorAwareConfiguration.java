@@ -8,11 +8,11 @@ import org.springframework.data.domain.AuditorAware;
 @Configuration
 public class StaticJpaAuditorAwareConfiguration {
 
-	public final static String AUDITOR_STRING = "Jim Black";
+	public static final String AUDITOR_STRING = "Jim Black";
 	
 	@Bean
 	@Primary
 	public AuditorAware<String> auditorAware() {
-		return () -> { return AUDITOR_STRING; };
+		return () -> AUDITOR_STRING;
 	}
 }
