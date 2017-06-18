@@ -3,6 +3,7 @@ package org.sevensource.support.jpa.liquibase;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.StringBufferInputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,6 +17,8 @@ import java.util.Set;
 import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.CommandLineRunner;
@@ -48,11 +51,27 @@ import liquibase.structure.core.DatabaseObjectFactory;
 @EnableAutoConfiguration
 public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 
+	private static final Logger logger = LoggerFactory.getLogger(LiquibaseDiffRunnerSupport.class);
+	
+	
+	
 	public static final String LIQUIBASE_PROFILE = "liquibase_diff";
 	
 	@Autowired
 	DataSource primaryDataSource;
+
 	
+	static class ReportBuilder {
+		private StringBuilder builder;
+		ReportBuilder appendLine(String s) {
+			builder.append(s).append("\\n");
+			return this;
+		}
+		
+		public String asString() {
+			return builder.toString();
+		}
+	}
 	
 	protected static void start(String[] args, Class<? extends LiquibaseDiffRunnerSupport> source) {
 		Map<String, Object> props = new HashMap<>();
@@ -93,35 +112,34 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 	public void diff(String schema, DataSource primaryDataSource, DataSource targetDataSource) throws LiquibaseException, IOException, ParserConfigurationException, SQLException {
 		DiffResult result = doDatabaseDiff(schema, primaryDataSource.getConnection(), targetDataSource.getConnection());
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("\\n\\n");
+		ReportBuilder builder = new ReportBuilder();
+		builder.appendLine("").appendLine("");
+		builder.appendLine(String.format(">> db diff (%s):", schema));
 		
-		System.out.println(" ");
-		System.out.println(" ");
-		System.out.println(String.format(">> db diff (%s):", schema));
-		System.out.println("=====================");
+		builder.appendLine("=====================");
 		
 		if(! result.areEqual()) {
 			String changeLog = generateChangeLog(result);
 			String changeReport = generateChangeReport(result);
         
-	        System.out.println(String.format(">> Report (%s):", schema));
-	        System.out.println(changeReport);
-	        System.out.println(" ");
-	        System.out.println(String.format(">> ChangeLog (%s):", schema));
-	        System.out.println("=======================");
-	        System.out.println(changeLog);
+			builder.appendLine(String.format(">> Report (%s):", schema));
+			builder.appendLine(changeReport);
+			builder.appendLine(" ");
+			builder.appendLine(String.format(">> ChangeLog (%s):", schema));
+			builder.appendLine("=======================");
+			builder.appendLine(changeLog);
 		} else {
-			System.out.println("No changes");
+			builder.appendLine("No changes");
 		}
+		
+		logger.error("Report: {}", builder.asString());
 	}
 	
 	private DataSource createDatabase() {
 		EmbeddedDatabaseFactory factory = new EmbeddedDatabaseFactory();
 		factory.setDatabaseName("targetDb");
 		factory.setDatabaseType(EmbeddedDatabaseType.H2);
-		EmbeddedDatabase db = factory.getDatabase();
-		return db;
+		return factory.getDatabase();
 	}
     
 	private DiffResult doDatabaseDiff(String schema, Connection referenceConnection, Connection targetConnection) throws LiquibaseException, IOException, ParserConfigurationException {
@@ -142,8 +160,7 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
 	        types.remove(Catalog.class);
 	        CompareControl compareControl = new CompareControl(types);
 	        
-	        DiffResult diffResult = liquibase.diff(referenceDatabase, targetDatabase, compareControl);
-	        return diffResult;
+	        return liquibase.diff(referenceDatabase, targetDatabase, compareControl);
 	    } finally {
 	        if (liquibase != null) {
 	            liquibase.forceReleaseLocks();
@@ -155,8 +172,7 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final PrintStream ps = new PrintStream(baos);
         new DiffToReport(diffResult, ps).print();
-        String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        return content;
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
 	}
 	
 	private String generateChangeLog(DiffResult diffResult) throws DatabaseException, ParserConfigurationException, IOException {
@@ -165,7 +181,6 @@ public abstract class LiquibaseDiffRunnerSupport implements CommandLineRunner {
         
         DiffOutputControl diffOutputControl = new DiffOutputControl(false, false, true, null);
         new DiffToChangeLog(diffResult, diffOutputControl).print(ps);
-        String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        return content;
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
 	}
 }
