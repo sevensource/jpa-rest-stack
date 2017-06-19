@@ -9,10 +9,6 @@ public class EntityAlreadyExistsException extends EntityException {
 	}
 
 	public EntityAlreadyExistsException(String message) {
-		this(message, null);
-	}
-
-	public EntityAlreadyExistsException(String message, Throwable cause) {
-		super(message, cause);
+		super(message);
 	}
 }

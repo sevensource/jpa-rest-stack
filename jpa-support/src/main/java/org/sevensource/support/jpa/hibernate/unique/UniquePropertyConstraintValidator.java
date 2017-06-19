@@ -49,9 +49,7 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     
     @Override
     public void initialize(UniquePropertyConstraint constraintAnnotation) {
-    	if (logger.isDebugEnabled()) {
-			logger.debug("Initializing UniqueConstraintValidator");
-		} 
+    	// nothing to do here
     }
     
 

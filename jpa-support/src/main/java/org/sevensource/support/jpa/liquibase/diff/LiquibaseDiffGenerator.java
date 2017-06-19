@@ -51,7 +51,7 @@ public class LiquibaseDiffGenerator {
 	
 	public ReportBuilder run() throws Exception {
 		if(targetDataSource == null) {
-			targetDataSource = createDatabase();
+			setTargetDataSource(createDatabase());
 		}
 		
 		Assert.notNull(sourceDataSource, "sourceDataSource must not be null");

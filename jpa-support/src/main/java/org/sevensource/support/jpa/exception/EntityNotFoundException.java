@@ -8,10 +8,6 @@ public class EntityNotFoundException extends EntityException {
 	}
 
 	public EntityNotFoundException(String message) {
-		this(message, null);
-	}
-
-	public EntityNotFoundException(String message, Throwable cause) {
-		super(message, cause);
+		super(message);
 	}
 }

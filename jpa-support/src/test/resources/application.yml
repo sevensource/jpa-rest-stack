@@ -1,2 +1,6 @@
 liquibase:
   enabled: false
+  
+logging:
+  level:
+    org.sevensource.support.jpa: DEBUG
