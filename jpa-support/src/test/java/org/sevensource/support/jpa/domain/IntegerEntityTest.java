@@ -43,6 +43,16 @@ public class IntegerEntityTest {
 		assertThat(e).isEqualTo(e);
 		em.flush();
 		assertThat(e).isEqualTo(e);
+		
+		assertThat(e).isNotEqualTo(null);
+		
+		e1.setId(null);
+		assertThat(e).isNotEqualTo(e1);
+		
+		e.setId(null);
+		assertThat(e).isNotEqualTo(e1);
+		
+		assertThat(e).isNotEqualTo(new SimpleEntity());
 	}
 	
 	@Test
@@ -52,5 +62,14 @@ public class IntegerEntityTest {
 		em.persist(e);
 		em.flush();
 		e.hashCode();
+	}
+	
+	@Test
+	public void toString_works() {
+		IntegerEntity e = new IntegerEntity();
+		e.toString();
+		em.persist(e);
+		em.flush();
+		e.toString();
 	}
 }

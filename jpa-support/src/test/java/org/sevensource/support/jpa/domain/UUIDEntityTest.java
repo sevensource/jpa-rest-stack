@@ -44,6 +44,16 @@ public class UUIDEntityTest {
 		assertThat(e).isEqualTo(e);
 		em.flush();
 		assertThat(e).isEqualTo(e);
+		
+		assertThat(e).isNotEqualTo(null);
+		
+		e1.setId(null);
+		assertThat(e).isNotEqualTo(e1);
+		
+		e.setId(null);
+		assertThat(e).isNotEqualTo(e1);
+		
+		assertThat(e).isNotEqualTo(new IntegerEntity());
 	}
 	
 	@Test
@@ -54,5 +64,14 @@ public class UUIDEntityTest {
 		em.flush();
 		int h2 = e.hashCode();
 		assertThat(h).isEqualTo(h2);
+	}
+	
+	@Test
+	public void toString_works() {
+		SimpleEntity e = new SimpleEntity();
+		e.toString();
+		em.persist(e);
+		em.flush();
+		e.toString();
 	}
 }
