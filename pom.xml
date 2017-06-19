@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>ch.seven-systems</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.4.3</version>
+		<version>1.5.4.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
