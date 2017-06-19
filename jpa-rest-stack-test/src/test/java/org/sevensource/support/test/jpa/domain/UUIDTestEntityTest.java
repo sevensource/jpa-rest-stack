@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.test.jpa.configuration.JpaSupportTestConfiguration;
-import org.sevensource.support.test.jpa.domain.AbstractUUIDEntityTestSupport;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestEntityMockProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

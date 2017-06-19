@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.mapstruct.MapperConfig;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.TargetType;
 import org.sevensource.support.jpa.domain.PersistentEntity;

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.sevensource.support.test.jpa.domain.IntegerTestEntity;
-import org.sevensource.support.test.jpa.domain.mock.AbstractMockProvider;
 import org.springframework.stereotype.Component;
 
 @Component

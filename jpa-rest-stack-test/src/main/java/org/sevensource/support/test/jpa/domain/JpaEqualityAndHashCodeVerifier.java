@@ -121,7 +121,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 			txn.begin();
 			function.accept(entityManager);
 			txn.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			if (txn != null && txn.isActive())
 				txn.rollback();
 			throw e;
@@ -156,7 +156,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 				future.get();
 			}
 		} catch (InterruptedException | ExecutionException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

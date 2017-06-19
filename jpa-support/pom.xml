@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 		<artifactId>jpa-rest-stack-parent</artifactId>
-		<version>0.2.0</version>
+		<version>0.2.1</version>
 	</parent>
 
 	<properties>
@@ -35,6 +35,11 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-jpamodelgen</artifactId>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -48,6 +53,18 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+		    				<groupId>org.hibernate</groupId>
+		    				<artifactId>hibernate-jpamodelgen</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

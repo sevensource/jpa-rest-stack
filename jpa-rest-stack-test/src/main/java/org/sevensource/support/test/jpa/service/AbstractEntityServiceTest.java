@@ -27,7 +27,7 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 
 
 @DataJpaTest
-public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID>> extends AbstractJpaTestSupport<T> {
+public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>> extends AbstractJpaTestSupport<T> {
 	
 	@Autowired
 	private EntityService<T, UUID> service;
@@ -35,7 +35,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	private final Class<T> domainClass;
 	
 	
-	public AbstractEntityServiceTests(Class<T> domainClass) {
+	public AbstractEntityServiceTest(Class<T> domainClass) {
 		super(domainClass);
 		this.domainClass = domainClass;
 	}
@@ -259,7 +259,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 	public void create_by_id_with_different_ids() {
 		T e = populate();
 		UUID id = UUID.randomUUID();
-		e = getService().create(id, e);
+		getService().create(id, e);
 		getEntityManager().flush();
 	}
 	
@@ -268,7 +268,7 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		UUID id = createEntity().getId();
 		T e = populate();
 		e.setId(id);
-		e = getService().create(id, e);
+		getService().create(id, e);
 	}
 	
 	
@@ -368,17 +368,17 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		createEntity(count);
 		getEntityManager().flush();
 		getEntityManager().clear();
-		count = getEntityCount();
+		int entityCount = getEntityCount();
 		
 		int pagesize = 7;
 		for(int c=0; c<3;c++) {
 			int expected;
-			if(count == 0) {
+			if(entityCount == 0) {
 				expected = 0;
-			} else if(count >= pagesize * (c + 1)) {
+			} else if(entityCount >= pagesize * (c + 1)) {
 				expected = pagesize;
 			} else {
-				expected = Math.max(count - pagesize * c, 0);
+				expected = Math.max(entityCount - pagesize * c, 0);
 			}
 
 			PageRequest pageRequest = new PageRequest(c, pagesize);
@@ -394,10 +394,10 @@ public abstract class AbstractEntityServiceTests<T extends PersistentEntity<UUID
 		createEntity(count);
 		getEntityManager().flush();
 		getEntityManager().clear();
-		count = getEntityCount();
+		int createdCount = getEntityCount();
 		
 		Sort sort = new Sort("id");
 		List<T> res = getService().findAll(sort);
-		assertThat(res).size().isEqualTo(count);
+		assertThat(res).size().isEqualTo(createdCount);
 	}
 }

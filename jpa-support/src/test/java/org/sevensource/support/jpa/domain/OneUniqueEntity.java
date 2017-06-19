@@ -2,9 +2,9 @@ package org.sevensource.support.jpa.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import org.sevensource.support.jpa.hibernate.unique.UniquePropertyConstraint;
-import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
+
 import org.sevensource.support.jpa.hibernate.unique.UniqueProperty;
+import org.sevensource.support.jpa.hibernate.unique.UniquePropertyConstraint;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
 
 @Entity

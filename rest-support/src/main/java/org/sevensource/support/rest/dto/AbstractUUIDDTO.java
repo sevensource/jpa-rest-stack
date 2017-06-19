@@ -18,7 +18,6 @@ public abstract class AbstractUUIDDTO implements IdentifiableDTO<UUID> {
 		return id;
 	}
 
-	@Override
 	public void setId(UUID id) {
 		this.id = id;
 	}

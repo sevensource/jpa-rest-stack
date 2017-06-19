@@ -3,7 +3,6 @@ package org.sevensource.support.jpa.hibernate;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
 import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
@@ -16,11 +15,11 @@ import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
  */
 public class AssignedUUIDGenerator extends UUIDGenerator {
 	
-	public final static String NAME = "assignedUUIDGenerator";
-	public final static String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.AssignedUUIDGenerator";
+	public static final String NAME = "assignedUUIDGenerator";
+	public static final String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.AssignedUUIDGenerator";
 	
 	@Override
-	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
+	public Serializable generate(SharedSessionContractImplementor session, Object object) {
 		if(object instanceof AbstractUUIDEntity) {
 			UUID id = ((AbstractUUIDEntity) object).getId();
 			if( id != null) {

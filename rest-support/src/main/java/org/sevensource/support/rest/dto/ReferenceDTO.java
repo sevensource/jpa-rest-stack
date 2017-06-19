@@ -14,6 +14,7 @@ public class ReferenceDTO implements IdentifiableDTO<UUID> {
 		this.id = uuid;
 	}
 	
+	@Override
 	public UUID getId() {
 		return id;
 	}

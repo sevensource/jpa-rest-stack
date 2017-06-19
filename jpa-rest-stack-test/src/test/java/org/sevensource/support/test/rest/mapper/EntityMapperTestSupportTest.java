@@ -10,7 +10,7 @@ import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestEntityMockProvider;
 import org.sevensource.support.test.jpa.domain.mock.UUIDTestReferenceEntityMockProvider;
 import org.sevensource.support.test.rest.dto.TestDTO;
-import org.sevensource.support.test.rest.mapping.AbstractEntityMapperTestSupport;
+import org.sevensource.support.test.rest.mapping.EntityMapperTestSupport;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,13 +22,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 	UUIDTestReferenceEntityMapperImpl.class,
 	UUIDTestEntityMockProvider.class,
 	UUIDTestReferenceEntityMockProvider.class})
-public class AbstractEntityMapperTestSupportTests extends AbstractEntityMapperTestSupport<UUIDTestEntity, TestDTO> {
+public class EntityMapperTestSupportTest extends EntityMapperTestSupport<UUIDTestEntity, TestDTO> {
 	
 	@MockBean
 	EntityService<UUIDTestEntity, UUID> serviceMock;
 	
 	
-	public AbstractEntityMapperTestSupportTests() {
+	public EntityMapperTestSupportTest() {
 		super(UUIDTestEntity.class);
 	}
 }

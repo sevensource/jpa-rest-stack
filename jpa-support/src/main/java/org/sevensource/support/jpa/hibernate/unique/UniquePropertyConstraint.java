@@ -14,7 +14,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniquePropertyConstraint {
 
-    String message() default "{UniquePropertyConstraint.message}";
+    String message() default "{org.sevensource.support.jpa.hibernate.unique.UniquePropertyConstraint.message}";
 
     Class<?>[] groups() default {};
 

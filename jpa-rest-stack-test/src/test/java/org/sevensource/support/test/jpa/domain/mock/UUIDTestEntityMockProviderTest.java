@@ -14,7 +14,6 @@ import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
 import org.sevensource.support.test.jpa.configuration.JpaSupportTestConfiguration;
 import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.UUIDTestReferenceEntity;
-import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,13 +27,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = {JpaSupportTestConfiguration.class})
 @ComponentScan(basePackageClasses={UUIDTestEntityMockProvider.class})
 @EntityScan(basePackageClasses=UUIDTestEntity.class)
-public class UUIDTestEntityMockProviderTests {
+public class UUIDTestEntityMockProviderTest {
 
 	@PersistenceContext
 	EntityManager em;
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	@Test
 	public void create_mock() {

@@ -2,8 +2,6 @@ package org.sevensource.support.jpa.domain;
 
 import javax.persistence.Entity;
 
-import org.sevensource.support.jpa.domain.AbstractUUIDEntity;
-
 @Entity
 public class SimpleEntity extends AbstractUUIDEntity {
 

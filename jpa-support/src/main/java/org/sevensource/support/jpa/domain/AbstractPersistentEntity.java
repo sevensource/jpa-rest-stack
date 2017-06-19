@@ -55,9 +55,14 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 	
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-		if (!getClass().equals(ClassUtils.getUserClass(o))) return false;
+        if (this == o) {
+        	return true;
+        } else if (o == null) {
+        	return false;
+        } else if (!getClass().equals(ClassUtils.getUserClass(o))) {
+        	return false;
+        }
+        
 		AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
 		
 		if(this.getId() == null || other.getId() == null) {
@@ -72,7 +77,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     	// always return the same hashCode
     	// although this decreases performance for large hash tables,
     	// this way the JPA contract is correctly followed
-        //return 31;
+        // return 31;
     	
 		int hashCode = 17;
 		hashCode += null == getId() ? 0 : getId().hashCode() * 31;

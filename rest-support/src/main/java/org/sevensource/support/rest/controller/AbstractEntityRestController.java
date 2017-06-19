@@ -57,7 +57,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		if(entities == null)
 			return Collections.emptyList();
 					
-		List<DTO> list = new ArrayList<>();
+		final List<DTO> list = new ArrayList<>();
 
 		for(E entity : entities) {
 			DTO dto = toResource(entity);
@@ -73,7 +73,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		Iterable<E> results = pageable == null ? entityService.findAll(sort)
 				: entityService.findAll(pageable);
 		
-		List<DTO> dtos = toResources(results);
+		final List<DTO> dtos = toResources(results);
 		return dtos;
 	}
 	
@@ -139,17 +139,17 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	
 	@PatchMapping("/{id}")
 	public ResponseEntity<DTO> patchItemResource(@PathVariable UUID id, DTO objectToSave) {
-		throw new RuntimeException("Not yet implemented");
+		throw new IllegalArgumentException("Not yet implemented");
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteItemResource(@PathVariable ID id) {
+	public ResponseEntity<Object> deleteItemResource(@PathVariable ID id) {
 		
 		boolean exists = entityService.exists(id);
 		
 		if (exists) {
 			entityService.delete(id);
-			return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

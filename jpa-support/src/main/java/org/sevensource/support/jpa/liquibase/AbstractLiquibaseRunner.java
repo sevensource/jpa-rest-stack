@@ -28,7 +28,7 @@ public abstract class AbstractLiquibaseRunner<T extends InitializingBean & Resou
 		this.resourceLoader = resourceLoader;
 	}
 	
-	protected abstract T init();
+	protected abstract T createInstance();
 	protected abstract DataSource getDataSource();
 	
 	@Override
@@ -37,7 +37,7 @@ public abstract class AbstractLiquibaseRunner<T extends InitializingBean & Resou
 			throw new IllegalStateException("dataSource cannot be null");
 		}
 		
-		T liquibase = init();
+		T liquibase = createInstance();
 		if(liquibase instanceof BeanNameAware) {
 			((BeanNameAware)liquibase).setBeanName(beanName);
 		}

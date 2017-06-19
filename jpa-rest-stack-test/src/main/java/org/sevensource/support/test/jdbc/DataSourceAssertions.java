@@ -4,6 +4,8 @@ import net.ttddyy.dsproxy.QueryCountHolder;
 
 public class DataSourceAssertions {
 
+	private DataSourceAssertions() { }
+	
     public static void reset() {
         QueryCountHolder.clear();
     }

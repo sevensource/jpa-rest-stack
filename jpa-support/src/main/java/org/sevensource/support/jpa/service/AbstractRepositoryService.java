@@ -24,6 +24,10 @@ import org.springframework.util.Assert;
 
 public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>> implements EntityService<T, UUID> {
 
+	private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
+	private static final String ENTITY_WITH_ID_S_DOES_NOT_EXIST = "Entity with id [%s] does not exist";
+	private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
+
 	private static final Logger logger = LoggerFactory.getLogger(AbstractRepositoryService.class);
 	
 	private final JpaRepository<T, UUID> repository;
@@ -57,30 +61,28 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=true)
 	public T get(UUID id) {
-		Assert.notNull(id, "ID must not be null");
+		Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 		return repository.findOne(id);
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
 	public boolean exists(UUID id) {
-		Assert.notNull(id, "ID must not be null");
+		Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 		return repository.exists(id);
 	}
 	
 	@Override
 	@Transactional(readOnly=false)
 	public T create(T entity) {
-		Assert.notNull(entity, "Entity must not be null");
-		//Assert.isNull(entity.getId(), "ID of entity must be null");
-		//return create(null, entity);
+		Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 		return create(entity.getId(), entity);
 	}
 	
 	@Override
 	@Transactional(readOnly=false)
 	public T create(UUID id, T entity) {
-		Assert.notNull(entity, "Entity must not be null");
+		Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 		
 		if(id == null) {
 			entity.setId(null);
@@ -107,14 +109,14 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=false)
 	public T update(UUID id, T entity) throws EntityNotFoundException {
-		Assert.notNull(id, "ID must not be null");
-		Assert.notNull(entity, "Entity must not be null");
+		Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+		Assert.notNull(entity, ENTITY_MUST_NOT_BE_NULL);
 		Assert.isTrue(id.equals(entity.getId()), "IDs must match");
 		
 		validate(entity);
 		
 		if(! exists(id)) {
-			final String msg = String.format("Entity with id [%s] does not exist", id);
+			final String msg = String.format(ENTITY_WITH_ID_S_DOES_NOT_EXIST, id);
 			throw new EntityNotFoundException(msg);
 		}
 		
@@ -128,10 +130,10 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	@Override
 	@Transactional(readOnly=false)
 	public void delete(UUID id) throws EntityNotFoundException {
-		Assert.notNull(id, "ID must not be null");
+		Assert.notNull(id, ID_MUST_NOT_BE_NULL);
 		
 		if(! exists(id)) {
-			final String msg = String.format("Entity with id [%s] does not exist", id);
+			final String msg = String.format(ENTITY_WITH_ID_S_DOES_NOT_EXIST, id);
 			throw new EntityNotFoundException(msg);
 		}
 		
@@ -152,7 +154,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	}
 	
 	protected void validateJsr310(T entity) {
-		Set<ConstraintViolation<T>> violations = validator.validate(entity);
+		final Set<ConstraintViolation<T>> violations = validator.validate(entity);
 		if(violations.isEmpty()) {
 			return;
 		} else {
@@ -162,7 +164,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	}
 	
 	protected void validateUniqueConstraint(T entity) throws EntityValidationException {
-		Set<ConstraintViolation<T>> violations = validator.validate(entity, UniqueValidation.class);
+		final Set<ConstraintViolation<T>> violations = validator.validate(entity, UniqueValidation.class);
 		if(violations.isEmpty()) {
 			return;
 		} else {

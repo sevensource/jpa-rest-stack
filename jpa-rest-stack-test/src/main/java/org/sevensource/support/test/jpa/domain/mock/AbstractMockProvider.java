@@ -39,7 +39,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private EntityManagerFactory emf;
 	
 	@Autowired
-	MockFactory<?> mockFactory;
+	MockFactory mockFactory;
 	
 	
 	public AbstractMockProvider(Class<T> domainClass) {
@@ -105,7 +105,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private boolean hasExistingEntityManagerTransaction() {
 		if(tem == null) return false;
 		try {
-			EntityManager manager = tem.getEntityManager();
+			tem.getEntityManager();
 			return true;
 		} catch(IllegalStateException e) {
 			return false;
@@ -115,8 +115,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 	private T persistWithExistingTransaction(T mock) {
 		tem.persist(mock);
 		tem.flush();
-		mock = tem.find(domainClass, mock.getId());
-		return mock;
+		return tem.find(domainClass, mock.getId());
 	}
 	
 	private T persistWithNewTransaction(T mock) {
@@ -133,10 +132,10 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			
 			txn.commit();
 			return mock;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			if (txn != null && txn.isActive())
 				txn.rollback();
-			throw new RuntimeException(e);
+			throw new IllegalArgumentException(e);
 		} finally {
 			if (entityManager != null) {
 				entityManager.close();

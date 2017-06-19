@@ -155,6 +155,8 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 			getEntityManager().flush();
 			Thread.sleep(101);
 		} catch (InterruptedException e1) {
+			Thread.currentThread().interrupt();
+			throw new IllegalStateException(e1);
 		}
 		Instant END = Instant.now();
 		

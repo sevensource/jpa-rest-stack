@@ -8,8 +8,8 @@ import org.sevensource.support.jpa.domain.AbstractIntegerEntity;
 
 public class AssignedIdentityGenerator extends IdentityGenerator {
  
-	public final static String NAME = "assignedIdentityGenerator";
-	public final static String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.AssignedIdentityGenerator";
+	public static final String NAME = "assignedIdentityGenerator";
+	public static final String GENERATOR_CLASS = "org.sevensource.support.jpa.hibernate.AssignedIdentityGenerator";
 	
 	@Override
 	public Serializable generate(SharedSessionContractImplementor s, Object obj) {

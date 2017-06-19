@@ -6,8 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -23,6 +21,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder;
+import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,63 +47,9 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     private EntityManagerFactory entityManagerFactory;
 
     
-    static class ConstraintDescriptor {
-    	final String field;
-    	final Object value;
-    	final String group;
-    	
-    	ConstraintDescriptor(String field, Object value, String group) {
-    		this.field = field;
-    		this.value = value;
-    		this.group = group;
-		}
-    }
-	
     @Override
     public void initialize(UniquePropertyConstraint constraintAnnotation) {
-    	if (logger.isDebugEnabled()) {
-			logger.debug("Initializing UniqueConstraintValidator");
-		} 
-    }
-    
-    private List<List<ConstraintDescriptor>> getConstraintDescriptors(Class<?> entityClass, Object target)
-    		throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-    	
-    	final List<List<ConstraintDescriptor>> constraints = new ArrayList<>();
-    	
-    	for(Field field : entityClass.getDeclaredFields()) {
-    		final UniqueProperty a = AnnotationUtils.findAnnotation(field, UniqueProperty.class);
-    		
-    		if(a != null) {
-    			final String constraintGroup = a.constraintGroup();
-    			final String name = field.getName();
-    			
-    	        PropertyDescriptor desc = new PropertyDescriptor(name, entityClass);
-    	        Method readMethod = desc.getReadMethod();
-    	        final Object value = readMethod.invoke(target);
-    			
-    			if(! StringUtils.hasLength(constraintGroup)) {
-    				constraints.add( Arrays.asList(new ConstraintDescriptor(name, value, null)));
-    			} else {
-    				boolean added = false;
-    				Iterator<List<ConstraintDescriptor>> it = constraints.iterator();
-    				while(!added && it.hasNext()) {
-    					List<ConstraintDescriptor> cl = it.next();
-    					if(cl.size() > 0 && constraintGroup.equals(cl.get(0).group)) {
-    						cl.add( new ConstraintDescriptor(name, value, constraintGroup));
-    						added = true;
-    					}
-    				}
-    				if(! added) {
-    					List<ConstraintDescriptor> l = new ArrayList<>(3);
-    					l.add(new ConstraintDescriptor(name, value, constraintGroup));
-    					constraints.add(l);
-    				}
-    			}
-    		}
-    	}
-    	
-    	return constraints;
+    	// nothing to do here
     }
     
 
@@ -111,45 +57,19 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     public boolean isValid(Object target, ConstraintValidatorContext context) {
         Class<?> entityClass = target.getClass();
         
-        List<List<ConstraintDescriptor>> constraints = null;
+        ConstraintList constraints = null;
         try {
 			constraints = getConstraintDescriptors(entityClass, target);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (InvocationTargetException | IntrospectionException e) {
-			throw new RuntimeException(e);
+		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+			throw new IllegalArgumentException(e);
 		}
-        
-        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-        CriteriaQuery<Tuple> criteriaQuery = builder.createTupleQuery();
-        Root<?> root = criteriaQuery.from(entityClass);
-        
-        Predicate[] predicates = new Predicate[constraints.size()];
-        
-        for(int c=0; c<constraints.size(); c++) {
-        	List<ConstraintDescriptor> constraintGroup = constraints.get(c);
-        	
-        	Predicate[] groupPredicates = new Predicate[constraintGroup.size()];
-        	for(int i=0; i<constraintGroup.size(); i++) {
-        		final ConstraintDescriptor constraint = constraintGroup.get(i);
-        		groupPredicates[i] = builder.equal(root.get(constraint.field), constraint.value);
-        	}
-        	predicates[c] = builder.and(groupPredicates);
-        }
-        
-        logQuery(constraints, entityClass);
-        
-        String propertyName = getIdPropertyName(entityClass);
-
-    	EntityManager em = entityManagerFactory.createEntityManager();
-    	criteriaQuery = criteriaQuery.multiselect(root.get(propertyName));
-    	criteriaQuery = criteriaQuery.where(builder.or(predicates));
-    	TypedQuery<Tuple> query = em.createQuery(criteriaQuery);
+ 
+    	TypedQuery<Tuple> query = buildQuery(entityClass, constraints);
             
         try {
-        	Object resultId = query.getSingleResult().get(0);
+        	final Object resultId = query.getSingleResult().get(0);
+        	final Object entityId = entityManagerFactory.getPersistenceUnitUtil().getIdentifier(target);
         	
-        	Object entityId = entityManagerFactory.getPersistenceUnitUtil().getIdentifier(target);
         	if(resultId.equals(entityId)) {
         		if (logger.isTraceEnabled()) {
 					logger.trace("Object returned by ValidationConstraint query is equal to the object under validation");
@@ -158,7 +78,9 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         	} else {
         		if (logger.isDebugEnabled()) {
 					logger.debug("Validation failed - object returned by ValidationConstraint query does not equal to the one under validation");
-				} 
+				}
+        		
+        		addConstraintViolation(context, constraints);
 	        	return false;
         	}
         } catch(NoResultException nre) {
@@ -172,7 +94,69 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         	throw new IllegalArgumentException(msg);
         }
     }
+    
+    private ConstraintList getConstraintDescriptors(Class<?> entityClass, Object target)
+    		throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+    	
+    	final ConstraintList constraints = new ConstraintList();
+    	
+    	for(Field field : entityClass.getDeclaredFields()) {
+    		final UniqueProperty a = AnnotationUtils.findAnnotation(field, UniqueProperty.class);
+    		
+    		if(a != null) {
+    			String constraintGroupName = a.constraintGroup();
+    			if(! StringUtils.hasLength(constraintGroupName)) {
+    				constraintGroupName = null;
+    			}
+    			final String name = field.getName();
+    			
+    	        final PropertyDescriptor desc = new PropertyDescriptor(name, entityClass);
+    	        final Method readMethod = desc.getReadMethod();
+    	        final Object value = readMethod.invoke(target);
+    			
+				final ConstraintDescriptorGroup group = constraints.getConstraintDescriptorGroup(constraintGroupName);
+				final ConstraintDescriptor descriptor = new ConstraintDescriptor(name, value, constraintGroupName);
+				
+				if(group == null) {    					
+					constraints.add(new ConstraintDescriptorGroup(constraintGroupName, descriptor));
+				} else {
+					group.getConstraints().add(descriptor);
+				}
+    		}
+    	}
+    	
+    	return constraints;
+    }
+    
+    private TypedQuery<Tuple> buildQuery(Class<?> entityClass, ConstraintList constraints) {
+    	CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteriaQuery = builder.createTupleQuery();
+        Root<?> root = criteriaQuery.from(entityClass);
+        
+        Predicate[] predicates = new Predicate[constraints.size()];
+        
+        for(int c=0; c<constraints.size(); c++) {
+        	ConstraintDescriptorGroup constraintGroup = constraints.get(c);
+        	
+        	Predicate[] groupPredicates = new Predicate[constraintGroup.getConstraints().size()];
+        	for(int i=0; i<constraintGroup.getConstraints().size(); i++) {
+        		final ConstraintDescriptor constraint = constraintGroup.getConstraints().get(i);
+        		groupPredicates[i] = builder.equal(root.get(constraint.field), constraint.value);
+        	}
+        	predicates[c] = builder.and(groupPredicates);
+        }
+        
+        logQuery(constraints, entityClass);
+        
+        String propertyName = getIdPropertyName(entityClass);
 
+    	EntityManager em = entityManagerFactory.createEntityManager();
+    	criteriaQuery = criteriaQuery.multiselect(root.get(propertyName));
+    	criteriaQuery = criteriaQuery.where(builder.or(predicates));
+    	return em.createQuery(criteriaQuery);
+    }
+
+    
 	private String getIdPropertyName(Class<?> entityClass) {
 		String idPropertyName = null;
         for (SingularAttribute sa : entityManagerFactory.getMetamodel().entity(entityClass).getSingularAttributes()) {
@@ -183,20 +167,40 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
         }
         return idPropertyName;
 	}
+    
+    private void addConstraintViolation(ConstraintValidatorContext context, ConstraintList constraints) {
+    	final String msg = context.getDefaultConstraintMessageTemplate();
+		ConstraintViolationBuilder constraintBuilder = context.buildConstraintViolationWithTemplate(msg);
+		NodeBuilderCustomizableContext nodeConstraintBuilder = null;
+		
+		for(ConstraintDescriptorGroup constraintList : constraints) {
+			for(ConstraintDescriptor cd : constraintList.getConstraints()) {
+				if(nodeConstraintBuilder == null)
+					nodeConstraintBuilder = constraintBuilder.addPropertyNode(cd.field);
+				else
+					nodeConstraintBuilder = nodeConstraintBuilder.addPropertyNode(cd.field);
+			}
+		}
+		
+		if(nodeConstraintBuilder != null) {
+			nodeConstraintBuilder.addConstraintViolation().disableDefaultConstraintViolation();
+		}
+    }
 
-    private static void logQuery(List<List<ConstraintDescriptor>> constraints, Class<?> entityClass) {
+	
+    private static void logQuery(ConstraintList constraints, Class<?> entityClass) {
     	if (logger.isDebugEnabled()) {
 			List<String> tmp = new ArrayList<>();
 			
 			for(int c=0; c<constraints.size(); c++) {
-				List<ConstraintDescriptor> constraintGroup = constraints.get(c);
+				ConstraintDescriptorGroup constraintGroup = constraints.get(c);
 				
-				String[] tmpx = new String[constraintGroup.size()];
-				for(int i=0; i<constraintGroup.size(); i++) {
-					final ConstraintDescriptor constraint = constraintGroup.get(i);
+				String[] tmpx = new String[constraintGroup.getConstraints().size()];
+				for(int i=0; i<constraintGroup.getConstraints().size(); i++) {
+					final ConstraintDescriptor constraint = constraintGroup.getConstraints().get(i);
 					tmpx[i] = String.format("%s='%s'", constraint.field, constraint.value);
 				}
-				;
+				
 				tmp.add("(" + String.join(" AND ", tmpx) + ")");
 			}
 			

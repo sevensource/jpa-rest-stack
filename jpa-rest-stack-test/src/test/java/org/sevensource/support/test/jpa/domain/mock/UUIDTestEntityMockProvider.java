@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.jpa.domain.UUIDTestReferenceEntity;
-import org.sevensource.support.test.jpa.domain.mock.AbstractMockProvider;
 import org.springframework.stereotype.Component;
 
 @Component

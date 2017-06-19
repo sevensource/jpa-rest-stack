@@ -27,7 +27,6 @@ import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,13 +42,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public abstract class AbstractEntityRestControllerTestSupport<E extends PersistentEntity<ID>, ID extends Serializable> {
+public abstract class EntityRestControllerTestSupport<E extends PersistentEntity<ID>, ID extends Serializable> {
 	
 	@Autowired
 	private MockMvc mvc;
 	
 	@Autowired
-	private MockFactory<?> mockFactory;
+	private MockFactory mockFactory;
 	
 	@Captor
 	private ArgumentCaptor<E> entityCaptor;
@@ -62,32 +61,32 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Before
 	public void before() {
-		when(getService().get(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().get(idCaptor.capture())).thenAnswer(c -> {
 			if(idCaptor.getValue().equals(nillId())) return null;
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(getService().create(entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(nextId());
 			return entity;
 		});
 		
-		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
 			return entity;
 		});
 		
-		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer((c) -> {
+		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E e = entityCaptor.getValue();
 			e.setId(idCaptor.getValue());
 			return e;
 		});
 		
-		when(getService().exists(idCaptor.capture())).thenAnswer((c) -> {
+		when(getService().exists(idCaptor.capture())).thenAnswer(c -> {
 			return ! nillId().equals(idCaptor.getValue());
 		});
 		
@@ -95,7 +94,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 		
 		when(getService().findAll(any(Sort.class))).thenReturn(objects);
 		
-		when(getService().findAll(any(PageRequest.class))).thenAnswer((c) -> {
+		when(getService().findAll(any(PageRequest.class))).thenAnswer(c -> {
 			Pageable pageable = c.getArgument(0);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();
@@ -162,7 +161,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	public void delete_resource_works() throws Exception {
 		ID assignedId = nextId();
 		
-		MvcResult result = mvc
+		mvc
 			.perform(request("/" + assignedId, HttpMethod.DELETE))
 			.andExpect(status().isNoContent())
 			.andDo(print())
@@ -173,7 +172,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Test
 	public void delete_non_existing_resource_returns_404() throws Exception {
-		MvcResult result = mvc
+		mvc
 			.perform(request("/" + nillId(), HttpMethod.DELETE))
 			.andExpect(status().isNotFound())
 			.andDo(print())
@@ -207,7 +206,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 		
 		ID requestedId = nillId();
 		
-		MvcResult result = mvc
+		mvc
 				.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
 				.andExpect(status().isCreated())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -223,7 +222,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 		
 		String json = "{\"id\": \"" + requestedId.toString() + "\"}";
 
-		MvcResult result = mvc
+		mvc
 				.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -241,7 +240,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 		
 		ID requestedId = nextId();
 		
-		MvcResult result = mvc
+		mvc
 				.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -254,7 +253,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	@Test
 	public void get_collection_resource_without_parameter() throws Exception {
 		
-		MvcResult result = mvc
+		mvc
 				.perform(request("/", HttpMethod.GET))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -265,7 +264,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Test
 	public void get_collection_resource_nonexistant_page() throws Exception {
-		MvcResult result = mvc
+		mvc
 				.perform(request("/?page=100&size=4", HttpMethod.GET))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -276,7 +275,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Test
 	public void get_collection_resource_first_page() throws Exception {
-		MvcResult result = mvc
+		mvc
 				.perform(request("/?page=0&size=4", HttpMethod.GET))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -287,7 +286,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Test
 	public void get_collection_resource_first_page_with_sort_asc() throws Exception {
-		MvcResult result = mvc
+		mvc
 				.perform(request("/?page=0&size=4&sort=id,ASC", HttpMethod.GET))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -299,7 +298,7 @@ public abstract class AbstractEntityRestControllerTestSupport<E extends Persiste
 	
 	@Test
 	public void get_collection_resource_first_page_with_sort_desc() throws Exception {
-		MvcResult result = mvc
+		mvc
 				.perform(request("/?page=0&size=4&sort=id,DESC", HttpMethod.GET))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
