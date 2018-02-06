@@ -1,5 +1,6 @@
-liquibase:
-  enabled: false
+spring:
+  liquibase:
+    enabled: false
   
 logging:
   level:

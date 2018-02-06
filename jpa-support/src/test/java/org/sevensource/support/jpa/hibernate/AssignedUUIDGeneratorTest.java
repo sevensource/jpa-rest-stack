@@ -22,24 +22,24 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @Import({ValidationAutoConfiguration.class})
 public class AssignedUUIDGeneratorTest {
-	
+
 	@PersistenceContext
 	EntityManager em;
-	
+
 	@Test
 	public void generator_creates_id_with_null_id() {
 		SimpleEntity e = new SimpleEntity();
 		e.setId(null);
 		em.persist(e);
 		em.flush();
-		
+
 		assertThat(e.getId()).isNotNull();
 		em.clear();
 		e = em.find(SimpleEntity.class, e.getId());
 		assertThat(e).isNotNull();
 		assertThat(e.getId()).isNotNull();
 	}
-	
+
 	@Test
 	public void generator_uses_existing_id() {
 		SimpleEntity e = new SimpleEntity();
@@ -47,7 +47,7 @@ public class AssignedUUIDGeneratorTest {
 		e.setId(id);
 		em.persist(e);
 		em.flush();
-		
+
 		assertThat(e.getId()).isEqualTo(id);
 		em.clear();
 		e = em.find(SimpleEntity.class, e.getId());
