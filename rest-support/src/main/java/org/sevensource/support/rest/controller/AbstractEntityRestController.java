@@ -9,12 +9,16 @@ import java.util.UUID;
 import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.dto.IdentifiableDTO;
+import org.sevensource.support.rest.dto.PagedCollectionResourceDTO;
 import org.sevensource.support.rest.mapping.EntityMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,31 +36,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO extends IdentifiableDTO<ID>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEntityRestController.class);
-		
+
 	private final EntityService<E, ID> entityService;
 	private final EntityMapper<E,DTO> mapper;
-	
+
 	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper) {
 		this.entityService = entityService;
 		this.mapper = mapper;
 	}
-	
-	protected DTO toResource(E entity) {
-		return mapper.toDTO(entity);
-	}
-	
+
 	protected E toEntity(DTO resource) {
 		return mapper.toEntity(resource);
 	}
-	
+
 	protected void toEntity(DTO resource, E destination) {
 		mapper.toEntity(resource, destination);
 	}
-	
-	protected final List<DTO> toResources(Iterable<E> entities) {
-		if(entities == null)
+
+	protected DTO toResource(E entity) {
+		return mapper.toDTO(entity);
+	}
+
+	protected List<DTO> toResources(Iterable<E> entities) {
+		if(entities == null) {
 			return Collections.emptyList();
-					
+		}
+
 		final List<DTO> list = new ArrayList<>();
 
 		for(E entity : entities) {
@@ -65,41 +70,46 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		}
 		return list;
 	}
-	
+
 	@GetMapping("")
 	@ResponseBody
-	public List<DTO> getCollectionResource(Pageable pageable, Sort sort) {
-
-		Iterable<E> results = pageable == null ? entityService.findAll(sort)
-				: entityService.findAll(pageable);
-		
-		final List<DTO> dtos = toResources(results);
-		return dtos;
+	public ResponseEntity<?> getCollectionResource(@PageableDefault(size=100) Pageable pageable, Sort sort) {
+		if(pageable.isUnpaged()) {
+			final List<E> results = entityService.findAll(sort);
+			final List<DTO> dtos = toResources(results);
+			return ResponseEntity.ok(dtos);
+		} else {
+			final Page<E> page = entityService.findAll(pageable);
+			final List<DTO> dtos = toResources(page);
+			final PageMetadata pageMetadata = new PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
+			final PagedCollectionResourceDTO<DTO> dto = new PagedCollectionResourceDTO<>(dtos, pageMetadata);
+			return ResponseEntity.ok(dto);
+		}
 	}
-	
+
 	@PostMapping("")
 	public ResponseEntity<DTO> postResource(@RequestBody DTO objectToSave) {
 		final E entityToSave = toEntity(objectToSave);
 		final E savedEntity = entityService.create(entityToSave);
-		
+
 		final Link selfLink = ControllerLinkBuilder
 				.linkTo(this.getClass())
 				.slash(savedEntity.getId())
 				.withSelfRel();
-		
+
 		final String href = selfLink.getHref();
 		final DTO dto = toResource(savedEntity);
-		
+
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.header(HttpHeaders.LOCATION, href)
 				.body(dto);
 	}
-	
+
 //	public ResponseEntity<List<String>> postCollectionResource() {
 //		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, "").build();
 //	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<DTO> getItemResource(@PathVariable ID id) {
 
@@ -108,12 +118,12 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		if (domainObj == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		
+
 		DTO dto = toResource(domainObj);
-		
+
 		return ResponseEntity.ok().body(dto);
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<DTO> putItemResource(@PathVariable ID id, @RequestBody DTO dto) {
 
@@ -122,7 +132,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		E entityToSave = entityService.get(id);
 		E savedEntity = null;
 		HttpStatus status;
-		
+
 		if(entityToSave != null) {
 			toEntity(dto, entityToSave);
 			savedEntity = entityService.update(id, entityToSave);
@@ -132,21 +142,21 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 			savedEntity = entityService.create(id, entityToSave);
 			status = HttpStatus.CREATED;
 		}
-		
+
 		final DTO savedDto = toResource(savedEntity);
 		return ResponseEntity.status(status).body(savedDto);
 	}
-	
+
 	@PatchMapping("/{id}")
 	public ResponseEntity<DTO> patchItemResource(@PathVariable UUID id, DTO objectToSave) {
 		throw new IllegalArgumentException("Not yet implemented");
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Object> deleteItemResource(@PathVariable ID id) {
-		
+
 		boolean exists = entityService.exists(id);
-		
+
 		if (exists) {
 			entityService.delete(id);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

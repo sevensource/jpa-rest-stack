@@ -12,13 +12,13 @@ public class ReferenceDTOSerializer extends StdSerializer<ReferenceDTO> {
 	public ReferenceDTOSerializer() {
         this(null);
     }
-   
+
     public ReferenceDTOSerializer(Class<ReferenceDTO> t) {
         super(t);
     }
 
 	@Override
 	public void serialize(ReferenceDTO value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-		gen.writeString(value.getId().toString());
-	}	
+		provider.defaultSerializeValue(value.getId(), gen);
+	}
 }
