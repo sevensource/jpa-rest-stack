@@ -20,51 +20,51 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 
 	@PersistenceContext
 	EntityManager em;
-	
+
 	@Autowired
 	MockFactory mockFactory;
-	
+
 	private final Class<T> domainClass;
-	
+
 	public AbstractJpaTestSupport(Class<T> domainClass) {
 		this.domainClass = domainClass;
 	}
-	
+
 	protected EntityManager getEntityManager() {
 		return em;
 	}
-	
+
 	protected EntityManagerFactory getEntityManagerFactory() {
 		return getEntityManager().getEntityManagerFactory();
 	}
-	
+
 	protected T populate() {
 		return mockFactory.on(domainClass).populate();
 	}
-	
+
 	protected T createEntity() {
 		return mockFactory.on(domainClass).create();
 	}
-	
+
 	protected List<T> createEntity(int counter) {
 		return mockFactory.on(domainClass).create(counter);
 	}
-	
+
 	protected T touch(T e) {
 		return mockFactory.on(domainClass).touch(e);
 	}
-	
+
 	protected List<Class<?>> getDeletionOrder() {
 		return mockFactory.on(domainClass).getDeletionOrder();
 	}
-	
+
 	protected void ensureEmpty() {
 		int count = getEntityCount();
 		assertThat(count)
 			.withFailMessage("Expected count of %s to be 0, but it is %d", domainClass.getSimpleName(), count)
 			.isEqualTo(0);
 	}
-	
+
 	protected int getEntityCount() {
 		CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<T> q = cb.createQuery(domainClass);
@@ -72,28 +72,28 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 		List<T> list = getEntityManager().createQuery(q).getResultList();
         return list.size();
 	}
-	
+
 	protected void deleteAll() {
-		
+
 		List<Class<?>> deletionClasses = getDeletionOrder();
-		
+
 		EntityManager entitymanager = getEntityManagerFactory().createEntityManager();
 		EntityTransaction tx = entitymanager.getTransaction();
 		tx.begin();
-		
+
 		for(Class<?> clazz : deletionClasses) {
 			CriteriaBuilder criteriaBuilder  = entitymanager.getCriteriaBuilder();
 			CriteriaQuery query = criteriaBuilder.createQuery(clazz);
 			query.from(clazz);
 			List<?> results = entitymanager.createQuery(query).getResultList();
-			
+
 			//Delete one-by-one to also delete @Embeddables and Cascades
 			for(Object o : results) {
 				entitymanager.remove(o);
 			}
 			entitymanager.flush();
 		}
-		
+
 		tx.commit();
 		entitymanager.clear();
 		entitymanager.close();

@@ -36,7 +36,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	private final Class<T> entityClass;
 
 
-	public AbstractRepositoryService(JpaRepository<T, UUID> repository, Validator validator, Class<T> entityClass) {
+	protected AbstractRepositoryService(JpaRepository<T, UUID> repository, Validator validator, Class<T> entityClass) {
 		this.repository = repository;
 		this.validator = validator;
 		this.entityClass = entityClass;

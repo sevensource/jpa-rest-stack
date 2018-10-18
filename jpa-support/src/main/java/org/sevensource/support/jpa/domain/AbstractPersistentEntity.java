@@ -24,35 +24,36 @@ import org.springframework.util.ClassUtils;
 @Access(AccessType.FIELD)
 public abstract class AbstractPersistentEntity<ID extends Serializable> implements PersistentEntity<ID> {
 
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 4692410111632259138L;
 
 	@Version
 	@Column(nullable=false)
 	private Integer version;
-	
+
 	@CreatedBy
     @Column(nullable=false, updatable=false, length=100)
 	private String createdBy;
-	
+
 	@CreatedDate
     @Column(nullable=false, updatable=false)
 	private Instant createdDate;
-	
+
 	@LastModifiedBy
     @Column(nullable=false, length=100)
 	private String lastModifiedBy;
-	
+
 	@LastModifiedDate
     @Column(nullable=false)
 	private Instant lastModifiedDate;
-    
-	
+
+
 	@Override
 	@Transient
 	public boolean isNew() {
 		return getId() == null;
 	}
-	
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -62,9 +63,9 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
         } else if (!getClass().equals(ClassUtils.getUserClass(o))) {
         	return false;
         }
-        
+
 		AbstractPersistentEntity<?> other = (AbstractPersistentEntity<?>) o;
-		
+
 		if(this.getId() == null || other.getId() == null) {
 			return false;
 		} else {
@@ -78,7 +79,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     	// although this decreases performance for large hash tables,
     	// this way the JPA contract is correctly followed
         // return 31;
-    	
+
 		int hashCode = 17;
 		hashCode += null == getId() ? 0 : getId().hashCode() * 31;
 		return hashCode;
@@ -108,7 +109,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
 	public Instant getLastModifiedDate() {
 		return lastModifiedDate;
 	}
-	
+
 	@Override
 	public String toString() {
 		return new ToStringCreator(this)
