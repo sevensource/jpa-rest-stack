@@ -80,6 +80,9 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 			return ResponseEntity.ok(dtos);
 		} else {
 			final Page<E> page = entityService.findAll(pageable);
+			if(page == null) {
+				return ResponseEntity.notFound().build();
+			}
 			final List<DTO> dtos = toResources(page);
 			final PageMetadata pageMetadata = new PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
 			final PagedCollectionResourceDTO<DTO> dto = new PagedCollectionResourceDTO<>(dtos, pageMetadata);
