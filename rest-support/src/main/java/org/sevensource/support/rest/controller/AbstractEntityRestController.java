@@ -105,10 +105,6 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 				.body(dto);
 	}
 
-//	public ResponseEntity<List<String>> postCollectionResource() {
-//		return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, "").build();
-//	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<DTO> getItemResource(@PathVariable ID id) {
 

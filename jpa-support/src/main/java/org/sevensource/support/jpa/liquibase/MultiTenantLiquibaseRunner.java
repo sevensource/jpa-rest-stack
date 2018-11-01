@@ -20,14 +20,14 @@ import org.springframework.util.StringUtils;
 import liquibase.integration.spring.MultiTenantSpringLiquibase;
 
 public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTenantSpringLiquibase> {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(MultiTenantLiquibaseRunner.class);
-	
+
 	private DataSource dataSource;
 	private final String defaultSchema;
 	private final List<String> schemas;
 	private final String changeLog;
-	
+
 	public MultiTenantLiquibaseRunner(DataSource dataSource, String changeLog, String defaultSchema, List<String> schemas) {
 		this.dataSource = dataSource;
 		this.changeLog = changeLog;
@@ -35,45 +35,38 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 		this.schemas = schemas;
 		setResourceLoader(new DefaultResourceLoader());
 	}
-	
+
 	public MultiTenantLiquibaseRunner(DataSource dataSource, String changeLog, String defaultSchema) {
 		this(dataSource, changeLog, defaultSchema, null);
 	}
-	
+
 	@Override
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
-	
+
 	@Override
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
-	
+
 	private void createSchemas() {
 		List<String> schemasToCreate = new ArrayList<>();
-		if(StringUtils.hasLength(defaultSchema)) schemasToCreate.add(defaultSchema);
-		if(! CollectionUtils.isEmpty(schemas)) schemasToCreate.addAll(schemas);
-		
-		
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
-		
-		List<String> availableSchemas = jdbcTemplate.execute(new ConnectionCallback<List<String>>() {
-			@Override
-			public List<String> doInConnection(Connection con) throws SQLException, DataAccessException {
-				ResultSet rs = con.getMetaData().getSchemas();
-				List<String> existing = new ArrayList<>();
-				
-				while(rs.next()) {
-					existing.add( rs.getString("TABLE_SCHEM").toLowerCase());
-				}
-				rs.close();
-				return existing;
-			}
-		});
-		
-		for(String schema : schemasToCreate) {
-			if(! availableSchemas.contains(schema)) {
+		if(StringUtils.hasLength(defaultSchema)) {
+			schemasToCreate.add(defaultSchema);
+		}
+		if(! CollectionUtils.isEmpty(schemas)) {
+			schemasToCreate.addAll(schemas);
+		}
+
+		final List<String> existingSchemas = getExistingSchemas();
+
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+
+		schemasToCreate
+			.stream()
+			.filter(s -> !existingSchemas.contains(s))
+			.forEach(schema -> {
 				try {
 					if (logger.isWarnEnabled()) {
 						logger.warn("Creating schema {}", schema);
@@ -83,16 +76,33 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 				} catch(Exception e) {
 					throw new IllegalStateException("Cannot create schema", e);
 				}
-			}
-		}
+			});
 	}
-	
+
+	private List<String> getExistingSchemas() {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+
+		return jdbcTemplate.execute(new ConnectionCallback<List<String>>() {
+			@Override
+			public List<String> doInConnection(Connection con) throws SQLException, DataAccessException {
+				ResultSet rs = con.getMetaData().getSchemas();
+				List<String> existing = new ArrayList<>();
+
+				while(rs.next()) {
+					existing.add( rs.getString("TABLE_SCHEM").toLowerCase());
+				}
+				rs.close();
+				return existing;
+			}
+		});
+	}
+
 	@Override
 	public void update() throws Exception {
 		createSchemas();
 		super.update();
 	}
-	
+
 
 	@Override
 	protected MultiTenantSpringLiquibase createInstance() {
@@ -104,5 +114,5 @@ public class MultiTenantLiquibaseRunner extends AbstractLiquibaseRunner<MultiTen
 		liquibase.setShouldRun(true);
 		return liquibase;
 	}
-	
+
 }

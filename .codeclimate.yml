@@ -4,6 +4,9 @@ plugins:
     enabled: true
     config:
       sonar.java.source: 8
+    checks:
+      squid:S1452:
+        enabled: false
   fixme:
     enabled: true
   checkstyle:
