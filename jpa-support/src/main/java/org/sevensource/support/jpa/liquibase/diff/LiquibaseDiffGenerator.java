@@ -72,35 +72,32 @@ public class LiquibaseDiffGenerator {
 
 	private ReportBuilder diff(String schema, DataSource primaryDataSource, DataSource targetDataSource) throws LiquibaseException, IOException, ParserConfigurationException, SQLException {
 
-		DiffResult result = null;
-
 		try(Connection primaryConnection = primaryDataSource.getConnection();
 				Connection targetConnection = targetDataSource.getConnection()) {
-			result = doDatabaseDiff(schema, primaryConnection, targetConnection);
+			DiffResult result = doDatabaseDiff(schema, primaryConnection, targetConnection);
+
+			ReportBuilder builder = new ReportBuilder();
+			builder.appendLine("").appendLine("");
+			builder.appendLine(String.format(">> db diff (%s):", schema));
+
+			builder.appendLine("=====================");
+
+			if(! result.areEqual()) {
+				String changeLog = generateChangeLog(result);
+				String changeReport = generateChangeReport(result);
+
+				builder.appendLine(String.format(">> Report (%s):", schema));
+				builder.appendLine(changeReport);
+				builder.appendLine(" ");
+				builder.appendLine(String.format(">> ChangeLog (%s):", schema));
+				builder.appendLine("=======================");
+				builder.appendLine(changeLog);
+			} else {
+				builder.appendLine("No changes");
+			}
+
+			return builder;
 		}
-
-		ReportBuilder builder = new ReportBuilder();
-		builder.appendLine("").appendLine("");
-		builder.appendLine(String.format(">> db diff (%s):", schema));
-
-		builder.appendLine("=====================");
-
-		if(! result.areEqual()) {
-			String changeLog = generateChangeLog(result);
-			String changeReport = generateChangeReport(result);
-
-			builder.appendLine(String.format(">> Report (%s):", schema));
-			builder.appendLine(changeReport);
-			builder.appendLine(" ");
-			builder.appendLine(String.format(">> ChangeLog (%s):", schema));
-			builder.appendLine("=======================");
-			builder.appendLine(changeLog);
-		} else {
-			builder.appendLine("No changes");
-		}
-
-
-		return builder;
 	}
 
 	private DiffResult doDatabaseDiff(String schema, Connection referenceConnection, Connection targetConnection) throws LiquibaseException {
