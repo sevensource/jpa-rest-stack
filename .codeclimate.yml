@@ -1,0 +1,12 @@
+version: "2"
+plugins:
+  sonar-java:
+    enabled: true
+    config:
+      sonar.java.source: 8
+  fixme:
+    enabled: true
+  checkstyle:
+    enabled: false
+  pmd:
+    enabled: true
