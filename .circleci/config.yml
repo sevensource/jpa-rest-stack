@@ -16,9 +16,10 @@ jobs:
           - v1-dependencies-
 
 #      - run: mvn dependency:go-offline
-      - run: mvn dependency:resolve-plugins
-      - run: mvn dependency:collect -DoutputFile=~/dependecy-collect.out -DappendOutput=true
-      - run: cat ~/dependecy-collect.out | grep -v "The following files have been resolved" | sort | uniq | awk -F ':' '{print $1 ":" $2 ":" $4 ":" $3}' | sed -e 's/^\s*/mvn dependency:get -Dartifact=/' | xargs sh
+      - run: |
+          mvn dependency:resolve-plugins
+          mvn dependency:collect -DoutputFile=$HOME/dependecy-collect.out -DappendOutput=true
+          grep -v "The following files have been resolved" $HOME/dependecy-collect.out | sort | uniq | awk -F ':' '{print $1 ":" $2 ":" $4 ":" $3}' | sed -e 's/^\s*/mvn dependency:get -Dartifact=/' | xargs sh
 
       - save_cache:
           paths:
