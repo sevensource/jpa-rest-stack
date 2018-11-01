@@ -19,7 +19,7 @@ jobs:
       - run: |
           mvn dependency:resolve-plugins
           mvn dependency:collect -DoutputFile=$HOME/dependecy-collect.out -DappendOutput=true
-          grep -v "The following files have been resolved" $HOME/dependecy-collect.out | sort | uniq | awk -F ':' '{print $1 ":" $2 ":" $4 ":" $3}' | sed -e 's/^\s*/mvn dependency:get -Dartifact=/' | xargs sh
+          grep -v "The following files have been resolved" $HOME/dependecy-collect.out | sort | uniq | sed '/^\s*$/d' | awk -F ':' '{print $1 ":" $2 ":" $4 ":" $3}' | sed -e 's/^\s*/mvn dependency:get -Dartifact=/' | sh -x
 
       - save_cache:
           paths:
