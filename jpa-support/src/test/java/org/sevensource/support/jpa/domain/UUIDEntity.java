@@ -3,7 +3,7 @@ package org.sevensource.support.jpa.domain;
 import javax.persistence.Entity;
 
 @Entity
-public class SimpleEntity extends AbstractUUIDEntity {
+public class UUIDEntity extends AbstractUUIDEntity {
 
 	private String name;
 	

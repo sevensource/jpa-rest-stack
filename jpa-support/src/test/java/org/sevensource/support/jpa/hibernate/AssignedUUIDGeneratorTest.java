@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.domain.SimpleEntity;
+import org.sevensource.support.jpa.domain.UUIDEntity;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -28,21 +28,21 @@ public class AssignedUUIDGeneratorTest {
 
 	@Test
 	public void generator_creates_id_with_null_id() {
-		SimpleEntity e = new SimpleEntity();
+		UUIDEntity e = new UUIDEntity();
 		e.setId(null);
 		em.persist(e);
 		em.flush();
 
 		assertThat(e.getId()).isNotNull();
 		em.clear();
-		e = em.find(SimpleEntity.class, e.getId());
+		e = em.find(UUIDEntity.class, e.getId());
 		assertThat(e).isNotNull();
 		assertThat(e.getId()).isNotNull();
 	}
 
 	@Test
 	public void generator_uses_existing_id() {
-		SimpleEntity e = new SimpleEntity();
+		UUIDEntity e = new UUIDEntity();
 		UUID id = UUID.randomUUID();
 		e.setId(id);
 		em.persist(e);
@@ -50,7 +50,7 @@ public class AssignedUUIDGeneratorTest {
 
 		assertThat(e.getId()).isEqualTo(id);
 		em.clear();
-		e = em.find(SimpleEntity.class, e.getId());
+		e = em.find(UUIDEntity.class, e.getId());
 		assertThat(e).isNotNull();
 		assertThat(e.getId()).isEqualTo(id);
 	}

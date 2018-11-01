@@ -10,10 +10,10 @@ public class ApiErrorDTO {
 	private String error;
 	private String exception;
 	private String message;
-	
+
 	private String path;
-	
-	
+
+
 	public ApiErrorDTO(Exception ex, HttpStatus status) {
 		this.timestamp = Instant.now().toEpochMilli();
 		this.exception = ex.getClass().getName();
@@ -21,7 +21,7 @@ public class ApiErrorDTO {
 		this.error = status.getReasonPhrase();
 		this.message = ex.getMessage();
 	}
-	
+
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -42,8 +42,5 @@ public class ApiErrorDTO {
 	}
 	public String getMessage() {
 		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
 	}
 }
