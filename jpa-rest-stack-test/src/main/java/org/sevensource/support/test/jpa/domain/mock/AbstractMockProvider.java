@@ -152,7 +152,8 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 
 	/**
 	 * set an ID on the mock manually
-	 * @param mock
+	 *
+	 * @param mock the object that should be modified
 	 */
 	protected void setId(T mock) {
 		if(mock instanceof AbstractUUIDEntity) {

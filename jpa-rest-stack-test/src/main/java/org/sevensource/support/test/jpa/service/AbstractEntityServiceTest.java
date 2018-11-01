@@ -72,9 +72,10 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 	 */
 	protected abstract List<T> getEntitesToPersistBeforeTransaction();
 
+
 	/**
 	 * get a list of entities with invalid data, which are expected to cause an {@link EntityValidationException}
-	 * @return
+	 * @return a list of entities with invalid data, which are expected to cause an {@link EntityValidationException}
 	 */
 	protected abstract List<T> getEntitiesWithValidationViolations();
 
@@ -361,6 +362,10 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 
 	/***    FIND TESTS    ***/
 	/************************/
+	/**
+	 *
+	 * @param count entityCount
+	 */
 	@Test
 	@DataProvider({ "0", "10", "20", "30"})
 	public void findall_is_correct_with_pageable(int count) {

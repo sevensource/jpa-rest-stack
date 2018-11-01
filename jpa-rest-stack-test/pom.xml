@@ -93,6 +93,13 @@
 			<artifactId>random-beans</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+    		<groupId>javax.interceptor</groupId>
+    		<artifactId>javax.interceptor-api</artifactId>
+    		<version>1.2.2</version>
+    		<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
