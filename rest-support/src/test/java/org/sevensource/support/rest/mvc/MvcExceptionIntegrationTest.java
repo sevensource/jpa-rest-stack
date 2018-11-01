@@ -8,10 +8,10 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
@@ -46,12 +46,12 @@ import com.jayway.jsonpath.JsonPath;
 		})
 @Configuration
 public class MvcExceptionIntegrationTest {
-	
+
 	private final static String TEXT = "Some detail message";
-	
+
 	@Autowired
 	TestRestTemplate restTemplate;
-	
+
 	@RestController
 	static class ExceptionThrowingController {
 		class ValidationPojo {
@@ -62,25 +62,25 @@ public class MvcExceptionIntegrationTest {
 			@NotEmpty
 			String anumber = "";
 		}
-		
+
 		@Autowired
 		Validator validator;
-		
+
 		@RequestMapping("/alreadyExistsException")
 		String alreadyExists() {
 			throw new EntityAlreadyExistsException(TEXT);
 		}
-		
+
 		@RequestMapping("/notFoundException")
 		String notFound() {
 			throw new EntityNotFoundException(TEXT);
 		}
-		
+
 		@RequestMapping("/validationSimple")
 		String validationSimple() {
 			throw new EntityValidationException(TEXT);
 		}
-		
+
 		@RequestMapping("/validationExtended")
 		String validationExtended() {
 			Set<? extends ConstraintViolation<?>> violations = validator.validate(new ValidationPojo());
@@ -88,40 +88,40 @@ public class MvcExceptionIntegrationTest {
 			throw new EntityValidationException(TEXT, violations);
 		}
 	}
-	
-	
+
+
 	@Test
 	public void alreadyExistsException_should_return_409() {
 		ResponseEntity<String> response = restTemplate.getForEntity("/alreadyExistsException", String.class);
 		DocumentContext ctx = JsonPath.parse(response.getBody());
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 		assertThat(ctx.read("$.message", String.class)).isEqualTo(TEXT);
 	}
-	
+
 	@Test
 	public void notFoundException_should_return_404() {
 		ResponseEntity<String> response = restTemplate.getForEntity("/notFoundException", String.class);
 		DocumentContext ctx = JsonPath.parse(response.getBody());
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(ctx.read("$.message", String.class)).isEqualTo(TEXT);
 	}
-	
+
 	@Test
 	public void entitValidationException_should_return_422() {
 		ResponseEntity<String> response = restTemplate.getForEntity("/validationSimple", String.class);
 		DocumentContext ctx = JsonPath.parse(response.getBody());
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
 		assertThat(ctx.read("$.message", String.class)).isEqualTo(TEXT);
 	}
-	
+
 	@Test
 	public void entitValidationExceptionWithViolations_should_return_422_and_contain_info() {
 		ResponseEntity<String> response = restTemplate.getForEntity("/validationExtended", String.class);
 		DocumentContext ctx = JsonPath.parse(response.getBody());
-		
+
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
 		assertThat(ctx.read("$.message", String.class)).isEqualTo(TEXT);
 		assertThat(ctx.read("$.validationErrors", Map.class)).containsOnlyKeys("title", "anumber");

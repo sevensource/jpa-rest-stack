@@ -31,21 +31,21 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 @ContextConfiguration(classes={CommonMappingConfiguration.class})
 @Import({ReferencingTestEntityMapperImpl.class})
 public class ReferenceDTOEntityMapperTest {
-	
+
 	@MockBean
 	EntityService<ReferencingTestEntity, UUID> refService;
-	
+
 	@MockBean
 	EntityService<SimpleTestEntity, UUID> simpleService;
-	
+
 	@Captor
 	ArgumentCaptor<UUID> idCaptor;
-	
+
 	@Autowired
 	ReferencingTestEntityMapper mapper;
-	
+
 	EnhancedRandom random = EnhancedRandomBuilder.aNewEnhancedRandomBuilder().build();
-	
+
 	@Before
 	public void before() {
 		when(refService.supports(eq(ReferencingTestEntity.class))).thenReturn(true);
@@ -58,21 +58,21 @@ public class ReferenceDTOEntityMapperTest {
 			return s;
 		});
 	}
-	
+
 	@Test
 	public void source_to_destination_works() {
-		ReferencingTestEntity s = random.random(ReferencingTestEntity.class);
+		ReferencingTestEntity s = random.nextObject(ReferencingTestEntity.class);
 		ReferencingTestDTO d = mapper.toDTO(s);
-		
+
 		assertThat(d.getId()).isEqualTo(s.getId());
 		assertThat(d.getVersion()).isEqualTo(s.getVersion());
 		assertThat(d.getName()).isEqualTo(s.getName());
 		assertThat(d.getReference().getId()).isEqualTo(s.getReference().getId());
 	}
-	
+
 	@Test
 	public void destination_to_source_works() {
-		ReferencingTestDTO d = random.random(ReferencingTestDTO.class);
+		ReferencingTestDTO d = random.nextObject(ReferencingTestDTO.class);
 		ReferencingTestEntity s = mapper.toEntity(d);
 
 		assertThat(s.getId()).isEqualTo(d.getId());
@@ -80,19 +80,19 @@ public class ReferenceDTOEntityMapperTest {
 		assertThat(s.getReference().getId()).isEqualTo(d.getReference().getId());
 		assertThat(s.getReference().getName()).isEqualTo("IT WORKS");
 	}
-	
+
 	@Test(expected=EntityNotFoundException.class)
 	public void unknown_reference_throws_entityNotFoundException() {
 		when(simpleService.get(any())).thenReturn(null);
-		ReferencingTestDTO d = random.random(ReferencingTestDTO.class);
+		ReferencingTestDTO d = random.nextObject(ReferencingTestDTO.class);
 		mapper.toEntity(d);
 	}
-	
+
 	@Test
 	public void null_reference_resolves_as_null() {
-		ReferencingTestDTO d = random.random(ReferencingTestDTO.class);
+		ReferencingTestDTO d = random.nextObject(ReferencingTestDTO.class);
 		d.setReference(null);
-		
+
 		ReferencingTestEntity s = mapper.toEntity(d);
 		assertThat(s.getReference()).isNull();
 	}

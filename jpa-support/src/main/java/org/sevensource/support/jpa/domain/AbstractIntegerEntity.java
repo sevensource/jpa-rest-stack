@@ -9,16 +9,14 @@ import org.hibernate.annotations.GenericGenerator;
 import org.sevensource.support.jpa.hibernate.AssignedIdentityGenerator;
 
 @MappedSuperclass
-public abstract class AbstractIntegerEntity extends AbstractPersistentEntity<Integer> { 
+public abstract class AbstractIntegerEntity extends AbstractPersistentEntity<Integer> {
 
-	private static final long serialVersionUID = 5980912852903319981L;
-	
 	@Id
 	@Column(updatable=false, unique=true, nullable=false)
 	@GeneratedValue(generator=AssignedIdentityGenerator.NAME)
 	@GenericGenerator(name=AssignedIdentityGenerator.NAME, strategy=AssignedIdentityGenerator.GENERATOR_CLASS)
 	private Integer id;
-	
+
 	@Override
 	public Integer getId() {
 		return id;

@@ -11,26 +11,26 @@
 	<parent>
 		<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 		<artifactId>jpa-rest-stack-parent</artifactId>
-		<version>0.3.0</version>
+		<version>0.4.0</version>
 	</parent>
 
 	<properties>
-		<datasource.proxy.version>1.4.1</datasource.proxy.version>
-		<equalsverifier.version>2.3</equalsverifier.version>
-		<junit.dataprovider.version>1.12.0</junit.dataprovider.version>
+		<datasource.proxy.version>1.4.10</datasource.proxy.version>
+		<equalsverifier.version>3.0.1</equalsverifier.version>
+		<junit.dataprovider.version>1.13.1</junit.dataprovider.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 			<artifactId>jpa-support</artifactId>
-			<version>0.3.0</version>
+			<version>0.4.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.sevensource.support.jpa-rest-stack</groupId>
 			<artifactId>rest-support</artifactId>
-			<version>0.3.0</version>
+			<version>0.4.0</version>
 		</dependency>
 		
 		<dependency>
@@ -92,6 +92,13 @@
 			<groupId>io.github.benas</groupId>
 			<artifactId>random-beans</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+    		<groupId>javax.interceptor</groupId>
+    		<artifactId>javax.interceptor-api</artifactId>
+    		<version>1.2.2</version>
+    		<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

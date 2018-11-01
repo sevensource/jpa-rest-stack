@@ -3,12 +3,12 @@ package org.sevensource.support.jpa.hibernate.unique;
 import java.util.ArrayList;
 import java.util.List;
 
-class ConstraintDescriptorGroup {
+class UniqueConstraintGroup {
 	private final String name;
-	private List<ConstraintDescriptor> constraints = new ArrayList<>(3);
+	private List<UniqueConstraint> constraints = new ArrayList<>(3);
 	
 	
-	public ConstraintDescriptorGroup(String groupName, ConstraintDescriptor descriptor) {
+	public UniqueConstraintGroup(String groupName, UniqueConstraint descriptor) {
 		this.name = groupName;
 		if(descriptor != null) {
 			this.constraints.add(descriptor);
@@ -19,7 +19,7 @@ class ConstraintDescriptorGroup {
 		return name;
 	}
 	
-	public List<ConstraintDescriptor> getConstraints() {
+	public List<UniqueConstraint> getConstraints() {
 		return constraints;
 	}
 }

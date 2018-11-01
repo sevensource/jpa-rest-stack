@@ -19,10 +19,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @Import({ValidationAutoConfiguration.class})
 public class IntegerEntityTest {
-	
+
 	@PersistenceContext
 	EntityManager em;
-	
+
 	@Test
 	public void isNew_works() {
 		IntegerEntity e = new IntegerEntity();
@@ -31,30 +31,30 @@ public class IntegerEntityTest {
 		em.flush();
 		assertThat(e.isNew()).isFalse();
 	}
-	
+
 	@Test
 	public void equals_works() {
 		IntegerEntity e = new IntegerEntity();
 		IntegerEntity e1 = new IntegerEntity();
 		assertThat(e1).isNotEqualTo(e);
 		assertThat(e).isEqualTo(e);
-		
+
 		em.persist(e);
 		assertThat(e).isEqualTo(e);
 		em.flush();
 		assertThat(e).isEqualTo(e);
-		
+
 		assertThat(e).isNotEqualTo(null);
-		
+
 		e1.setId(null);
 		assertThat(e).isNotEqualTo(e1);
-		
+
 		e.setId(null);
 		assertThat(e).isNotEqualTo(e1);
-		
-		assertThat(e).isNotEqualTo(new SimpleEntity());
+
+		assertThat(e).isNotEqualTo(new UUIDEntity());
 	}
-	
+
 	@Test
 	public void hashCode_works() {
 		IntegerEntity e = new IntegerEntity();
@@ -63,7 +63,7 @@ public class IntegerEntityTest {
 		em.flush();
 		e.hashCode();
 	}
-	
+
 	@Test
 	public void toString_works() {
 		IntegerEntity e = new IntegerEntity();
@@ -71,5 +71,17 @@ public class IntegerEntityTest {
 		em.persist(e);
 		em.flush();
 		e.toString();
+	}
+
+	@Test
+	public void auditing_works() {
+		IntegerEntity e = new IntegerEntity();
+		e = em.merge(e);
+		em.flush();
+
+		assertThat(e.getCreatedBy()).isNotNull();
+		assertThat(e.getCreatedDate()).isNotNull();
+		assertThat(e.getLastModifiedBy()).isNotNull();
+		assertThat(e.getLastModifiedDate()).isNotNull();
 	}
 }
