@@ -11,7 +11,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.sevensource.support.jpa.hibernate.AssignedUUIDGenerator;
-import org.springframework.util.ClassUtils;
 
 @MappedSuperclass
 public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> {
@@ -52,27 +51,6 @@ public abstract class AbstractUUIDEntity extends AbstractPersistentEntity<UUID> 
 		}
 		return id.equals(_id);
 	}
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-        	return true;
-        }
-        else if (o == null) {
-        	return false;
-        }
-        else if (!getClass().equals(ClassUtils.getUserClass(o))) {
-        	return false;
-        }
-
-		AbstractUUIDEntity other = (AbstractUUIDEntity) o;
-
-		if(this.getId() == null || other.getId() == null) {
-			return false;
-		} else {
-			return this.getId().equals(other.getId());
-		}
-    }
 
 
     @Override

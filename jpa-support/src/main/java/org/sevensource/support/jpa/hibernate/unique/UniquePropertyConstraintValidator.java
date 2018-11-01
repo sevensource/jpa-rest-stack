@@ -4,7 +4,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,35 +63,25 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 			throw new IllegalArgumentException(e);
 		}
 
-    	TypedQuery<Tuple> query = buildQuery(entityClass, constraints);
+    	final TypedQuery<Tuple> query = buildQuery(entityClass, constraints);
+    	final Object resultId = executeQuery(query, entityClass);
 
-        try {
-        	final Object resultId = query.getSingleResult().get(0);
-        	final Object entityId = entityManagerFactory.getPersistenceUnitUtil().getIdentifier(target);
+    	if(resultId == null) {
+    		return true;
+    	}
 
-        	if(resultId.equals(entityId)) {
-        		if (logger.isTraceEnabled()) {
-					logger.trace("Object returned by ValidationConstraint query is equal to the object under validation");
-				}
-        		return true;
-        	} else {
-        		if (logger.isDebugEnabled()) {
-					logger.debug("Validation failed - object returned by ValidationConstraint query does not equal to the one under validation");
-				}
+    	final Object entityId = entityManagerFactory.getPersistenceUnitUtil().getIdentifier(target);
 
-        		addConstraintViolation(context, constraints);
-	        	return false;
-        	}
-        } catch(NoResultException nre) {
-        	if (logger.isTraceEnabled()) {
-				logger.trace("ValidationConstraint query returned no results");
+    	if(resultId.equals(entityId)) {
+    		return true;
+    	} else {
+    		if (logger.isDebugEnabled()) {
+				logger.debug("Validation failed - object returned by ValidationConstraint query does not equal to the one under validation");
 			}
-        	return true;
-        } catch(NonUniqueResultException nure) {
-        	String msg = String.format("UniqueValidation query for class %s returned more than one result", entityClass.getName());
-        	logger.error(msg);
-        	throw new IllegalArgumentException(msg);
-        }
+
+    		addConstraintViolation(context, constraints);
+        	return false;
+    	}
     }
 
     private ConstraintList getConstraintDescriptors(Class<?> entityClass, Object target)
@@ -111,8 +100,7 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     			final String name = field.getName();
 
     	        final PropertyDescriptor desc = new PropertyDescriptor(name, entityClass);
-    	        final Method readMethod = desc.getReadMethod();
-    	        final Object value = readMethod.invoke(target);
+    	        final Object value = desc.getReadMethod().invoke(target);
 
 				final ConstraintDescriptorGroup group = constraints.getConstraintDescriptorGroup(constraintGroupName);
 				final ConstraintDescriptor descriptor = new ConstraintDescriptor(name, value, constraintGroupName);
@@ -154,6 +142,20 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     	criteriaQuery = criteriaQuery.multiselect(root.get(propertyName));
     	criteriaQuery = criteriaQuery.where(builder.or(predicates));
     	return em.createQuery(criteriaQuery);
+    }
+
+    private Object executeQuery(TypedQuery<Tuple> query, Class<?> entityClass) {
+    	try {
+        	final Object resultId = query.getSingleResult().get(0);
+        	return resultId;
+        } catch(NoResultException nre) {
+        	// no results, we're good to go
+        	return null;
+        } catch(NonUniqueResultException nure) {
+        	final String msg = String.format("UniqueValidation query for class %s returned more than one result", entityClass.getName());
+        	logger.error(msg);
+        	throw new IllegalArgumentException(msg);
+        }
     }
 
 
