@@ -5,9 +5,9 @@ import java.time.Instant;
 import org.springframework.http.HttpStatus;
 
 public class ApiErrorDTO {
-	private long timestamp;
-	private int status;
-	private String error;
+	private final long timestamp = Instant.now().toEpochMilli();
+	private final int status;
+	private final String error;
 	private String exception;
 	private String message;
 
@@ -15,10 +15,9 @@ public class ApiErrorDTO {
 
 
 	public ApiErrorDTO(Exception ex, HttpStatus status) {
-		this.timestamp = Instant.now().toEpochMilli();
-		this.exception = ex.getClass().getName();
 		this.status = status.value();
 		this.error = status.getReasonPhrase();
+		this.exception = ex.getClass().getName();
 		this.message = ex.getMessage();
 	}
 

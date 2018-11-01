@@ -77,25 +77,30 @@ public class LiquibaseDiffGenerator {
 			DiffResult result = doDatabaseDiff(schema, primaryConnection, targetConnection);
 
 			ReportBuilder builder = new ReportBuilder();
-			builder.appendLine("").appendLine("");
-			builder.appendLine(String.format(">> db diff (%s):", schema));
-
-			builder.appendLine("=====================");
+			builder
+				.appendLine("")
+				.appendLine("")
+				.appendLine(String.format(">> db diff (%s):", schema))
+				.appendLine("=====================");
 
 			if(! result.areEqual()) {
-				String changeLog = generateChangeLog(result);
-				String changeReport = generateChangeReport(result);
+				final String changeLog = generateChangeLog(result);
+				final String changeReport = generateChangeReport(result);
 
-				builder.appendLine(String.format(">> Report (%s):", schema));
-				builder.appendLine(changeReport);
-				builder.appendLine(" ");
-				builder.appendLine(String.format(">> ChangeLog (%s):", schema));
-				builder.appendLine("=======================");
-				builder.appendLine(changeLog);
+				builder
+					.appendLine(String.format(">> Report (%s):", schema))
+					.appendLine(changeReport)
+					.appendLine(" ")
+					.appendLine(String.format(">> ChangeLog (%s):", schema))
+					.appendLine("=======================")
+					.appendLine(changeLog);
 			} else {
-				builder.appendLine("No changes");
+				builder
+					.appendLine(">> No changes");
 			}
 
+			builder
+				.appendLine("=====================");
 			return builder;
 		}
 	}
