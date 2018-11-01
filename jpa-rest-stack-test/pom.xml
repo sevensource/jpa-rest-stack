@@ -15,9 +15,9 @@
 	</parent>
 
 	<properties>
-		<datasource.proxy.version>1.4.1</datasource.proxy.version>
-		<equalsverifier.version>2.3</equalsverifier.version>
-		<junit.dataprovider.version>1.12.0</junit.dataprovider.version>
+		<datasource.proxy.version>1.4.10</datasource.proxy.version>
+		<equalsverifier.version>3.0.1</equalsverifier.version>
+		<junit.dataprovider.version>1.13.1</junit.dataprovider.version>
 	</properties>
 
 	<dependencies>

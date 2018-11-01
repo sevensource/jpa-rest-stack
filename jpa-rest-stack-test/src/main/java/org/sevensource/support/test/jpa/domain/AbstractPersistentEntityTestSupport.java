@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.transaction.BeforeTransaction;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.EqualsVerifierApi;
 import nl.jqno.equalsverifier.Warning;
 
 
@@ -37,7 +38,8 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 		deleteAll();
 	}
 
-	protected final EqualsVerifier<E> defaultEqualsVerifier() {
+	protected final EqualsVerifierApi<E> defaultEqualsVerifier() {
+
 		return
 			    EqualsVerifier
 		    	.forClass(domainClass)

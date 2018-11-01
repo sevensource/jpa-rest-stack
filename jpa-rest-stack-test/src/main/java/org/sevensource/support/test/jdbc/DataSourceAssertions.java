@@ -5,28 +5,28 @@ import net.ttddyy.dsproxy.QueryCountHolder;
 public class DataSourceAssertions {
 
 	private DataSourceAssertions() { }
-	
+
     public static void reset() {
         QueryCountHolder.clear();
     }
-    
-    public static int selectCount() {
+
+    public static long selectCount() {
     	return QueryCountHolder.getGrandTotal().getSelect();
     }
-    
-    public static int insertCount() {
+
+    public static long insertCount() {
     	return QueryCountHolder.getGrandTotal().getInsert();
     }
-    
-    public static int updateCount() {
+
+    public static long updateCount() {
     	return QueryCountHolder.getGrandTotal().getUpdate();
     }
-    
-    public static int deleteCount() {
+
+    public static long deleteCount() {
     	return QueryCountHolder.getGrandTotal().getDelete();
     }
-    
-    public static int totalCount() {
+
+    public static long totalCount() {
     	return QueryCountHolder.getGrandTotal().getTotal();
     }
 }

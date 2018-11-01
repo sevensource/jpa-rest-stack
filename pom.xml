@@ -24,9 +24,6 @@
 
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 
-<!-- 
-		<spring-data-releasetrain.version>Lovelace-RELEASE</spring-data-releasetrain.version>
- -->
 		<random.beans.version>3.7.0</random.beans.version>
 		<mockito.version>[2.7.0,3.0.0)</mockito.version>
 		<commons.lang3.version>3.8</commons.lang3.version>
@@ -181,6 +178,7 @@
 				<version>${random.beans.version}</version>
 				<scope>test</scope>
 			</dependency>
+			
 			<dependency>
 				<groupId>io.github.benas</groupId>
 				<artifactId>random-beans-randomizers</artifactId>
