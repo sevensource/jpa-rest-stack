@@ -30,7 +30,7 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              chmod o+x ./code-climate-runner.sh
+              chmod ug+x ./code-climate-runner.sh
               ./code-climate-runner.sh
             fi
       
