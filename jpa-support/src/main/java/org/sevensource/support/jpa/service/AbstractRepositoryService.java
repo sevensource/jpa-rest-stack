@@ -14,8 +14,6 @@ import org.sevensource.support.jpa.exception.EntityException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,8 +26,6 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 	private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
 	private static final String ENTITY_WITH_ID_S_DOES_NOT_EXIST = "Entity with id [%s] does not exist";
 	private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
-
-	private static final Logger logger = LoggerFactory.getLogger(AbstractRepositoryService.class);
 
 	private final JpaRepository<T, UUID> repository;
 	private final Validator validator;

@@ -11,8 +11,6 @@ import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.dto.IdentifiableDTO;
 import org.sevensource.support.rest.dto.PagedCollectionResourceDTO;
 import org.sevensource.support.rest.mapping.EntityMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,8 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO extends IdentifiableDTO<ID>> {
-
-	private static final Logger logger = LoggerFactory.getLogger(AbstractEntityRestController.class);
 
 	private final EntityService<E, ID> entityService;
 	private final EntityMapper<E,DTO> mapper;

@@ -381,7 +381,7 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 				expected = Math.max(entityCount - pagesize * c, 0);
 			}
 
-			PageRequest pageRequest = new PageRequest(c, pagesize);
+			PageRequest pageRequest = PageRequest.of(c, pagesize);
 			Page<T> res = getService().findAll(pageRequest);
 			assertThat(res).size().isEqualTo(expected);
 		}
@@ -396,7 +396,8 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		getEntityManager().clear();
 		int createdCount = getEntityCount();
 
-		Sort sort = new Sort("id");
+
+		Sort sort = Sort.by("id");
 		List<T> res = getService().findAll(sort);
 		assertThat(res).size().isEqualTo(createdCount);
 	}

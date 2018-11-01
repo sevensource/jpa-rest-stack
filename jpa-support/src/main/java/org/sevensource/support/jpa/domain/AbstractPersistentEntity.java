@@ -17,7 +17,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.util.ClassUtils;
+import org.springframework.data.util.ProxyUtils;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -60,7 +60,7 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
         	return true;
         } else if (o == null) {
         	return false;
-        } else if (!getClass().equals(ClassUtils.getUserClass(o))) {
+        } else if (!getClass().equals(ProxyUtils.getUserClass(o))) {
         	return false;
         }
 

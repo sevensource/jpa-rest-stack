@@ -27,25 +27,29 @@ import io.github.benas.randombeans.api.EnhancedRandom;
 public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implements MockProvider<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMockProvider.class);
-	
+
 	private final Class<T> domainClass;
-	
+
 	private EnhancedRandom random;
-	
+
 	@Autowired(required=false)
 	private TestEntityManager tem;
-	
+
 	@Autowired(required=false)
 	private EntityManagerFactory emf;
-	
+
 	@Autowired
 	MockFactory mockFactory;
-	
-	
+
+
 	public AbstractMockProvider(Class<T> domainClass) {
 		this.domainClass = domainClass;
 	}
-	
+
+	public void setMockFactory(MockFactory mockFactory) {
+		this.mockFactory = mockFactory;
+	}
+
 	@PostConstruct
 	public void postConstruct() {
 		EnhancedRandomBuilder randomBuilder = EnhancedRandomBuilder.aNewEnhancedRandomBuilder()
@@ -56,7 +60,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 				   .collectionSizeRange(1, 10)
 				   .scanClasspathForConcreteTypes(true)
 				   .overrideDefaultInitialization(true);
-		
+
 		if(tem != null || emf != null) {
 			randomBuilder = randomBuilder
 					.exclude(FieldDefinitionBuilder.field().named("id").inClass(AbstractUUIDEntity.class).get())
@@ -68,10 +72,10 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 					.exclude(FieldDefinitionBuilder.field().named("createdDate").ofType(Instant.class).inClass(AbstractPersistentEntity.class).get())
 					.exclude(FieldDefinitionBuilder.field().named("version").ofType(Integer.class).inClass(AbstractPersistentEntity.class).get());
 		}
-		
+
 		random = randomBuilder.build();
 	}
-	
+
 	@Override
 	public Class<T> getDomainClass() {
 		return domainClass;
@@ -85,8 +89,8 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 		}
 
 		return list;
-	}	
-	
+	}
+
 	@Override
 	public T create() {
 		T mock = populate();
@@ -98,12 +102,14 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			logger.warn("Mocking persist() of entity {}", mock.getClass().getSimpleName());
 			setId(mock);
 		}
-		
+
 		return mock;
 	}
-	
+
 	private boolean hasExistingEntityManagerTransaction() {
-		if(tem == null) return false;
+		if(tem == null) {
+			return false;
+		}
 		try {
 			tem.getEntityManager();
 			return true;
@@ -111,13 +117,13 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			return false;
 		}
 	}
-	
+
 	private T persistWithExistingTransaction(T mock) {
 		tem.persist(mock);
 		tem.flush();
 		return tem.find(domainClass, mock.getId());
 	}
-	
+
 	private T persistWithNewTransaction(T mock) {
 		EntityManager entityManager = null;
 		EntityTransaction txn = null;
@@ -125,16 +131,17 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			entityManager = emf.createEntityManager();
 			txn = entityManager.getTransaction();
 			txn.begin();
-			
+
 			entityManager.persist(mock);
 			entityManager.flush();
 			entityManager.refresh(mock);
-			
+
 			txn.commit();
 			return mock;
 		} catch (Exception e) {
-			if (txn != null && txn.isActive())
+			if (txn != null && txn.isActive()) {
 				txn.rollback();
+			}
 			throw new IllegalArgumentException(e);
 		} finally {
 			if (entityManager != null) {
@@ -142,7 +149,7 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			}
 		}
 	}
-	
+
 	/**
 	 * set an ID on the mock manually
 	 * @param mock
@@ -156,12 +163,16 @@ public abstract class AbstractMockProvider<T extends PersistentEntity<?>> implem
 			throw new IllegalStateException("Override setId() - don't know how to set id on " + mock.getClass().getSimpleName());
 		}
 	}
-	
-	
+
+
 	protected <E extends PersistentEntity<?>> E create(Class<E> clazz) {
 		return mockFactory.on(clazz).create();
 	}
-	
+
+//	protected <E extends PersistentEntity<?>> E populate(Class<E> clazz) {
+//		return mockFactory.on(clazz).populate();
+//	}
+
 	protected EnhancedRandom getRandomizer() {
 		return random;
 	}
