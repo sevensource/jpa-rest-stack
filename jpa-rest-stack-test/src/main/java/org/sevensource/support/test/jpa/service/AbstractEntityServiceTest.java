@@ -360,12 +360,10 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 	}
 
 
-	/***    FIND TESTS    ***/
-	/************************/
-	/**
-	 *
-	 * @param count entityCount
-	 */
+	// FIND TESTS
+	// **************************
+	// **************************
+
 	@Test
 	@DataProvider({ "0", "10", "20", "30"})
 	public void findall_is_correct_with_pageable(int count) {

@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.sevensource.parents</groupId>
 		<artifactId>sevensource-oss-build</artifactId>
-		<version>1.6</version>
+		<version>1.7</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -127,9 +127,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<useSystemClassLoader>false</useSystemClassLoader>
-				</configuration>
 			</plugin>
 			
 			<plugin>

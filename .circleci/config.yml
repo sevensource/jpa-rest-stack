@@ -30,12 +30,7 @@ jobs:
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
-              cd src/main/java/
-              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-              chmod +x ./cc-test-reporter
-              ./cc-test-reporter before-build
-              ./cc-test-reporter format-coverage --input-type jacoco -d ../../../target/site/jacoco-ut/jacoco.xml --add-prefix src/main/java
-              ./cc-test-reporter upload-coverage
+              sh code-climate-runner.sh
             fi
       
       - deploy:
