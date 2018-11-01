@@ -15,11 +15,10 @@ jobs:
           - v1-dependencies-{{ checksum "pom.xml" }}
           - v1-dependencies-
 
-#      - run: mvn dependency:go-offline
       - run: |
           mvn dependency:resolve-plugins
-          mvn dependency:collect -DoutputFile=$HOME/dependecy-collect.out -DappendOutput=true
-          grep -v "The following files have been resolved" $HOME/dependecy-collect.out | sort | uniq | sed '/^\s*$/d' | awk -F ':' '{print $1 ":" $2 ":" $4 ":" $3}' | sed -e 's/^\s*/mvn dependency:get -Dartifact=/' | sh -x
+          mvn -U --fail-never dependency:go-offline || true
+          mvn de.qaware.maven:go-offline-maven-plugin:1.0.0:resolve-dependencies
 
       - save_cache:
           paths:
