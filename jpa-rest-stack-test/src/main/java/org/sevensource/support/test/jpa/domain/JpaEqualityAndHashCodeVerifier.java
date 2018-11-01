@@ -29,18 +29,18 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 	private Class<E> domainClass;
 	private EntityManagerFactory entityManagerFactory;
 	private boolean changesHashCodeAfterPersist;
-	
+
 	public JpaEqualityAndHashCodeVerifier(E entity, EntityManagerFactory entityManagerFactory, boolean changesHashCodeAfterPersist) {
 		this.entity = entity;
-		this.domainClass = (Class<E>) this.entity.getClass();
+		this.domainClass = (Class<E>) entity.getClass();
 		this.entityManagerFactory = entityManagerFactory;
 		this.changesHashCodeAfterPersist = changesHashCodeAfterPersist;
 	}
-	
+
 	public void verify() {
-		
+
 		Set<E> tuples = new HashSet<>();
-		
+
 		assertThat(tuples.contains(entity)).isFalse();
 		tuples.add(entity);
 		assertThat(tuples.contains(entity)).isTrue();
@@ -50,16 +50,16 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 				tuples.remove(entity);
 				assertThat(tuples.size()).isEqualTo(0);
 			}
-			
+
 			entityManager.persist(entity);
 			entityManager.flush();
-			
+
 			if(changesHashCodeAfterPersist) {
 				entity = entityManager.find(domainClass, entity.getId());
 				tuples.add(entity);
 				assertThat(tuples.contains(entity)).isTrue();
 			}
-			
+
 			assertThat(tuples.contains(entity)).as("The entity is found after it's persisted").isTrue();
 		});
 
@@ -88,7 +88,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 						+ "in an other Persistence Context and " + "in an other thread").isTrue();
 			});
 		});
-		
+
 		// now: delete - delete one by one to respect cascades
 		doInJPA(entityManager -> {
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -101,7 +101,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 		});
 	}
 
-	
+
 	@FunctionalInterface
 	protected interface JPATransactionVoidFunction extends Consumer<EntityManager> {
 		default void beforeTransactionCompletion() {
@@ -110,7 +110,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 		default void afterTransactionCompletion() {
 		}
 	}
-	
+
 	protected void doInJPA(JPATransactionVoidFunction function) {
 		EntityManager entityManager = null;
 		EntityTransaction txn = null;
@@ -122,8 +122,9 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 			function.accept(entityManager);
 			txn.commit();
 		} catch (Exception e) {
-			if (txn != null && txn.isActive())
+			if (txn != null && txn.isActive()) {
 				txn.rollback();
+			}
 			throw e;
 		} finally {
 			function.afterTransactionCompletion();
@@ -132,7 +133,7 @@ public class JpaEqualityAndHashCodeVerifier<E extends PersistentEntity<?>> {
 			}
 		}
 	}
-	
+
 	@FunctionalInterface
 	protected interface VoidCallable extends Callable<Void> {
 

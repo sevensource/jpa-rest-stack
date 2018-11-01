@@ -83,7 +83,7 @@ public abstract class AbstractJpaTestSupport<T extends PersistentEntity<?>> {
 
 		for(Class<?> clazz : deletionClasses) {
 			CriteriaBuilder criteriaBuilder  = entitymanager.getCriteriaBuilder();
-			CriteriaQuery query = criteriaBuilder.createQuery(clazz);
+			CriteriaQuery<?> query = criteriaBuilder.createQuery(clazz);
 			query.from(clazz);
 			List<?> results = entitymanager.createQuery(query).getResultList();
 

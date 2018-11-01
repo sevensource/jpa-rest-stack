@@ -221,7 +221,7 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 
 		ensureEmpty();
 		E entity = populate();
-		JpaEqualityAndHashCodeVerifier verifier = new JpaEqualityAndHashCodeVerifier(entity, getEntityManagerFactory(), entityChangesHashCodeAfterPersist());
+		JpaEqualityAndHashCodeVerifier<E> verifier = new JpaEqualityAndHashCodeVerifier<>(entity, getEntityManagerFactory(), entityChangesHashCodeAfterPersist());
 		verifier.verify();
 	}
 
