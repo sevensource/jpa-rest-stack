@@ -8,7 +8,7 @@ find . -type f -iname "jacoco.xml" -print0 | while IFS= read -r -d $'\0' report;
   PROJECT=$(dirname "${report}" | cut -d "/" -f2)
   TYPE=$(dirname "${report}" | rev | cut -d "/" -f1 | rev)
 
-  if [ $PROJECT = "target" ]; then
+  if [ "$PROJECT" == "target" ]; then
     PROJECT="."
   fi
 
