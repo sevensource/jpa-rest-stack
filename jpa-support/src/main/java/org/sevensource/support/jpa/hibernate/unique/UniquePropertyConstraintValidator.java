@@ -4,8 +4,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -78,7 +78,6 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     }
 
     private UniqueConstraintList getConstraintDescriptors(Class<?> entityClass, Object target) {
-
         try {
         	final UniqueConstraintList constraintList = new UniqueConstraintList();
 
@@ -105,13 +104,12 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 
     private TypedQuery<Tuple> buildQuery(UniqueConstraintList constraints, Class<?> entityClass) {
     	CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
-        CriteriaQuery<Tuple> criteriaQuery = builder.createTupleQuery();
+    	CriteriaQuery<Tuple> criteriaQuery = builder.createTupleQuery();
         Root<?> root = criteriaQuery.from(entityClass);
 
         Predicate[] predicates = constraints
         	.stream()
         	.map(constraintGroup -> {
-
         		Predicate[] groupPredicates = constraintGroup.getConstraints()
         			.stream()
         			.map(constraint -> builder.equal(root.get(constraint.field), constraint.value))
@@ -158,17 +156,21 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
 	}
 
     private void addConstraintViolation(ConstraintValidatorContext context, UniqueConstraintList constraintList) {
-    	final String msg = context.getDefaultConstraintMessageTemplate();
-		ConstraintViolationBuilder constraintBuilder = context.buildConstraintViolationWithTemplate(msg);
+
+		final List<UniqueConstraint> constraints = constraintList.stream()
+			.flatMap(constraintGroup -> constraintGroup.getConstraints().stream())
+			.collect(Collectors.toList());
+
+
 		NodeBuilderCustomizableContext nodeConstraintBuilder = null;
 
-		for(UniqueConstraintGroup constraintGroup : constraintList) {
-			for(UniqueConstraint cd : constraintGroup.getConstraints()) {
-				if(nodeConstraintBuilder == null) {
-					nodeConstraintBuilder = constraintBuilder.addPropertyNode(cd.field);
-				} else {
-					nodeConstraintBuilder = nodeConstraintBuilder.addPropertyNode(cd.field);
-				}
+		for(UniqueConstraint constraint : constraints) {
+			if(nodeConstraintBuilder == null) {
+		    	final String msg = context.getDefaultConstraintMessageTemplate();
+				final ConstraintViolationBuilder constraintBuilder = context.buildConstraintViolationWithTemplate(msg);
+				nodeConstraintBuilder = constraintBuilder.addPropertyNode(constraint.field);
+			} else {
+				nodeConstraintBuilder = nodeConstraintBuilder.addPropertyNode(constraint.field);
 			}
 		}
 
@@ -178,23 +180,19 @@ public class UniquePropertyConstraintValidator implements ConstraintValidator<Un
     }
 
 
-    private static void logQuery(UniqueConstraintList constraints, Class<?> entityClass) {
+    private static void logQuery(UniqueConstraintList constraintList, Class<?> entityClass) {
     	if (logger.isDebugEnabled()) {
-			List<String> tmp = new ArrayList<>();
 
-			for(int c=0; c<constraints.size(); c++) {
-				UniqueConstraintGroup constraintGroup = constraints.get(c);
+			final String constraintDescription = constraintList.stream()
+				.map(constraintGroup -> {
+					return constraintGroup.getConstraints()
+						.stream()
+						.map(constraint -> String.format("%s='%s'", constraint.field, constraint.value))
+						.collect(Collectors.joining(" AND ", "(", ")"));
+				})
+				.collect(Collectors.joining(" OR "));
 
-				String[] tmpx = new String[constraintGroup.getConstraints().size()];
-				for(int i=0; i<constraintGroup.getConstraints().size(); i++) {
-					final UniqueConstraint constraint = constraintGroup.getConstraints().get(i);
-					tmpx[i] = String.format("%s='%s'", constraint.field, constraint.value);
-				}
-
-				tmp.add("(" + String.join(" AND ", tmpx) + ")");
-			}
-
-			logger.debug("Validating UniqueConstraint [{}] for entity {}", String.join(" OR ", tmp), entityClass );
+			logger.debug("Validating UniqueConstraint [{}] for entity {}", constraintDescription, entityClass );
 		}
     }
 
