@@ -167,7 +167,10 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		}
 
 		final DTO savedDto = toResource(savedEntity);
-		return ResponseEntity.status(status).body(savedDto);
+		HttpHeaders headers = ETag.from(savedEntity).addTo(new HttpHeaders());
+		headers.setLastModified(savedEntity.getLastModifiedDate().toEpochMilli());
+		
+		return ResponseEntity.status(status).headers(headers).body(savedDto);
 	}
 
 	@PatchMapping("/{id}")

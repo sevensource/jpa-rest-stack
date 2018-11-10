@@ -314,13 +314,15 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		ID requestedId = nillId();
 
 		mvc
-				.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
-				.andExpect(status().isCreated())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.id").isNotEmpty())
-				.andExpect(jsonPath("$.id").value(requestedId.toString()))
-				.andDo(print())
-				.andReturn();
+			.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
+			.andExpect(status().isCreated())
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andExpect(jsonPath("$.id").isNotEmpty())
+			.andExpect(jsonPath("$.id").value(requestedId.toString()))
+			.andDo(print())
+			.andReturn();
 	}
 
 	@Test
@@ -330,13 +332,15 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		String json = "{\"id\": \"" + requestedId.toString() + "\"}";
 
 		mvc
-				.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.id").isNotEmpty())
-				.andExpect(jsonPath("$.id").value(requestedId.toString()))
-				.andDo(print())
-				.andReturn();
+			.perform(request("/" + requestedId, HttpMethod.PUT).content(json))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andExpect(jsonPath("$.id").isNotEmpty())
+			.andExpect(jsonPath("$.id").value(requestedId.toString()))
+			.andDo(print())
+			.andReturn();
 	}
 	
 	@Test
@@ -360,6 +364,8 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 						.content(json))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+				.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
 				.andExpect(jsonPath("$.id").isNotEmpty())
 				.andExpect(jsonPath("$.id").value(requestedId.toString()))
 				.andDo(print())
