@@ -74,7 +74,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 			} else {
 				E entity = mockFactory.on(getEntityClass()).create();
 				entity.setId(idCaptor.getValue());
-				entityMap.put(idCaptor.getValue(), entity);
+				entityMap.put(entity.getId(), entity);
 				return entity;				
 			}
 		});
@@ -82,18 +82,21 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		when(getService().create(entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(nextId());
+			entityMap.put(entity.getId(), entity);
 			return entity;
 		});
 
 		when(getService().create(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
 			entity.setId(idCaptor.getValue());
+			entityMap.put(entity.getId(), entity);
 			return entity;
 		});
 
 		when(getService().update(idCaptor.capture(), entityCaptor.capture())).thenAnswer(c -> {
 			E e = entityCaptor.getValue();
 			e.setId(idCaptor.getValue());
+			entityMap.put(e.getId(), e);
 			return e;
 		});
 
@@ -334,6 +337,55 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 				.andExpect(jsonPath("$.id").value(requestedId.toString()))
 				.andDo(print())
 				.andReturn();
+	}
+	
+	@Test
+	public void put_existing_resource_with_matched_etag_works() throws Exception {
+		ID requestedId = nextId();
+		
+		MvcResult result = mvc
+			.perform(request("/" + requestedId, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.ETAG))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andReturn();
+		
+		final String etag = result.getResponse().getHeader(HttpHeaders.ETAG);
+
+		String json = "{\"id\": \"" + requestedId.toString() + "\"}";
+
+		mvc
+				.perform(request("/" + requestedId, HttpMethod.PUT)
+						.header(HttpHeaders.IF_MATCH, etag)
+						.content(json))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$.id").isNotEmpty())
+				.andExpect(jsonPath("$.id").value(requestedId.toString()))
+				.andDo(print())
+				.andReturn();
+	}
+	
+	@Test
+	public void put_existing_resource_with_unmatched_etag_fails() throws Exception {
+		ID requestedId = nextId();
+		
+		mvc
+			.perform(request("/" + requestedId, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.ETAG))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andReturn();
+
+		String json = "{\"id\": \"" + requestedId.toString() + "\"}";
+
+		mvc
+			.perform(request("/" + requestedId, HttpMethod.PUT)
+					.header(HttpHeaders.IF_MATCH, "\"" + UUID.randomUUID() + "\"")
+					.content(json))
+			.andExpect(status().isPreconditionFailed())
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andDo(print());
 	}
 
 	@Test

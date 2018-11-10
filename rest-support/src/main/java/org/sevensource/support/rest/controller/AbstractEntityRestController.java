@@ -130,15 +130,16 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		}
 		
 		DTO dto = toResource(domainObj);
+		HttpHeaders headers = etag.addTo(new HttpHeaders());
+		headers.setLastModified(domainObj.getLastModifiedDate().toEpochMilli());
 		
 		return ResponseEntity.ok()
-				.eTag(etag.toString())
-				.lastModified(domainObj.getLastModifiedDate().toEpochMilli())
+				.headers(headers)
 				.body(dto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<DTO> putItemResource(@PathVariable ID id, @RequestBody DTO dto) {
+	public ResponseEntity<DTO> putItemResource(@PathVariable ID id, @RequestBody DTO dto, ETag etag, @RequestHeader HttpHeaders requestHeaders) {
 
 		dto.setId(id);
 
@@ -147,6 +148,15 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		HttpStatus status;
 
 		if(entityToSave != null) {
+			
+			if(etag != null && ! etag.equals(ETag.NO_ETAG)) {
+				final ETag expectedETag = ETag.from(entityToSave);
+				if(! expectedETag.equals(etag)) {
+					HttpHeaders headers = expectedETag.addTo(new HttpHeaders());
+					return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).headers(headers).build();
+				}
+			}
+			
 			toEntity(dto, entityToSave);
 			savedEntity = entityService.update(id, entityToSave);
 			status = HttpStatus.OK;

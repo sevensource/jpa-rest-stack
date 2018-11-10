@@ -73,26 +73,6 @@ public final class ETag {
 	}
 
 	/**
-	 * Verifies the ETag to be created for the given target bean with the current one and raises a
-	 * {@link ETagDoesntMatchException} in case they don't match.
-	 *
-	 * @param entity must not be {@literal null}.
-	 * @param target can be {@literal null}.
-	 * @throws ETagDoesntMatchException in case the calculated {@link ETag} for the given bean does not match the current
-	 *           one.
-	 */
-	public void verify(PersistentEntity<?> other) {
-
-		if (this == NO_ETAG) {
-			return;
-		}
-
-		if (!this.equals(from(other))) {
-			throw new ETagDoesntMatchException(other, this);
-		}
-	}
-
-	/**
 	 * Returns whether the {@link ETag} matches the given {@link PersistentEntity} and target. A more dissenting way of
 	 * checking matches as it does not match if the ETag is {@link #NO_ETAG}.
 	 *
@@ -107,7 +87,7 @@ public final class ETag {
 
 		return this.equals(from(other));
 	}
-
+	
 	/**
 	 * Adds the current {@link ETag} to the given headers.
 	 *
@@ -127,6 +107,7 @@ public final class ETag {
 		headers.setETag(stringValue);
 		return headers;
 	}
+
 
 	/*
 	 * (non-Javadoc)
