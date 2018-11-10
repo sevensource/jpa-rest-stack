@@ -192,15 +192,23 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 	}
 
 	@Test
-	public void isNew_works() {
+	public void isNew_works_for_instantiated_entity() {
 		E e = populate();
 		assertThat(e.isNew()).isTrue();
-
+	}
+	
+	@Test
+	public void isNew_works_for_persisted_entity() {
+		E e = populate();
+		assertThat(e.isNew()).isTrue();
 		getEntityManager().persist(e);
 		getEntityManager().flush();
 		assertThat(e.isNew()).isFalse();
-
-		e = populate();
+	}
+	
+	@Test
+	public void isNew_works_with_null_id() {
+		E e = populate();
 		e.setId(null);
 		assertThat(e.isNew()).isTrue();
 		getEntityManager().persist(e);
