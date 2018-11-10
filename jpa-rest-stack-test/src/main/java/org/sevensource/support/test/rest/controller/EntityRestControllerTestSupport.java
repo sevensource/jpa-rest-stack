@@ -17,8 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +60,8 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 	private ArgumentCaptor<ID> idCaptor;
 
 	private ObjectMapper mapper = new ObjectMapper();
+	
+	private Map<ID, E> entityMap = new HashMap<>();
 
 
 	@Before
@@ -65,10 +69,14 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		when(getService().get(idCaptor.capture())).thenAnswer(c -> {
 			if(idCaptor.getValue().equals(nillId())) {
 				return null;
+			} else if(entityMap.containsKey(idCaptor.getValue())) {
+				return entityMap.get(idCaptor.getValue());
+			} else {
+				E entity = mockFactory.on(getEntityClass()).create();
+				entity.setId(idCaptor.getValue());
+				entityMap.put(idCaptor.getValue(), entity);
+				return entity;				
 			}
-			E entity = mockFactory.on(getEntityClass()).create();
-			entity.setId(idCaptor.getValue());
-			return entity;
 		});
 
 		when(getService().create(entityCaptor.capture())).thenAnswer(c -> {
@@ -153,9 +161,95 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		.perform(request("/" + nextId(), HttpMethod.GET))
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(header().exists(HttpHeaders.ETAG))
+		.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+		.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
+		.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
 		.andExpect(jsonPath("$.id").isNotEmpty())
 		.andExpect(jsonPath("$.version").isNotEmpty())
 		.andDo(print());
+	}
+	
+	@Test
+	public void get_existing_resource_returns_not_modified_with_matching_etag() throws Exception {
+		ID id = nextId();
+		
+		MvcResult result = mvc
+			.perform(request("/" + id, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.ETAG))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andReturn();
+		
+		final String etag = result.getResponse().getHeader(HttpHeaders.ETAG);
+		mvc
+			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_NONE_MATCH, etag))
+			.andExpect(status().isNotModified());
+	}
+	
+	@Test
+	public void get_existing_resource_returns_not_modified_with_matching_last_modified() throws Exception {
+		ID id = nextId();
+		
+		MvcResult result = mvc
+			.perform(request("/" + id, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andReturn();
+		
+		final String lastModified = result.getResponse().getHeader(HttpHeaders.LAST_MODIFIED);
+		mvc
+			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_MODIFIED_SINCE, lastModified))
+			.andExpect(status().isNotModified());
+	}
+	
+	@Test
+	public void get_existing_resource_returns_ok_with_unmatched_etag() throws Exception {
+		ID id = nextId();
+		
+		mvc
+			.perform(request("/" + id, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.ETAG))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andReturn();
+
+		mvc
+			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_NONE_MATCH, "\"" + UUID.randomUUID() + "\""))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void get_existing_resource_returns_ok_with_unmatched_last_modified() throws Exception {
+		ID id = nextId();
+		
+		mvc
+			.perform(request("/" + id, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andReturn();
+
+		mvc
+			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_MODIFIED_SINCE, Long.MIN_VALUE))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void get_existing_resource_returns_not_modified_with_future_last_modified() throws Exception {
+		ID id = nextId();
+		
+		mvc
+			.perform(request("/" + id, HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andReturn();
+
+		mvc
+			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_MODIFIED_SINCE, Long.MAX_VALUE))
+			.andExpect(status().isNotModified());
 	}
 
 	@Test

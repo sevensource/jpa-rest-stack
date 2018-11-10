@@ -10,6 +10,7 @@ import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.dto.IdentifiableDTO;
 import org.sevensource.support.rest.dto.PagedCollectionResourceDTO;
+import org.sevensource.support.rest.etag.ETag;
 import org.sevensource.support.rest.mapping.EntityMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 
 public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO extends IdentifiableDTO<ID>> {
@@ -68,7 +69,6 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	}
 
 	@GetMapping("")
-	@ResponseBody
 	public ResponseEntity<?> getCollectionResource(@PageableDefault(size=100) Pageable pageable, Sort sort) {
 		if(pageable.isUnpaged()) {
 			final List<E> results = entityService.findAll(sort);
@@ -106,7 +106,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<DTO> getItemResource(@PathVariable ID id) {
+	public ResponseEntity<DTO> getItemResource(@PathVariable ID id, @RequestHeader HttpHeaders requestHeaders) {
 
 		final E domainObj = entityService.get(id);
 
@@ -114,9 +114,27 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
+		final ETag etag = ETag.from(domainObj);
+		
+		List<String> ifNoneMatch = requestHeaders.getIfNoneMatch();
+		if(! ifNoneMatch.isEmpty()) {
+			ETag requestETag = ETag.from(ifNoneMatch.get(0));
+			if(etag.equals(requestETag)) {
+				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+			}
+		}
+		
+		long ifModifiedSince = requestHeaders.getIfModifiedSince();
+		if(ifModifiedSince != -1 && domainObj.getLastModifiedDate().toEpochMilli() <= ifModifiedSince) {
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+		}
+		
 		DTO dto = toResource(domainObj);
-
-		return ResponseEntity.ok().body(dto);
+		
+		return ResponseEntity.ok()
+				.eTag(etag.toString())
+				.lastModified(domainObj.getLastModifiedDate().toEpochMilli())
+				.body(dto);
 	}
 
 	@PutMapping("/{id}")
