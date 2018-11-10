@@ -108,34 +108,40 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	@GetMapping("/{id}")
 	public ResponseEntity<DTO> getItemResource(@PathVariable ID id, @RequestHeader HttpHeaders requestHeaders) {
 
-		final E domainObj = entityService.get(id);
+		final E entity = entityService.get(id);
 
-		if (domainObj == null) {
+		if (entity == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
-		final ETag etag = ETag.from(domainObj);
 		
-		List<String> ifNoneMatch = requestHeaders.getIfNoneMatch();
-		if(! ifNoneMatch.isEmpty()) {
-			ETag requestETag = ETag.from(ifNoneMatch.get(0));
-			if(etag.equals(requestETag)) {
-				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
-			}
-		}
-		
-		long ifModifiedSince = requestHeaders.getIfModifiedSince();
-		if(ifModifiedSince != -1 && domainObj.getLastModifiedDate().toEpochMilli() <= ifModifiedSince) {
+		if(resourceIsValid(entity, requestHeaders)) {
 			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
 		}
 		
-		DTO dto = toResource(domainObj);
-		HttpHeaders headers = etag.addTo(new HttpHeaders());
-		headers.setLastModified(domainObj.getLastModifiedDate().toEpochMilli());
+		DTO dto = toResource(entity);
+		HttpHeaders headers = ETag.from(entity).addTo(new HttpHeaders());
+		headers.setLastModified(entity.getLastModifiedDate().toEpochMilli());
 		
 		return ResponseEntity.ok()
 				.headers(headers)
 				.body(dto);
+	}
+	
+	private boolean resourceIsValid(E entity, HttpHeaders requestHeaders) {
+		List<String> ifNoneMatch = requestHeaders.getIfNoneMatch();
+		if(! ifNoneMatch.isEmpty()) {
+			ETag expectedEtag = ETag.from(entity);
+			ETag requestedETag = ETag.from(ifNoneMatch.get(0));
+			return expectedEtag.equals(requestedETag);
+		}
+		
+		final long requestedIfModifiedSince = requestHeaders.getIfModifiedSince();
+		if(requestedIfModifiedSince != -1) {
+			final long lastModified = entity.getLastModifiedDate().toEpochMilli();
+			return lastModified <= requestedIfModifiedSince;
+		}
+		
+		return false;
 	}
 
 	@PutMapping("/{id}")
@@ -148,15 +154,11 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		HttpStatus status;
 
 		if(entityToSave != null) {
-			
-			if(etag != null && ! etag.equals(ETag.NO_ETAG)) {
-				final ETag expectedETag = ETag.from(entityToSave);
-				if(! expectedETag.equals(etag)) {
-					HttpHeaders headers = expectedETag.addTo(new HttpHeaders());
-					return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).headers(headers).build();
-				}
+			if(! matchesPrecondition(entityToSave, etag)) {
+				HttpHeaders headers = ETag.from(entityToSave).addTo(new HttpHeaders());
+				return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).headers(headers).build();				
 			}
-			
+
 			toEntity(dto, entityToSave);
 			savedEntity = entityService.update(id, entityToSave);
 			status = HttpStatus.OK;
@@ -171,6 +173,14 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		headers.setLastModified(savedEntity.getLastModifiedDate().toEpochMilli());
 		
 		return ResponseEntity.status(status).headers(headers).body(savedDto);
+	}
+	
+	private boolean matchesPrecondition(E entity, ETag requestedETag) {
+		if(ETag.NO_ETAG.equals(requestedETag)) {
+			return true;
+		}
+		
+		return ETag.from(entity).equals(requestedETag);
 	}
 
 	@PatchMapping("/{id}")
