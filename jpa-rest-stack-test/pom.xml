@@ -49,25 +49,14 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		 <dependency>
-		 	<groupId>org.mapstruct</groupId>
-		 	<artifactId>mapstruct-jdk8</artifactId>
-		 </dependency>
-		 
-		 <dependency>
-		 	<groupId>org.mapstruct</groupId>
-		 	<artifactId>mapstruct-processor</artifactId>
-		 </dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-jdk8</artifactId>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
@@ -100,10 +89,29 @@
     		<version>1.2.2</version>
     		<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+		 					<groupId>org.mapstruct</groupId>
+		 					<artifactId>mapstruct-processor</artifactId>
+		 					<version>${org.mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
