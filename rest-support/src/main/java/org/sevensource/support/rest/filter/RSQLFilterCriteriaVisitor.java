@@ -23,37 +23,6 @@ class RSQLFilterCriteriaVisitor implements RSQLVisitor<FilterCriteria, FilterCri
 		this.rsqlOperator2FilterOperator = rsqlOperator2FilterOperator;
 	}
 	
-	private FilterCriteria visit(Node node, FilterCriteriaTransformer transformer) {
-		if(node instanceof AndNode) {
-			return visit( (AndNode) node, transformer);
-		} else if(node instanceof OrNode) {
-			return visit( (OrNode) node, transformer);
-		} else if(node instanceof ComparisonNode) {
-			return visit( (ComparisonNode) node, transformer);
-		} else {
-			throw new IllegalArgumentException("Don't know how to handle node of type " + node.getClass());
-		}
-	}
-	
-	private LogicalFilterCriteria visit(LogicalNode node, LogicalFilterOperator operator, FilterCriteriaTransformer transformer) {
-    	LogicalFilterCriteria wrapper = new LogicalFilterCriteria(operator);
-    	for(Node childNode : node.getChildren()) {
-    		FilterCriteria criteria = visit(childNode, transformer);
-    		wrapper.addChild(criteria);
-    	}
-    	return wrapper;
-	}
-	
-    @Override
-    public FilterCriteria visit(AndNode node, FilterCriteriaTransformer transformer) {
-    	return visit(node, LogicalFilterOperator.AND, transformer);
-    }
- 
-    @Override
-    public FilterCriteria visit(OrNode node, FilterCriteriaTransformer transformer) {
-    	return visit(node, LogicalFilterOperator.OR, transformer);
-    }
- 
     @Override
     public FilterCriteria visit(ComparisonNode node, FilterCriteriaTransformer transformer) {
     	
@@ -70,6 +39,37 @@ class RSQLFilterCriteriaVisitor implements RSQLVisitor<FilterCriteria, FilterCri
     	
     	return new ComparisonFilterCriteria(mappedKey, operator, mappedValue);
     }
+	
+    @Override
+    public FilterCriteria visit(AndNode node, FilterCriteriaTransformer transformer) {
+    	return visit(node, LogicalFilterOperator.AND, transformer);
+    }
+ 
+    @Override
+    public FilterCriteria visit(OrNode node, FilterCriteriaTransformer transformer) {
+    	return visit(node, LogicalFilterOperator.OR, transformer);
+    }
+    
+	private LogicalFilterCriteria visit(LogicalNode node, LogicalFilterOperator operator, FilterCriteriaTransformer transformer) {
+    	LogicalFilterCriteria wrapper = new LogicalFilterCriteria(operator);
+    	for(Node childNode : node.getChildren()) {
+    		FilterCriteria criteria = visit(childNode, transformer);
+    		wrapper.addChild(criteria);
+    	}
+    	return wrapper;
+	}
+    
+	private FilterCriteria visit(Node node, FilterCriteriaTransformer transformer) {
+		if(node instanceof AndNode) {
+			return visit( (AndNode) node, transformer);
+		} else if(node instanceof OrNode) {
+			return visit( (OrNode) node, transformer);
+		} else if(node instanceof ComparisonNode) {
+			return visit( (ComparisonNode) node, transformer);
+		} else {
+			throw new IllegalArgumentException("Don't know how to handle node of type " + node.getClass());
+		}
+	}
     
     ComparisonFilterOperator mapOperator(String[] operators) {
     	for(String operator : operators) {

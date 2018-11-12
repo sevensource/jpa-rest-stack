@@ -159,4 +159,9 @@ public class RSQLFilterCriteriaParserTest {
 			}
 		}
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void throws_exception_on_unknown_operator() {
+		RSQLFilterCriteriaParser.getVisitor().mapOperator(new String[] {"=isunicorn="});
+	}
 }
