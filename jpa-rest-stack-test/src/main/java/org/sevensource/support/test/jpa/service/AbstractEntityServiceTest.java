@@ -1,7 +1,7 @@
 package org.sevensource.support.test.jpa.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.UUID;
@@ -86,12 +86,8 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		List<T> entities = getEntitiesWithValidationViolations();
 		if(entities != null) {
 			for(T e : entities) {
-				try {
-					getService().create(e);
-					fail("Create should fail with invalid entity: " + e);
-				} catch(EntityValidationException ex) {
-					// ok, as expected
-				}
+				assertThatThrownBy(() -> getService().create(e) )
+					.isExactlyInstanceOf(EntityValidationException.class);
 			}
 		}
 	}
@@ -101,12 +97,8 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 		List<T> entities = getEntitiesWithValidationViolations();
 		if(entities != null) {
 			for(T e : entities) {
-				try {
-					getService().create(UUID.randomUUID(), e);
-					fail("Create should fail with invalid entity: " + e);
-				} catch(EntityValidationException ex) {
-					// ok, as expected
-				}
+				assertThatThrownBy(() -> getService().create(UUID.randomUUID(), e) )
+					.isExactlyInstanceOf(EntityValidationException.class);
 			}
 		}
 	}
@@ -119,16 +111,13 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 			getEntityManager().flush();
 
 			for(int i=0; i<created.size(); i++) {
-				try {
-					T e = entities.get(i);
-					getService().get(created.get(i).getId());
-					UUID id = created.get(i).getId();
-					e.setId(id);
-					getService().update(id, e);
-					fail("Update should fail with invalid entity: " + e);
-				} catch(EntityValidationException ex) {
-					// ok, as expected
-				}
+				T e = entities.get(i);
+				getService().get(created.get(i).getId());
+				UUID id = created.get(i).getId();
+				e.setId(id);
+				
+				assertThatThrownBy(() -> getService().update(id, e) )
+					.isExactlyInstanceOf(EntityValidationException.class);
 			}
 		}
 	}
@@ -136,9 +125,10 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 
 	/***     GET TESTS    ***/
 	/************************/
-	@Test(expected=IllegalArgumentException.class)
+	@Test()
 	public void get_with_null_argument() {
-		getService().get(null);
+		assertThatThrownBy(() -> getService().get(null) )
+			.isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test()
