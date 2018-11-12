@@ -14,3 +14,7 @@ plugins:
     enabled: false
   pmd:
     enabled: true
+
+exclude_patterns:
+  - "src/test/**"
+  - "*/src/test/**"
