@@ -149,24 +149,22 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 	@Test
 	public void get_resource_with_bad_id() throws Exception {
 		mvc
-		.perform(request("/" + invalidId(), HttpMethod.GET))
-		.andExpect(status().isBadRequest())
-		.andDo(print());
+			.perform(request("/" + invalidId(), HttpMethod.GET))
+			.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void get_existing_resource() throws Exception {
 		mvc
-		.perform(request("/" + nextId(), HttpMethod.GET))
-		.andExpect(status().isOk())
-		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-		.andExpect(header().exists(HttpHeaders.ETAG))
-		.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
-		.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
-		.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
-		.andExpect(jsonPath("$.id").isNotEmpty())
-		.andExpect(jsonPath("$.version").isNotEmpty())
-		.andDo(print());
+			.perform(request("/" + nextId(), HttpMethod.GET))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andExpect(header().exists(HttpHeaders.ETAG))
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
+			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
+			.andExpect(jsonPath("$.id").isNotEmpty())
+			.andExpect(jsonPath("$.version").isNotEmpty());
 	}
 	
 	@Test
@@ -211,8 +209,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 			.perform(request("/" + id, HttpMethod.GET))
 			.andExpect(status().isOk())
 			.andExpect(header().exists(HttpHeaders.ETAG))
-			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())))
-			.andReturn();
+			.andExpect(header().string(HttpHeaders.ETAG, not(isEmptyOrNullString())));
 
 		mvc
 			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_NONE_MATCH, "\"" + UUID.randomUUID() + "\""))
@@ -227,8 +224,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 			.perform(request("/" + id, HttpMethod.GET))
 			.andExpect(status().isOk())
 			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
-			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
-			.andReturn();
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())));
 
 		mvc
 			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_MODIFIED_SINCE, Long.MIN_VALUE))
@@ -243,8 +239,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 			.perform(request("/" + id, HttpMethod.GET))
 			.andExpect(status().isOk())
 			.andExpect(header().exists(HttpHeaders.LAST_MODIFIED))
-			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())))
-			.andReturn();
+			.andExpect(header().string(HttpHeaders.LAST_MODIFIED, not(isEmptyOrNullString())));
 
 		mvc
 			.perform(request("/" + id, HttpMethod.GET).header(HttpHeaders.IF_MODIFIED_SINCE, Long.MAX_VALUE))
@@ -254,9 +249,9 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 	@Test
 	public void get_nonexisting_resource() throws Exception {
 		mvc
-		.perform(request("/" + nillId(), HttpMethod.GET))
-		.andExpect(status().isNotFound())
-		.andDo(print());
+			.perform(request("/" + nillId(), HttpMethod.GET))
+			.andExpect(status().isNotFound())
+			.andDo(print());
 	}
 
 
@@ -437,19 +432,9 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 
 	@Test
 	public void get_collection_resource_nonexistant_page() throws Exception {
-//		mvc
-//				.perform(request("/?page=100&size=4", HttpMethod.GET))
-//				.andExpect(status().isOk())
-//				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-//				.andExpect(jsonPath("$.data").isEmpty())
-//				.andExpect(jsonPath("$", hasKey("page")))
-//				.andDo(print())
-//				.andReturn();
 		mvc
-		.perform(request("/?page=100&size=4", HttpMethod.GET))
-		.andExpect(status().isNotFound())
-		.andDo(print())
-		.andReturn();
+			.perform(request("/?page=100&size=4", HttpMethod.GET))
+			.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -459,9 +444,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.data", hasSize(4)))
-				.andExpect(jsonPath("$", hasKey("page")))
-				.andDo(print())
-				.andReturn();
+				.andExpect(jsonPath("$", hasKey("page")));
 	}
 
 	@Test
@@ -472,9 +455,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$", hasKey("page")))
 				.andExpect(jsonPath("$.data", hasSize(4)))
-				.andExpect(jsonPath("$.data[0].id").value(nillId().toString()))
-				.andDo(print())
-				.andReturn();
+				.andExpect(jsonPath("$.data[0].id").value(nillId().toString()));
 	}
 
 	@Test
@@ -486,9 +467,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 				.andExpect(jsonPath("$", hasKey("page")))
 				.andExpect(jsonPath("$.data", hasSize(4)))
 				.andExpect(jsonPath("$.data[0].id").isNotEmpty())
-				.andExpect(jsonPath("$.data[0].id").value(not(nillId().toString())))
-				.andDo(print())
-				.andReturn();
+				.andExpect(jsonPath("$.data[0].id").value(not(nillId().toString())));
 	}
 
 }
