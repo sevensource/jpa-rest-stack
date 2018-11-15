@@ -33,11 +33,10 @@ class RSQLFilterCriteriaVisitor implements RSQLVisitor<FilterCriteria, FilterCri
     		throw new InvalidFilterCriteriaException("Operation " + operator.name() + " not allowed on field " + key);
     	}
     	
-    	final String mappedKey = transformer.mapFieldName(key);
-    	final Object value = node.getOperator().isMultiValue() ? node.getArguments() : node.getArguments().get(0);
-    	final Object mappedValue = transformer.mapFieldValue(key, value);
     	
-    	return new ComparisonFilterCriteria(mappedKey, operator, mappedValue);
+    	final Object value = node.getOperator().isMultiValue() ? node.getArguments() : node.getArguments().get(0);
+    	
+    	return transformer.transform(new ComparisonFilterCriteria(key, operator, value));
     }
 	
     @Override

@@ -1,6 +1,8 @@
 package org.sevensource.support.rest.filter;
 
+import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
 import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
+import org.sevensource.support.jpa.filter.FilterCriteria;
 
 public interface FilterCriteriaTransformer {
 	
@@ -11,26 +13,16 @@ public interface FilterCriteriaTransformer {
 	 * @param operation the operation to be taken on the specified field
 	 * @return true if the operation is allowed
 	 */
-	boolean isFieldOperationAllowed(String field, ComparisonFilterOperator operation);
-	
-	/**
-	 * maps a fieldName to an Entity fieldName
-	 * 
-	 * @param fieldName the *unmapped* fieldName
-	 * @return the entityFieldName
-	 */
-	default String mapFieldName(String fieldName) {
-		return fieldName;
+	default boolean isFieldOperationAllowed(String fieldName, ComparisonFilterOperator operation) {
+		return false;
 	}
 	
 	/**
-	 * transforms field values to an entityValue 
-	 * 
-	 * @param fieldName the *unmapped* fieldName
-	 * @param value the value
-	 * @return the entityValue
+	 * optionally transform or replace a ComparisonFilterCriteria
+	 * @param criteria the current criteria
+	 * @return any FilterCriteria
 	 */
-	default Object mapFieldValue(String fieldName, Object value) {
-		return value;
+	default FilterCriteria transform(ComparisonFilterCriteria criteria) {
+		return criteria;
 	}
 }
