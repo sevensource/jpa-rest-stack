@@ -66,18 +66,14 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 
 	@Before
 	public void before() {
-		when(getService().get(idCaptor.capture())).thenAnswer(c -> {
-			if(idCaptor.getValue().equals(nillId())) {
-				return null;
-			} else if(entityMap.containsKey(idCaptor.getValue())) {
-				return entityMap.get(idCaptor.getValue());
-			} else {
+		when(getService().get(idCaptor.capture())).thenAnswer(c ->
+			entityMap.computeIfAbsent(idCaptor.getValue(), (id) -> {
+				if(id.equals(nillId())) return null;
 				E entity = mockFactory.on(getEntityClass()).create();
-				entity.setId(idCaptor.getValue());
-				entityMap.put(entity.getId(), entity);
-				return entity;				
-			}
-		});
+				entity.setId(id);
+				return entity;
+			})
+		);
 
 		when(getService().create(entityCaptor.capture())).thenAnswer(c -> {
 			E entity = mockFactory.on(getEntityClass()).create();
@@ -100,9 +96,9 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 			return e;
 		});
 
-		when(getService().exists(idCaptor.capture())).thenAnswer(c -> {
-			return ! nillId().equals(idCaptor.getValue());
-		});
+		when(getService().exists(idCaptor.capture())).thenAnswer(c -> 
+			! nillId().equals(idCaptor.getValue())
+		);
 
 		final List<E> objects = mockFactory.on(getEntityClass()).create(10);
 
