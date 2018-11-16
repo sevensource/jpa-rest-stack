@@ -13,6 +13,7 @@ import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
+import org.sevensource.support.jpa.filter.FilterCriteria;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,13 +46,13 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 
 	@Override
 	@Transactional(readOnly=true)
-	public Page<T> findAll(Pageable pageable) {
+	public Page<T> findAll(Pageable pageable, FilterCriteria filterCriteria) {
 		return repository.findAll(pageable);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<T> findAll(Sort sort) {
+	public List<T> findAll(Sort sort, FilterCriteria filterCriteria) {
 		return repository.findAll(sort);
 	}
 

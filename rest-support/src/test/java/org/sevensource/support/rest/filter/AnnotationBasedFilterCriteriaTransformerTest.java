@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
 
-public class DefaultAnnotationBasedFilterCriteriaTransformerTest {
+public class AnnotationBasedFilterCriteriaTransformerTest {
 
 	private static class DefaultValueDTO {
 		@FilterableProperty
@@ -31,22 +31,22 @@ public class DefaultAnnotationBasedFilterCriteriaTransformerTest {
 	
 	@Test
 	public void default_value_asserts_true() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.EQUAL_TO)).isTrue();
 	}
 	
 	@Test
 	public void no_annotation_asserts_false() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("firstname", ComparisonFilterOperator.GREATER_THAN)).isFalse();
 	}
 	
 	@Test
 	public void invalid_field_throws() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(DefaultValueDTO.class);
 		
 		assertThatThrownBy(() -> 
 			transformer.isFieldOperationAllowed("someprop", ComparisonFilterOperator.GREATER_THAN)).isInstanceOf(IllegalArgumentException.class);
@@ -54,36 +54,36 @@ public class DefaultAnnotationBasedFilterCriteriaTransformerTest {
 	
 	@Test
 	public void single_value_asserts_true() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(SingleValueDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(SingleValueDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.EQUAL_TO)).isTrue();
 	}
 	
 	@Test
 	public void single_value_asserts_false() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(SingleValueDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(SingleValueDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.GREATER_THAN)).isFalse();
 	}
 	
 	@Test
 	public void no_value_works() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(NoValuesDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(NoValuesDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.EQUAL_TO)).isFalse();
 	}
 	
 	@Test
 	public void multi_value_asserts_true() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(ManyValuesDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(ManyValuesDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.EQUAL_TO)).isTrue();
 	}
 	
 	@Test
 	public void multi_value_asserts_false() {
-		DefaultAnnotationBasedFilterCriteriaTransformer transformer = 
-				new DefaultAnnotationBasedFilterCriteriaTransformer(ManyValuesDTO.class);
+		AnnotationBasedFilterCriteriaTransformer transformer = 
+				new AnnotationBasedFilterCriteriaTransformer(ManyValuesDTO.class);
 		assertThat(transformer.isFieldOperationAllowed("name", ComparisonFilterOperator.LIKE)).isFalse();
 	}
 }

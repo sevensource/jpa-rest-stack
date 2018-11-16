@@ -1,17 +1,25 @@
 package org.sevensource.support.rest.controller;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.sevensource.support.jpa.domain.PersistentEntity;
+import org.sevensource.support.jpa.filter.FilterCriteria;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.rest.dto.IdentifiableDTO;
 import org.sevensource.support.rest.dto.PagedCollectionResourceDTO;
 import org.sevensource.support.rest.etag.ETag;
+import org.sevensource.support.rest.filter.AnnotationBasedFilterCriteriaTransformer;
+import org.sevensource.support.rest.filter.FilterCriteriaTransformer;
+import org.sevensource.support.rest.filter.RSQLFilterCriteriaParser;
 import org.sevensource.support.rest.mapping.EntityMapper;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +30,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,16 +39,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 public abstract class AbstractEntityRestController<ID extends Serializable, E extends PersistentEntity<ID>, DTO extends IdentifiableDTO<ID>> {
 
 	private final EntityService<E, ID> entityService;
 	private final EntityMapper<E,DTO> mapper;
+	private final FilterCriteriaTransformer filterCriteriaTransformer; 
+	
+	public static final String FILTER_PARAM_NAME = "query";
 
 	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper) {
 		this.entityService = entityService;
 		this.mapper = mapper;
+		this.filterCriteriaTransformer = buildFilterCriteriaTransformer();
 	}
 
 	protected E toEntity(DTO resource) {
@@ -69,13 +83,23 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	}
 
 	@GetMapping("")
-	public ResponseEntity<?> getCollectionResource(@PageableDefault(size=100) Pageable pageable, Sort sort) {
+	public ResponseEntity<?> getCollectionResource(
+			@RequestParam(required=false, name=FILTER_PARAM_NAME) String queryFilter,
+			@PageableDefault(size=100) Pageable pageable,
+			Sort sort) {
+		
+		FilterCriteria filterCriteria = null;
+		if(StringUtils.hasText(queryFilter)) {
+			filterCriteria = RSQLFilterCriteriaParser.parse(queryFilter, filterCriteriaTransformer);
+		}
+		
+		
 		if(pageable.isUnpaged()) {
-			final List<E> results = entityService.findAll(sort);
+			final List<E> results = entityService.findAll(sort, filterCriteria);
 			final List<DTO> dtos = toResources(results);
 			return ResponseEntity.ok(dtos);
 		} else {
-			final Page<E> page = entityService.findAll(pageable);
+			final Page<E> page = entityService.findAll(pageable, filterCriteria);
 			if(page == null) {
 				return ResponseEntity.notFound().build();
 			}
@@ -199,5 +223,22 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+	
+	protected FilterCriteriaTransformer buildFilterCriteriaTransformer() {
+		Class<?> queryFilterClass = getQueryFilterClass();
+		return new AnnotationBasedFilterCriteriaTransformer(queryFilterClass);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	protected Class<?> getQueryFilterClass() {
+		Map<TypeVariable, Type> typeVariableMap = GenericTypeResolver.getTypeVariableMap(getClass());
+		return typeVariableMap
+			.values()
+			.stream()
+			.map(c -> GenericTypeResolver.resolveType(c, typeVariableMap))
+			.filter(IdentifiableDTO.class::isAssignableFrom)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Cannot infer queryFilterClass"));
 	}
 }

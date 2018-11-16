@@ -60,15 +60,15 @@ public class RSQLFilterCriteriaParser {
 		return rootNode.accept(VISITOR, transformer);
 	}
 	
-	public static RSQLFilterCriteriaVisitor getVisitor() {
+	static RSQLFilterCriteriaVisitor getVisitor() {
 		return VISITOR;
 	}
 	
-	public static Map<String, ComparisonFilterOperator> getRsqloperator2filteroperator() {
+	static Map<String, ComparisonFilterOperator> getRsqloperator2filteroperator() {
 		return rsqlOperator2FilterOperator;
 	}
 	
-	public static Set<ComparisonOperator> getRsqloperators() {
+	static Set<ComparisonOperator> getRsqloperators() {
 		return rsqlOperators;
 	}
 }
