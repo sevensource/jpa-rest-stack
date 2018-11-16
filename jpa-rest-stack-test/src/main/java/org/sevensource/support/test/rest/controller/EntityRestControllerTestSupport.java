@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,7 +28,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.sevensource.support.jpa.domain.PersistentEntity;
-import org.sevensource.support.jpa.filter.FilterCriteria;
 import org.sevensource.support.jpa.service.EntityService;
 import org.sevensource.support.test.jpa.domain.mock.MockFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,9 +103,9 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 
 		final List<E> objects = mockFactory.on(getEntityClass()).create(10);
 
-		when(getService().findAll(any(Sort.class), any(FilterCriteria.class))).thenReturn(objects);
+		when(getService().findAll(any(Sort.class), isNull())).thenReturn(objects);
 
-		when(getService().findAll(any(PageRequest.class), any(FilterCriteria.class))).thenAnswer(c -> {
+		when(getService().findAll(any(PageRequest.class), isNull())).thenAnswer(c -> {
 			Pageable pageable = c.getArgument(0);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();
