@@ -20,12 +20,14 @@ public class Customer extends AbstractIntegerEntity {
 		
 	}
 	
-	public Customer(String firstname, String lastname, CustomerType customerType, int age) {
+	public Customer(String firstname, String lastname, CustomerType customerType, int age, Instant registered, ZonedDateTime localTime) {
 		super();
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.customerType = customerType;
 		this.age = age;
+		this.registered = registered;
+		this.localTime = localTime;
 	}
 	
 	public String getFirstname() {

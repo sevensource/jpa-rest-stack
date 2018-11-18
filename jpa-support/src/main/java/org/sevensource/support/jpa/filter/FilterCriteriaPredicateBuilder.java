@@ -2,6 +2,7 @@ package org.sevensource.support.jpa.filter;
 
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,8 +13,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.Assert;
 
@@ -26,11 +25,9 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
 	public static final char LIKE_WILDCARD = '*';
 	
 	private final transient FilterCriteria filterCriteria;
-	private final transient ConversionService conversionService;
 
-	public FilterCriteriaPredicateBuilder(FilterCriteria filterCriteria, ConversionService conversionService) {
+	public FilterCriteriaPredicateBuilder(FilterCriteria filterCriteria) {
 		this.filterCriteria = filterCriteria;
-		this.conversionService = conversionService;
 	}
 	
 	@Override
@@ -70,12 +67,7 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
 	private Predicate toComparisonPredicate(Root<T> root, ComparisonFilterCriteria criteria, CriteriaBuilder criteriaBuilder) {
 		Path<?> propertyPath = findPropertyPath(root, criteria.getKey());
 		
-		Object argument;
-		if(criteria.getValue() != null) {
-			argument = castArguments(propertyPath, criteria.getValue());
-		} else {
-			argument = null;
-		}
+		final Object argument = criteria.getValue();
 		
 		switch(criteria.getOperator()) {
 		case EQUAL_TO:
@@ -119,19 +111,6 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
 		}
 	}
 	
-	private Object castArguments(Path<?> propertyPath, Object argument) {
-		TypeDescriptor sourceType = TypeDescriptor.forObject(argument);
-		
-		TypeDescriptor targetType;
-		if(argument instanceof List) {
-			targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(propertyPath.getJavaType()));
-		} else {
-			targetType = TypeDescriptor.valueOf(propertyPath.getJavaType());
-		}
-		
-		return conversionService.convert(argument, sourceType, targetType);
-	}
-	
 	private Path<?> findPropertyPath(Root<T> root, String propertyPath) {
 		return root.get(propertyPath);
 	}
@@ -168,25 +147,27 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
     
     private static Predicate createIn(Expression<?> propertyPath, Object arguments, CriteriaBuilder builder) {
     	Assert.notNull(arguments, "Argument must not be null");
+    	
     	if(! (arguments instanceof Collection)) {
-    		throw new IllegalArgumentException("Cannot create IN comparison with arguments of type " + arguments.getClass());
+    		arguments = Arrays.asList(arguments);
     	}
+    	
 	    return propertyPath.in((Collection)arguments);
     }
     
     private static Predicate createNotIn(Expression<?> propertyPath, Object arguments, CriteriaBuilder builder) {
     	Assert.notNull(arguments, "Argument must not be null");
     	if(! (arguments instanceof Collection)) {
-    		throw new IllegalArgumentException("Cannot create IN comparison with arguments of type " + arguments.getClass());
+    		arguments = Arrays.asList(arguments);
     	}
     	
-	    return builder.not(propertyPath.in((Collection)arguments));
+    	return builder.or(propertyPath.isNull(), builder.not(propertyPath.in((Collection)arguments)));
     }
     
     private static Predicate createGreaterThan(Expression propertyPath, Object argument, CriteriaBuilder builder) {
     	Assert.notNull(argument, "Argument must not be null");
     	if(argument instanceof Number) {
-    		return builder.gt((Expression<? extends Number>) propertyPath, (Number) argument);
+    		return builder.gt(propertyPath, (Number) argument);
     	} else if((argument instanceof Temporal && argument instanceof Comparable)) {
     		return builder.greaterThan(propertyPath, (Comparable) argument);
     	} else {
@@ -197,7 +178,7 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
     private static Predicate createGreaterThanOrEqualTo(Expression propertyPath, Object argument, CriteriaBuilder builder) {
     	Assert.notNull(argument, "Argument must not be null");
     	if(argument instanceof Number) {
-    		return builder.ge((Expression<? extends Number>) propertyPath, (Number) argument);
+    		return builder.ge(propertyPath, (Number) argument);
     	} else if((argument instanceof Temporal && argument instanceof Comparable)) {
     		return builder.greaterThanOrEqualTo(propertyPath, (Comparable) argument);
     	} else {
@@ -208,7 +189,7 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
     private static Predicate createLessThan(Expression propertyPath, Object argument, CriteriaBuilder builder) {
     	Assert.notNull(argument, "Argument must not be null");
     	if(argument instanceof Number) {
-    		return builder.lt((Expression<? extends Number>) propertyPath, (Number) argument);
+    		return builder.lt(propertyPath, (Number) argument);
     	} else if((argument instanceof Temporal && argument instanceof Comparable)) {
     		return builder.lessThan(propertyPath, (Comparable) argument);
     	} else {
@@ -219,7 +200,7 @@ public class FilterCriteriaPredicateBuilder<T> implements Specification<T> {
     private static Predicate createLessThanOrEqualTo(Expression propertyPath, Object argument, CriteriaBuilder builder) {
     	Assert.notNull(argument, "Argument must not be null");
     	if(argument instanceof Number) {
-    		return builder.le((Expression<? extends Number>) propertyPath, (Number) argument);
+    		return builder.le(propertyPath, (Number) argument);
     	} else if((argument instanceof Temporal && argument instanceof Comparable)) {
     		return builder.lessThanOrEqualTo(propertyPath, (Comparable) argument);
     	} else {

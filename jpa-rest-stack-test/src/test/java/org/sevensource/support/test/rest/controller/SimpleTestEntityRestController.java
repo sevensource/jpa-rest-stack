@@ -8,6 +8,7 @@ import org.sevensource.support.test.jpa.domain.UUIDTestEntity;
 import org.sevensource.support.test.rest.dto.TestDTO;
 import org.sevensource.support.test.rest.mapper.UUIDTestEntityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +19,7 @@ public class SimpleTestEntityRestController extends AbstractEntityRestController
 	public final static String PATH = "/entity";
 	
 	@Autowired
-	public SimpleTestEntityRestController(EntityService<UUIDTestEntity, UUID> service, UUIDTestEntityMapper mapper) {
-		super(service, mapper);
+	public SimpleTestEntityRestController(EntityService<UUIDTestEntity, UUID> service, UUIDTestEntityMapper mapper, ConversionService conversionService) {
+		super(service, mapper, conversionService);
 	}
 }

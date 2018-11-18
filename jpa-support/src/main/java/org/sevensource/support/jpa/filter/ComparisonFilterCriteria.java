@@ -20,4 +20,8 @@ public class ComparisonFilterCriteria implements FilterCriteria {
 	public Object getValue() {
 		return value;
 	}
+	
+	public ComparisonFilterCriteria withNewValue(Object newValue) {
+		return new ComparisonFilterCriteria(this.key, this.operator, newValue);
+	}
 }

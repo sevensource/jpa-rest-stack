@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_Like_Test {
+public class FilterCriteriaPredicateBuilder_GreaterThan_Test {
 
 	Customer person1;
 	Customer person2;
@@ -60,52 +60,33 @@ public class FilterCriteriaPredicateBuilder_Like_Test {
 		return new FilterCriteriaPredicateBuilder<>(criteria);
 	}
 	
+	
 	@Test
-	public void string_prop_like() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, "Joh*");
+	public void integer_greater_than() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN, 35);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(1);
+		assertThat(repository.findAll(builder)).hasSize(2);
 	}
 	
 	@Test
-	public void string_prop_like_with_integer_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, 2);
+	public void instant_greater_than() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.GREATER_THAN, instant0);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(0);
+		assertThat(repository.findAll(builder)).hasSize(2);
 	}
 	
 	@Test
-	public void string_prop_like_with_null_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, null);
+	public void null_greater_than_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN, null);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(1);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
+	
+	@Test
+	public void string_greaterthan_throws() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.GREATER_THAN, "John");
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		
-	@Test
-	public void integer_prop_like_throws() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LIKE, 35);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
-	}
-	
-	@Test
-	public void enum_prop_like_throws() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.LIKE, CustomerType.PERSON);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
-	}
-	
-	@Test
-	public void string_prop_notlike() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_LIKE, "Joh*");
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(4);
-	}
-	
-	@Test
-	public void string_prop_notlike_with_null_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_LIKE, null);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(4);
 	}
 }

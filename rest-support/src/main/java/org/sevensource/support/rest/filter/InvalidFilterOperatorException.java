@@ -1,13 +1,13 @@
 package org.sevensource.support.rest.filter;
 
-public class InvalidFilterCriteriaException extends RuntimeException {
+public class InvalidFilterOperatorException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3237595975510546553L;
 
-	public InvalidFilterCriteriaException(String message) {
+	public InvalidFilterOperatorException(String message) {
 		super(message);
 	}
 }

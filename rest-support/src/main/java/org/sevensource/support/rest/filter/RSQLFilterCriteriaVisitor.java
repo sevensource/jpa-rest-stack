@@ -30,7 +30,7 @@ class RSQLFilterCriteriaVisitor implements RSQLVisitor<FilterCriteria, FilterCri
     	final ComparisonFilterOperator operator = mapOperator(node.getOperator().getSymbols());
     	
     	if(! transformer.isFieldOperationAllowed(key, operator)) {
-    		throw new InvalidFilterCriteriaException("Operation " + operator.name() + " not allowed on field " + key);
+    		throw new InvalidFilterOperatorException("Operation " + operator.name() + " not allowed on field " + key);
     	}
     	
     	

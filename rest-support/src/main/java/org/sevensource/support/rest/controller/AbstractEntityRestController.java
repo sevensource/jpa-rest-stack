@@ -20,6 +20,7 @@ import org.sevensource.support.rest.filter.FilterCriteriaTransformer;
 import org.sevensource.support.rest.filter.RSQLFilterCriteriaParser;
 import org.sevensource.support.rest.mapping.EntityMapper;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,13 +47,15 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 
 	private final EntityService<E, ID> entityService;
 	private final EntityMapper<E,DTO> mapper;
+	private final ConversionService conversionService;
 	private final FilterCriteriaTransformer filterCriteriaTransformer; 
 	
 	public static final String FILTER_PARAM_NAME = "query";
 
-	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper) {
+	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper, ConversionService conversionService) {
 		this.entityService = entityService;
 		this.mapper = mapper;
+		this.conversionService = conversionService;
 		this.filterCriteriaTransformer = buildFilterCriteriaTransformer();
 	}
 
@@ -227,7 +230,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	
 	protected FilterCriteriaTransformer buildFilterCriteriaTransformer() {
 		Class<?> queryFilterClass = getQueryFilterClass();
-		return new AnnotationBasedFilterCriteriaTransformer(queryFilterClass);
+		return new AnnotationBasedFilterCriteriaTransformer(queryFilterClass, conversionService);
 	}
 	
 	@SuppressWarnings("rawtypes")

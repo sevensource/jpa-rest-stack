@@ -7,15 +7,13 @@ import org.sevensource.support.jpa.filter.FilterCriteria;
 public interface FilterCriteriaTransformer {
 	
 	/**
-	 * specifies if an operation is allowed
+	 * determine if an operation on a given field is allowed
 	 * 
-	 * @param field the *unmapped* named of the field
-	 * @param operation the operation to be taken on the specified field
+	 * @param field the name of the field
+	 * @param operation the operation to be applied to the given field
 	 * @return true if the operation is allowed
 	 */
-	default boolean isFieldOperationAllowed(String fieldName, ComparisonFilterOperator operation) {
-		return false;
-	}
+	boolean isFieldOperationAllowed(String fieldName, ComparisonFilterOperator operation);
 	
 	/**
 	 * optionally transform or replace a ComparisonFilterCriteria
