@@ -1,7 +1,5 @@
 package org.sevensource.support.jpa.filter.predicate;
 
-import java.time.temporal.Temporal;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -18,7 +16,7 @@ class LessThanOrEqualPredicateBuilder implements ComparisonFilterCriteriaPredica
     	Assert.notNull(argument, "Argument must not be null");
     	if(argument instanceof Number) {
     		return builder.le(propertyPath, (Number) argument);
-    	} else if((argument instanceof Temporal && argument instanceof Comparable)) {
+    	} else if(argument instanceof Comparable) {
     		return builder.lessThanOrEqualTo(propertyPath, (Comparable) argument);
     	} else {
     		throw new IllegalArgumentException("Cannot create lessThanOrEqualTo for type " + argument.getClass());

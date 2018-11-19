@@ -107,12 +107,8 @@ public class AnnotationBasedFilterCriteriaTransformer implements FilterCriteriaT
 		try {
 			return conversionService.convert(value, Instant.class);
 		} catch(ConverterNotFoundException e) {
-			Long longValue = conversionService.convert(value, Long.class);
-			if(longValue == null) {
-				return null;
-			} else {
-				return Instant.ofEpochMilli(longValue);
-			}
+			final Long longValue = conversionService.convert(value, Long.class);
+			return longValue == null ? null : Instant.ofEpochMilli(longValue);
 		}
 	}
 }
