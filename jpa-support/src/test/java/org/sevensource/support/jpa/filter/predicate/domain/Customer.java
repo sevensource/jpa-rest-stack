@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.filter.domain;
+package org.sevensource.support.jpa.filter.predicate.domain;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;

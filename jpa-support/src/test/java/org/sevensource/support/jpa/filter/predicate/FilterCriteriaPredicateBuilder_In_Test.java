@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.filter;
+package org.sevensource.support.jpa.filter.predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,9 +12,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.filter.domain.Customer;
-import org.sevensource.support.jpa.filter.domain.CustomerRepository;
-import org.sevensource.support.jpa.filter.domain.CustomerType;
+import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
+import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
+import org.sevensource.support.jpa.filter.FilterCriteria;
+import org.sevensource.support.jpa.filter.predicate.FilterCriteriaPredicateBuilder;
+import org.sevensource.support.jpa.filter.predicate.domain.Customer;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerRepository;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

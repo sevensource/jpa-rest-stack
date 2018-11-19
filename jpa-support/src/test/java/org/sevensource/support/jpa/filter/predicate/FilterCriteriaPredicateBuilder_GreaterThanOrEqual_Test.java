@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.filter;
+package org.sevensource.support.jpa.filter.predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,9 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.filter.domain.Customer;
-import org.sevensource.support.jpa.filter.domain.CustomerRepository;
-import org.sevensource.support.jpa.filter.domain.CustomerType;
+import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
+import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
+import org.sevensource.support.jpa.filter.FilterCriteria;
+import org.sevensource.support.jpa.filter.predicate.domain.Customer;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerRepository;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -27,7 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_LessThan_Test {
+public class FilterCriteriaPredicateBuilder_GreaterThanOrEqual_Test {
 
 	Customer person1;
 	Customer person2;
@@ -62,22 +65,29 @@ public class FilterCriteriaPredicateBuilder_LessThan_Test {
 	
 	
 	@Test
-	public void integer_less_than() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN, 35);
+	public void integer_greater_than_or_equal() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, 35);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(1);
+		assertThat(repository.findAll(builder)).hasSize(4);
 	}
 	
 	@Test
-	public void instant_less_than() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.LESS_THAN, instant2000);
+	public void instant_greater_than_or_equal() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, instant0);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
+		assertThat(repository.findAll(builder)).hasSize(4);
 	}
 	
 	@Test
-	public void null_less_than_throws() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN, null);
+	public void null_greater_than_or_equal_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, null);
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+	}
+	
+	@Test
+	public void enum_greater_than_or_equal_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, CustomerType.COMPANY);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}

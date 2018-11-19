@@ -1,4 +1,4 @@
-package org.sevensource.support.jpa.filter;
+package org.sevensource.support.jpa.filter.predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,9 +11,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
-import org.sevensource.support.jpa.filter.domain.Customer;
-import org.sevensource.support.jpa.filter.domain.CustomerRepository;
-import org.sevensource.support.jpa.filter.domain.CustomerType;
+import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
+import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
+import org.sevensource.support.jpa.filter.FilterCriteria;
+import org.sevensource.support.jpa.filter.LogicalFilterCriteria;
+import org.sevensource.support.jpa.filter.LogicalFilterOperator;
+import org.sevensource.support.jpa.filter.predicate.domain.Customer;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerRepository;
+import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -27,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_LessThanOrEqual_Test {
+public class FilterCriteriaPredicateBuilder_LogicalTest {
 
 	Customer person1;
 	Customer person2;
@@ -60,24 +65,27 @@ public class FilterCriteriaPredicateBuilder_LessThanOrEqual_Test {
 		return new FilterCriteriaPredicateBuilder<>(criteria);
 	}
 	
-	
 	@Test
-	public void integer_less_than_or_equal() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, 35);
+	public void logical_and_works() {
+		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.AND);
+		criteria.addChild(new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, "John"));
+		criteria.addChild(new ComparisonFilterCriteria("lastname", ComparisonFilterOperator.EQUAL_TO, "Doe"));
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(3);
+		assertThat(repository.findAll(builder)).hasSize(1);
+	}
+
+	@Test
+	public void logical_or_works() {
+		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.OR);
+		criteria.addChild(new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, "John"));
+		criteria.addChild(new ComparisonFilterCriteria("lastname", ComparisonFilterOperator.EQUAL_TO, "Blige"));
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThat(repository.findAll(builder)).hasSize(2);
 	}
 	
 	@Test
-	public void instant_less_than_or_equal() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, instant2000);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(4);
-	}
-	
-	@Test
-	public void null_less_than_or_equal_throws() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, null);
+	public void logical_without_comparison_throws() {
+		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.OR);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
