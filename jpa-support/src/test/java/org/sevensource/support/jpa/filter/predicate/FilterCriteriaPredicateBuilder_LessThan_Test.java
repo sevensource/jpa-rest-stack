@@ -89,6 +89,6 @@ public class FilterCriteriaPredicateBuilder_LessThan_Test {
 	public void enum_less_than_throws() {		
 		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.LESS_THAN, CustomerType.COMPANY);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+		assertThat(repository.findAll(builder)).hasSize(0);
 	}
 }

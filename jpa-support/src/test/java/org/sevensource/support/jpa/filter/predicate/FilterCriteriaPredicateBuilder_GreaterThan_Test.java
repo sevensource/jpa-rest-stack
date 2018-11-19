@@ -14,7 +14,6 @@ import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
 import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
 import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
 import org.sevensource.support.jpa.filter.FilterCriteria;
-import org.sevensource.support.jpa.filter.predicate.FilterCriteriaPredicateBuilder;
 import org.sevensource.support.jpa.filter.predicate.domain.Customer;
 import org.sevensource.support.jpa.filter.predicate.domain.CustomerRepository;
 import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
@@ -87,10 +86,10 @@ public class FilterCriteriaPredicateBuilder_GreaterThan_Test {
 	}
 	
 	@Test
-	public void string_greaterthan_throws() {
+	public void string_greaterthan() {
 		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.GREATER_THAN, "John");
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		
-		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+		assertThat(repository.findAll(builder)).hasSize(2);
 	}
 }

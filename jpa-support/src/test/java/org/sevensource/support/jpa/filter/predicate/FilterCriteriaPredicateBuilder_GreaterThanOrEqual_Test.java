@@ -86,9 +86,16 @@ public class FilterCriteriaPredicateBuilder_GreaterThanOrEqual_Test {
 	}
 	
 	@Test
-	public void enum_greater_than_or_equal_throws() {		
+	public void enum_greater_than_or_equal() {		
 		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, CustomerType.COMPANY);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+		assertThat(repository.findAll(builder)).hasSize(4);
+	}
+	
+	@Test
+	public void string_greater_than_or_equal() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, "John");
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThat(repository.findAll(builder)).hasSize(3);
 	}
 }
