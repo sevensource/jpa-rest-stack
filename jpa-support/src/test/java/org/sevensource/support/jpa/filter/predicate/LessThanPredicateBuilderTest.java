@@ -3,6 +3,8 @@ package org.sevensource.support.jpa.filter.predicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -14,8 +16,6 @@ import org.sevensource.support.jpa.configuration.JpaTestConfiguration;
 import org.sevensource.support.jpa.filter.ComparisonFilterCriteria;
 import org.sevensource.support.jpa.filter.ComparisonFilterOperator;
 import org.sevensource.support.jpa.filter.FilterCriteria;
-import org.sevensource.support.jpa.filter.LogicalFilterCriteria;
-import org.sevensource.support.jpa.filter.LogicalFilterOperator;
 import org.sevensource.support.jpa.filter.predicate.domain.Customer;
 import org.sevensource.support.jpa.filter.predicate.domain.CustomerRepository;
 import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_LogicalTest {
+public class LessThanPredicateBuilderTest {
 
 	Customer person1;
 	Customer person2;
@@ -65,27 +65,38 @@ public class FilterCriteriaPredicateBuilder_LogicalTest {
 		return new FilterCriteriaPredicateBuilder<>(criteria);
 	}
 	
+	
 	@Test
-	public void logical_and_works() {
-		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.AND);
-		criteria.addChild(new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, "John"));
-		criteria.addChild(new ComparisonFilterCriteria("lastname", ComparisonFilterOperator.EQUAL_TO, "Doe"));
+	public void integer_less_than() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN, 35);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(1);
 	}
-
+	
 	@Test
-	public void logical_or_works() {
-		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.OR);
-		criteria.addChild(new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, "John"));
-		criteria.addChild(new ComparisonFilterCriteria("lastname", ComparisonFilterOperator.EQUAL_TO, "Blige"));
+	public void instant_less_than() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.LESS_THAN, instant2000);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(2);
 	}
 	
 	@Test
-	public void logical_without_comparison_throws() {
-		LogicalFilterCriteria criteria = new LogicalFilterCriteria(LogicalFilterOperator.OR);
+	public void null_less_than_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN, null);
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+	}
+	
+	@Test
+	public void enum_less_than_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.LESS_THAN, CustomerType.COMPANY);
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThat(repository.findAll(builder)).hasSize(0);
+	}
+	
+	@Test
+	public void non_comparable_less_than_throws() throws MalformedURLException {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN, new URL("http://www.github.com/"));
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}

@@ -3,6 +3,8 @@ package org.sevensource.support.jpa.filter.predicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -30,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_LessThanOrEqual_Test {
+public class GreaterThanOrEqualPredicateBuilderTest {
 
 	Customer person1;
 	Customer person2;
@@ -65,30 +67,44 @@ public class FilterCriteriaPredicateBuilder_LessThanOrEqual_Test {
 	
 	
 	@Test
-	public void integer_less_than_or_equal() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, 35);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(3);
-	}
-	
-	@Test
-	public void instant_less_than_or_equal() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, instant2000);
+	public void integer_greater_than_or_equal() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, 35);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(4);
 	}
 	
 	@Test
-	public void null_less_than_or_equal_throws() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, null);
+	public void instant_greater_than_or_equal() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, instant0);
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThat(repository.findAll(builder)).hasSize(4);
+	}
+	
+	@Test
+	public void null_greater_than_or_equal_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, null);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 	
 	@Test
-	public void enum_less_than_or_equal_throws() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.LESS_THAN_OR_EQUAL, CustomerType.COMPANY);
+	public void enum_greater_than_or_equal() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, CustomerType.COMPANY);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
+		assertThat(repository.findAll(builder)).hasSize(4);
+	}
+	
+	@Test
+	public void string_greater_than_or_equal() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, "John");
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThat(repository.findAll(builder)).hasSize(3);
+	}
+	
+	@Test
+	public void non_comparable_greater_than_or_equal_throws() throws MalformedURLException {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.GREATER_THAN_OR_EQUAL, new URL("http://www.github.com/"));
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 }

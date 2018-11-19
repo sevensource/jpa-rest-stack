@@ -1,6 +1,7 @@
 package org.sevensource.support.jpa.filter.predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -20,6 +21,7 @@ import org.sevensource.support.jpa.filter.predicate.domain.CustomerType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,7 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = JpaTestConfiguration.class)
 @EntityScan(basePackageClasses=Customer.class)
 @EnableJpaRepositories(basePackageClasses=CustomerRepository.class)
-public class FilterCriteriaPredicateBuilder_Equal_Test {
+public class LikePredicateBuilderTest {
 
 	Customer person1;
 	Customer person2;
@@ -63,93 +65,50 @@ public class FilterCriteriaPredicateBuilder_Equal_Test {
 	}
 	
 	@Test
-	public void string_prop_equal_to() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, "John");
+	public void string_prop_like() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, "Joh*");
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(1);
 	}
-
-	@Test
-	public void string_prop_equal_to_with_null_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.EQUAL_TO, null);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(1);
-	}
-		
-	@Test
-	public void integer_prop_equal_to() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.EQUAL_TO, 35);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
-	}
 	
 	@Test
-	public void integer_prop_equal_to_with_string_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.EQUAL_TO, "35");
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
-	}
-	
-	@Test
-	public void integer_prop_equal_to_with_long_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.EQUAL_TO, 35L);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
-	}
-	
-	@Test
-	public void integer_prop_equal_to_with_null_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.EQUAL_TO, null);
+	public void string_prop_like_with_integer_arg() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, 2);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(0);
 	}
 	
 	@Test
-	public void enum_prop_equal_to() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.EQUAL_TO, CustomerType.PERSON);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
-	}
-	
-	@Test
-	public void enum_prop_equal_to_with_null_arg() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.EQUAL_TO, null);
+	public void string_prop_like_with_null_arg() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.LIKE, null);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(1);
 	}
-
-
+		
 	@Test
-	public void instant_prop_equal_to() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("registered", ComparisonFilterOperator.EQUAL_TO, instant0);
+	public void integer_prop_like_throws() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("age", ComparisonFilterOperator.LIKE, 35);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(2);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
 	}
 	
 	@Test
-	public void string_prop_notequal_to() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_EQUAL_TO, "John");
+	public void enum_prop_like_throws() {
+		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.LIKE, CustomerType.PERSON);
+		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
+		assertThatThrownBy(() -> repository.findAll(builder)).isExactlyInstanceOf(InvalidDataAccessApiUsageException.class);
+	}
+	
+	@Test
+	public void string_prop_notlike() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_LIKE, "Joh*");
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(4);
 	}
 	
 	@Test
-	public void string_prop_notequal_to_with_null_arg() {		
-		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_EQUAL_TO, null);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(4);
-	}
-	
-	@Test
-	public void enum_prop_not_equal_to() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.NOT_EQUAL_TO, CustomerType.PERSON);
-		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
-		assertThat(repository.findAll(builder)).hasSize(3);
-	}
-	
-	@Test
-	public void enum_prop_not_equal_to_with_null_arg() {
-		FilterCriteria criteria = new ComparisonFilterCriteria("customerType", ComparisonFilterOperator.NOT_EQUAL_TO, null);
+	public void string_prop_notlike_with_null_arg() {		
+		FilterCriteria criteria = new ComparisonFilterCriteria("firstname", ComparisonFilterOperator.NOT_LIKE, null);
 		FilterCriteriaPredicateBuilder<Customer> builder = builder(criteria);
 		assertThat(repository.findAll(builder)).hasSize(4);
 	}
