@@ -19,6 +19,7 @@ import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,23 +49,21 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 
 	@Override
 	@Transactional(readOnly=true)
-	public Page<T> findAll(Pageable pageable, FilterCriteria filterCriteria) {
-		if(filterCriteria == null) {
-			return repository.findAll(pageable);	
-		} else {
-			final FilterCriteriaPredicateBuilder<T> spec = new FilterCriteriaPredicateBuilder<>(filterCriteria);
-			return repository.findAll(spec, pageable);
-		}
+	public Page<T> findAll(FilterCriteria filterCriteria, Pageable pageable) {
+		return repository.findAll(buildSpecification(filterCriteria), pageable);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<T> findAll(Sort sort, FilterCriteria filterCriteria) {
-		if(filterCriteria == null) {
-			return repository.findAll(sort);	
+	public List<T> findAll(FilterCriteria filterCriteria, Sort sort) {
+		return repository.findAll(buildSpecification(filterCriteria), sort);
+	}
+	
+	protected Specification<T> buildSpecification(FilterCriteria criteria) {
+		if(criteria == null) {
+			return null;
 		} else {
-			final FilterCriteriaPredicateBuilder<T> spec = new FilterCriteriaPredicateBuilder<>(filterCriteria);
-			return repository.findAll(spec, sort);
+			return new FilterCriteriaPredicateBuilder<>(criteria);
 		}
 	}
 

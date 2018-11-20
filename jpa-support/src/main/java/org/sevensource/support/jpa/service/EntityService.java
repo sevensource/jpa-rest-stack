@@ -96,13 +96,13 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	 * @param pageable {@link Pageable}
 	 * @return data
 	 */
-	public Page<T> findAll(Pageable pageable, FilterCriteria filterCriteria);
+	public Page<T> findAll(FilterCriteria filterCriteria, Pageable pageable);
 	
 	/**
 	 * 
 	 * @param sort {@link Sort}
 	 * @return data
 	 */
-	public List<T> findAll(Sort sort, FilterCriteria filterCriteria);
+	public List<T> findAll(FilterCriteria filterCriteria, Sort sort);
 	
 }

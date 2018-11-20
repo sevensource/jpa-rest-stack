@@ -103,9 +103,9 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 
 		final List<E> objects = mockFactory.on(getEntityClass()).create(10);
 
-		when(getService().findAll(any(Sort.class), isNull())).thenReturn(objects);
+		when(getService().findAll(isNull(), any(Sort.class))).thenReturn(objects);
 
-		when(getService().findAll(any(PageRequest.class), isNull())).thenAnswer(c -> {
+		when(getService().findAll(isNull(), any(PageRequest.class))).thenAnswer(c -> {
 			Pageable pageable = c.getArgument(0);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();

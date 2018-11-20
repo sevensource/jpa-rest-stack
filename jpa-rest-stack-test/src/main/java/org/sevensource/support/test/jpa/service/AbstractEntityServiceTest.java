@@ -375,7 +375,7 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 			}
 
 			PageRequest pageRequest = PageRequest.of(c, pagesize);
-			Page<T> res = getService().findAll(pageRequest, null);
+			Page<T> res = getService().findAll(null, pageRequest);
 			assertThat(res).size().isEqualTo(expected);
 		}
 	}
@@ -391,7 +391,7 @@ public abstract class AbstractEntityServiceTest<T extends PersistentEntity<UUID>
 
 
 		Sort sort = Sort.by("id");
-		List<T> res = getService().findAll(sort, null);
+		List<T> res = getService().findAll(null, sort);
 		assertThat(res).size().isEqualTo(createdCount);
 	}
 }

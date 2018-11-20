@@ -19,6 +19,7 @@ import org.sevensource.support.rest.filter.AnnotationBasedFilterCriteriaTransfor
 import org.sevensource.support.rest.filter.FilterCriteriaTransformer;
 import org.sevensource.support.rest.filter.RSQLFilterCriteriaParser;
 import org.sevensource.support.rest.mapping.EntityMapper;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -47,15 +48,13 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 
 	private final EntityService<E, ID> entityService;
 	private final EntityMapper<E,DTO> mapper;
-	private final ConversionService conversionService;
 	private final FilterCriteriaTransformer filterCriteriaTransformer; 
 	
 	public static final String FILTER_PARAM_NAME = "query";
 
-	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper, ConversionService conversionService) {
+	public AbstractEntityRestController(EntityService<E, ID> entityService, EntityMapper<E,DTO> mapper) {
 		this.entityService = entityService;
 		this.mapper = mapper;
-		this.conversionService = conversionService;
 		this.filterCriteriaTransformer = buildFilterCriteriaTransformer();
 	}
 
@@ -98,11 +97,11 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 		
 		
 		if(pageable.isUnpaged()) {
-			final List<E> results = entityService.findAll(sort, filterCriteria);
+			final List<E> results = entityService.findAll(filterCriteria, sort);
 			final List<DTO> dtos = toResources(results);
 			return ResponseEntity.ok(dtos);
 		} else {
-			final Page<E> page = entityService.findAll(pageable, filterCriteria);
+			final Page<E> page = entityService.findAll(filterCriteria, pageable);
 			if(page == null) {
 				return ResponseEntity.notFound().build();
 			}
@@ -230,7 +229,7 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 	
 	protected FilterCriteriaTransformer buildFilterCriteriaTransformer() {
 		Class<?> queryFilterClass = getQueryFilterClass();
-		return new AnnotationBasedFilterCriteriaTransformer(queryFilterClass, conversionService);
+		return new AnnotationBasedFilterCriteriaTransformer(queryFilterClass, getConversionService());
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -243,5 +242,9 @@ public abstract class AbstractEntityRestController<ID extends Serializable, E ex
 			.filter(IdentifiableDTO.class::isAssignableFrom)
 			.findFirst()
 			.orElseThrow(() -> new IllegalStateException("Cannot infer queryFilterClass"));
+	}
+	
+	protected ConversionService getConversionService() {
+		return ApplicationConversionService.getSharedInstance();
 	}
 }
