@@ -13,26 +13,30 @@ import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
+import org.sevensource.support.jpa.filter.FilterCriteria;
+import org.sevensource.support.jpa.filter.predicate.FilterCriteriaPredicateBuilder;
 import org.sevensource.support.jpa.hibernate.unique.UniqueValidation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>> implements EntityService<T, UUID> {
+public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>, R extends JpaRepository<T, UUID> & JpaSpecificationExecutor<T>> implements EntityService<T, UUID> {
 
 	private static final String ENTITY_MUST_NOT_BE_NULL = "Entity must not be null";
 	private static final String ENTITY_WITH_ID_S_DOES_NOT_EXIST = "Entity with id [%s] does not exist";
 	private static final String ID_MUST_NOT_BE_NULL = "ID must not be null";
 
-	private final JpaRepository<T, UUID> repository;
+	private final R repository;
 	private final Validator validator;
 	private final Class<T> entityClass;
 
 
-	protected AbstractRepositoryService(JpaRepository<T, UUID> repository, Validator validator, Class<T> entityClass) {
+	protected AbstractRepositoryService(R repository, Validator validator, Class<T> entityClass) {
 		this.repository = repository;
 		this.validator = validator;
 		this.entityClass = entityClass;
@@ -45,14 +49,22 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 
 	@Override
 	@Transactional(readOnly=true)
-	public Page<T> findAll(Pageable pageable) {
-		return repository.findAll(pageable);
+	public Page<T> findAll(FilterCriteria filterCriteria, Pageable pageable) {
+		return repository.findAll(buildSpecification(filterCriteria), pageable);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<T> findAll(Sort sort) {
-		return repository.findAll(sort);
+	public List<T> findAll(FilterCriteria filterCriteria, Sort sort) {
+		return repository.findAll(buildSpecification(filterCriteria), sort);
+	}
+	
+	protected Specification<T> buildSpecification(FilterCriteria criteria) {
+		if(criteria == null) {
+			return null;
+		} else {
+			return new FilterCriteriaPredicateBuilder<>(criteria);
+		}
 	}
 
 	@Override
@@ -153,9 +165,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 
 	protected void validateJsr310(T entity) {
 		final Set<ConstraintViolation<T>> violations = validator.validate(entity);
-		if(violations.isEmpty()) {
-			return;
-		} else {
+		if(! violations.isEmpty()) {
 			final String message = String.format("Validation of entity %s failed", entityClass.getName());
 			throw new EntityValidationException(message, violations);
 		}
@@ -163,9 +173,7 @@ public abstract class AbstractRepositoryService<T extends PersistentEntity<UUID>
 
 	protected void validateUniqueConstraint(T entity) throws EntityValidationException {
 		final Set<ConstraintViolation<T>> violations = validator.validate(entity, UniqueValidation.class);
-		if(violations.isEmpty()) {
-			return;
-		} else {
+		if(! violations.isEmpty()) {
 			final String message = String.format("Validation of entity %s failed with a UniqueConstraint", entityClass.getName());
 			throw new EntityValidationException(message, violations);
 		}

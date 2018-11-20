@@ -14,7 +14,7 @@ public class StaticJpaAuditorAwareConfiguration {
 
 	@Bean
 	@Primary
-	public AuditorAware<String> auditorAware() {
+	public AuditorAware<String> testAuditorAware() {
 		return () -> Optional.of(AUDITOR_STRING);
 	}
 }

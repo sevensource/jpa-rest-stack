@@ -80,10 +80,6 @@ public abstract class AbstractPersistentEntity<ID extends Serializable> implemen
     	// this way the JPA contract is correctly followed
         // return 31;
 
-//		int hashCode = 17;
-//		hashCode += null == getId() ? 0 : getId().hashCode() * 31;
-//		return hashCode;
-
     	return getId() == null ? 0 : getId().hashCode();
     }
 

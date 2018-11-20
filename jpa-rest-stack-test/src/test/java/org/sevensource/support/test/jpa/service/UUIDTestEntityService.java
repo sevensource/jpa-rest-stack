@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UUIDTestEntityService extends AbstractRepositoryService<UUIDTestEntity> {
+public class UUIDTestEntityService extends AbstractRepositoryService<UUIDTestEntity, UUIDTestEntityRepository> {
 
 	private final UUIDTestEntityRepository repository;
 

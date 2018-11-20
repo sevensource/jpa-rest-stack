@@ -9,6 +9,7 @@ import org.sevensource.support.jpa.domain.PersistentEntity;
 import org.sevensource.support.jpa.exception.EntityAlreadyExistsException;
 import org.sevensource.support.jpa.exception.EntityNotFoundException;
 import org.sevensource.support.jpa.exception.EntityValidationException;
+import org.sevensource.support.jpa.filter.FilterCriteria;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -95,13 +96,13 @@ public interface EntityService<T extends PersistentEntity<ID>, ID extends Serial
 	 * @param pageable {@link Pageable}
 	 * @return data
 	 */
-	public Page<T> findAll(Pageable pageable);
+	public Page<T> findAll(FilterCriteria filterCriteria, Pageable pageable);
 	
 	/**
 	 * 
 	 * @param sort {@link Sort}
 	 * @return data
 	 */
-	public List<T> findAll(Sort sort);
+	public List<T> findAll(FilterCriteria filterCriteria, Sort sort);
 	
 }

@@ -2,6 +2,7 @@ package org.sevensource.support.rest.configuration;
 
 import java.util.List;
 
+import org.sevensource.support.rest.etag.ETagArgumentResolver;
 import org.sevensource.support.rest.exception.RestControllerExceptionHandler;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,10 +44,16 @@ public class CommonMvcConfiguration implements WebMvcConfigurer {
 
 		return resolver;
 	}
+	
+	@Bean
+	public ETagArgumentResolver eTagArgumentResolver() {
+		return new ETagArgumentResolver();
+	}
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(sortHandlerMethodArgumentResolver());
 		argumentResolvers.add(pageableHandlerMethodArgumentResolver());
+		argumentResolvers.add(eTagArgumentResolver());
 	}
 }

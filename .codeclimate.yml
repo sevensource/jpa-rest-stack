@@ -5,11 +5,16 @@ plugins:
     config:
       sonar.java.source: 8
     checks:
-      squid:S1452:
-        enabled: false
+      squid:
+        S1452:
+          enabled: false
   fixme:
     enabled: true
   checkstyle:
     enabled: false
   pmd:
     enabled: true
+
+exclude_patterns:
+  - "src/test/**"
+  - "*/src/test/**"
