@@ -106,7 +106,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 		when(getService().findAll(isNull(), any(Sort.class))).thenReturn(objects);
 
 		when(getService().findAll(isNull(), any(PageRequest.class))).thenAnswer(c -> {
-			Pageable pageable = c.getArgument(0);
+			Pageable pageable = c.getArgument(1);
 			int page = pageable.getPageNumber();
 			int size = pageable.getPageSize();
 
@@ -129,7 +129,7 @@ public abstract class EntityRestControllerTestSupport<E extends PersistentEntity
 				}
 			}
 
-			return new PageImpl<>(objects.subList(start, end), c.getArgument(0), objects.size());
+			return new PageImpl<>(objects.subList(start, end), c.getArgument(1), objects.size());
 		});
 	}
 
