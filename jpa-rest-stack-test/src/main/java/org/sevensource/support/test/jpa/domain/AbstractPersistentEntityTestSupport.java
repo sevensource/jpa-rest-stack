@@ -108,7 +108,7 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 		Set<E> set = new HashSet<>();
 		set.add(entity1);
 		set.add(entity2);
-		assertThat(set.size()).isEqualTo(2);
+		assertThat(set).hasSize(2);
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 	}
 
 	@Test
-	public void persist_creates_a_UUID() {
+	public void persist_creates_an_ID() {
 		ensureEmpty();
 
 		E e = populate();
@@ -219,7 +219,7 @@ public abstract class AbstractPersistentEntityTestSupport<ID extends Serializabl
 	@Test
 	public void toString_works() {
 		E e = populate();
-		e.toString();
+		assertThat(e.toString()).isNotBlank();
 	}
 
 	@Test

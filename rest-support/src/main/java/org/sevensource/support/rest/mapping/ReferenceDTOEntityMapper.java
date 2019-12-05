@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.proxy.HibernateProxy;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.TargetType;
@@ -24,7 +25,17 @@ public class ReferenceDTOEntityMapper {
 	
 	
     public <T extends PersistentEntity<UUID>> ReferenceDTO toDTO(T entity) {
-        return entity != null ? new ReferenceDTO( entity.getId() ) : null;
+    	
+    	if(entity == null) {
+    		return null;
+    	} else if(entity instanceof HibernateProxy) {
+            final Serializable id = ((HibernateProxy) entity).getHibernateLazyInitializer().getIdentifier();
+            if(id instanceof UUID) {
+            	return new ReferenceDTO((UUID) id);
+            }
+    	}
+    	
+        return new ReferenceDTO( entity.getId() );
     }
     
     public <T extends PersistentEntity<UUID>> T resolve(ReferenceDTO reference, @TargetType Class<T> entityClass) {

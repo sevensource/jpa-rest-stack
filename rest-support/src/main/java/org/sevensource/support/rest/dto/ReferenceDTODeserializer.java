@@ -41,5 +41,5 @@ public class ReferenceDTODeserializer extends StdDeserializer<ReferenceDTO> {
 				throw new InvalidFormatException(p, "Cannot parse value as UUID", value, UUID.class);
 			}
 		}
-	}	
+	}
 }

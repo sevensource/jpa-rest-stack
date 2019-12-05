@@ -18,7 +18,7 @@ jobs:
       - run: |
           mvn dependency:resolve-plugins
           mvn -U --fail-never dependency:resolve || true
-          mvn de.qaware.maven:go-offline-maven-plugin:1.0.0:resolve-dependencies
+          mvn de.qaware.maven:go-offline-maven-plugin:1.1.0:resolve-dependencies
 
       - save_cache:
           paths:

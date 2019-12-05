@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.sevensource.parents</groupId>
 		<artifactId>sevensource-oss-build</artifactId>
-		<version>1.7</version>
+		<version>1.8</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -26,10 +26,10 @@
 
 		<random.beans.version>3.7.0</random.beans.version>
 		<mockito.version>[2.7.0,3.0.0)</mockito.version>
-		<commons.lang3.version>3.8</commons.lang3.version>
-		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
+		<commons.lang3.version>3.9</commons.lang3.version>
+		<org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
 		
-		<spring-boot.version>2.1.0.RELEASE</spring-boot.version>
+		<spring-boot.version>2.1.6.RELEASE</spring-boot.version>
 	</properties>
 	
 	<url>http://www.github.com/sevensource/jpa-rest-stack</url>	
